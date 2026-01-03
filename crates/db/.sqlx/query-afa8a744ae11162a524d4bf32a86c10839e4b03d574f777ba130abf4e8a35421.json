@@ -1,0 +1,56 @@
+{
+  "db_name": "SQLite",
+  "query": "INSERT INTO task_history (id, task_id, event_type, old_value, new_value, metadata)\n               VALUES ($1, $2, $3, $4, $5, $6)\n               RETURNING \n                   id as \"id!: Uuid\",\n                   task_id as \"task_id!: Uuid\",\n                   event_type as \"event_type!: TaskHistoryEventType\",\n                   old_value,\n                   new_value,\n                   metadata,\n                   created_at as \"created_at!: DateTime<Utc>\"",
+  "describe": {
+    "columns": [
+      {
+        "name": "id!: Uuid",
+        "ordinal": 0,
+        "type_info": "Blob"
+      },
+      {
+        "name": "task_id!: Uuid",
+        "ordinal": 1,
+        "type_info": "Blob"
+      },
+      {
+        "name": "event_type!: TaskHistoryEventType",
+        "ordinal": 2,
+        "type_info": "Text"
+      },
+      {
+        "name": "old_value",
+        "ordinal": 3,
+        "type_info": "Text"
+      },
+      {
+        "name": "new_value",
+        "ordinal": 4,
+        "type_info": "Text"
+      },
+      {
+        "name": "metadata",
+        "ordinal": 5,
+        "type_info": "Text"
+      },
+      {
+        "name": "created_at!: DateTime<Utc>",
+        "ordinal": 6,
+        "type_info": "Text"
+      }
+    ],
+    "parameters": {
+      "Right": 6
+    },
+    "nullable": [
+      true,
+      false,
+      false,
+      true,
+      true,
+      true,
+      false
+    ]
+  },
+  "hash": "afa8a744ae11162a524d4bf32a86c10839e4b03d574f777ba130abf4e8a35421"
+}

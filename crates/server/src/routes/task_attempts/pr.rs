@@ -11,6 +11,7 @@ use db::models::{
     repo::{Repo, RepoError},
     session::{CreateSession, Session},
     task::{Task, TaskStatus},
+    task_history::{CreateTaskHistory, TaskHistory, TaskHistoryEventType},
     workspace::{Workspace, WorkspaceError},
     workspace_repo::WorkspaceRepo,
 };
@@ -96,7 +97,9 @@ Create a simple, professional PR description (2-4 sentences) covering:
 
 Keep it concise - avoid listing every step or commit detail. Focus on the overall change and its purpose.
 
-Use `gh pr edit #{pr_number} --body "your description here"` to update ONLY the PR body/description. Do NOT change the title."#;
+Use `gh pr edit #{pr_number} --body "your description here"` to update ONLY the PR body/description. Do NOT change the title.
+
+After updating the PR description, the system will automatically log this change to the task history for tracking purposes."#;
 
 async fn trigger_pr_description_follow_up(
     deployment: &DeploymentImpl,
@@ -178,6 +181,30 @@ async fn trigger_pr_description_follow_up(
             &ExecutionProcessRunReason::CodingAgent,
         )
         .await?;
+
+    // Log that we initiated a PR body update request
+    let task = workspace
+        .parent_task(&deployment.db().pool)
+        .await?
+        .ok_or(ApiError::Workspace(WorkspaceError::TaskNotFound))?;
+
+    let metadata = serde_json::json!({
+        "pr_number": pr_number,
+        "pr_url": pr_url,
+        "action": "initiated_auto_description"
+    });
+
+    let _ = TaskHistory::create(
+        &deployment.db().pool,
+        &CreateTaskHistory {
+            task_id: task.id,
+            event_type: TaskHistoryEventType::PrBodyUpdated,
+            old_value: None,
+            new_value: Some(format!("Initiated automatic PR description update for PR #{}", pr_number)),
+            metadata: Some(metadata.to_string()),
+        },
+    )
+    .await;
 
     Ok(())
 }

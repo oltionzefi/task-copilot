@@ -17,6 +17,7 @@ use db::models::{
     project::{Project, ProjectError},
     repo::Repo,
     task::{CreateTask, Task, TaskWithAttemptStatus, UpdateTask},
+    task_history::TaskHistory,
     workspace::{CreateWorkspace, Workspace},
     workspace_repo::{CreateWorkspaceRepo, WorkspaceRepo},
 };
@@ -533,11 +534,20 @@ pub async fn create_jira_ticket(
     )))
 }
 
+pub async fn get_task_history(
+    Extension(task): Extension<Task>,
+    State(deployment): State<DeploymentImpl>,
+) -> Result<ResponseJson<ApiResponse<Vec<TaskHistory>>>, ApiError> {
+    let history = TaskHistory::find_by_task_id(&deployment.db().pool, task.id).await?;
+    Ok(ResponseJson(ApiResponse::success(history)))
+}
+
 pub fn router(deployment: &DeploymentImpl) -> Router<DeploymentImpl> {
     let task_actions_router = Router::new()
         .route("/", put(update_task))
         .route("/", delete(delete_task))
         .route("/share", post(share_task))
+        .route("/history", get(get_task_history))
         .route("/generate-jira-template", post(generate_jira_template))
         .route("/jira-ticket", post(create_jira_ticket));
 
