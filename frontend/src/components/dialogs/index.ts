@@ -40,6 +40,10 @@ export {
 
 export { CreatePRDialog } from './tasks/CreatePRDialog';
 export {
+  JiraReviewDialog,
+  type JiraReviewDialogProps,
+} from './tasks/JiraReviewDialog';
+export {
   EditorSelectionDialog,
   type EditorSelectionDialogProps,
 } from './tasks/EditorSelectionDialog';

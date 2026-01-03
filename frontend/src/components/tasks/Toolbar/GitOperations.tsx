@@ -26,6 +26,7 @@ import { ChangeTargetBranchDialog } from '@/components/dialogs/tasks/ChangeTarge
 import RepoSelector from '@/components/tasks/RepoSelector';
 import { RebaseDialog } from '@/components/dialogs/tasks/RebaseDialog';
 import { CreatePRDialog } from '@/components/dialogs/tasks/CreatePRDialog';
+import { JiraReviewDialog } from '@/components/dialogs/tasks/JiraReviewDialog';
 import { useTranslation } from 'react-i18next';
 import { useAttemptRepo } from '@/hooks/useAttemptRepo';
 import { useGitOperations } from '@/hooks/useGitOperations';
@@ -165,8 +166,12 @@ function GitOperations({
           ? t('git.states.pushing')
           : t('git.states.push');
     }
+    // Show different label for Jira tasks
+    if (task.intent === 'jira') {
+      return t('git.states.reviewJira', { defaultValue: 'Review Jira' });
+    }
     return t('git.states.createPr');
-  }, [mergeInfo.hasOpenPR, pushSuccess, pushing, t]);
+  }, [mergeInfo.hasOpenPR, pushSuccess, pushing, task.intent, t]);
 
   const handleMergeClick = async () => {
     // Directly perform merge without checking branch status
@@ -247,6 +252,14 @@ function GitOperations({
     // If PR already exists, push to it
     if (mergeInfo.hasOpenPR) {
       await handlePushClick();
+      return;
+    }
+
+    // Show Jira review dialog for Jira intent tasks
+    if (task.intent === 'jira') {
+      JiraReviewDialog.show({
+        task,
+      });
       return;
     }
 
