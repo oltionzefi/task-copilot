@@ -20,6 +20,30 @@
       "@playwright/mcp@latest"
     ]
   },
+  "jira": {
+    "command": "npx",
+    "args": [
+      "-y",
+      "@modelcontextprotocol/server-atlassian"
+    ],
+    "env": {
+      "JIRA_URL": "YOUR_JIRA_URL",
+      "JIRA_EMAIL": "YOUR_EMAIL",
+      "JIRA_API_TOKEN": "YOUR_API_TOKEN"
+    }
+  },
+  "confluence": {
+    "command": "npx",
+    "args": [
+      "-y",
+      "@modelcontextprotocol/server-atlassian"
+    ],
+    "env": {
+      "CONFLUENCE_URL": "YOUR_CONFLUENCE_URL",
+      "CONFLUENCE_EMAIL": "YOUR_EMAIL",
+      "CONFLUENCE_API_TOKEN": "YOUR_API_TOKEN"
+    }
+  },
   "meta": {
     "task_copilot": {
       "name": "Task Copilot",
@@ -38,6 +62,18 @@
       "description": "Browser automation with Playwright",
       "url": "https://github.com/microsoft/playwright-mcp",
       "icon": "mcp/playwright_logo_icon.svg"
+    },
+    "jira": {
+      "name": "Jira",
+      "description": "Access and manage Jira issues, projects, and workflows",
+      "url": "https://github.com/modelcontextprotocol/servers/tree/main/src/atlassian",
+      "icon": "mcp/jira_logo.svg"
+    },
+    "confluence": {
+      "name": "Confluence",
+      "description": "Search and retrieve Confluence pages and spaces",
+      "url": "https://github.com/modelcontextprotocol/servers/tree/main/src/atlassian",
+      "icon": "mcp/confluence_logo.svg"
     }
   }
 }
