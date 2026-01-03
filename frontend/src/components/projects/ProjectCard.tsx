@@ -29,6 +29,9 @@ import { projectsApi } from '@/lib/api';
 import { LinkProjectDialog } from '@/components/dialogs/projects/LinkProjectDialog';
 import { useTranslation } from 'react-i18next';
 import { useProjectMutations } from '@/hooks/useProjectMutations';
+import { useQuery } from '@tanstack/react-query';
+import { portfoliosApi } from '@/lib/api';
+import { getPortfolioThemeStyles } from '@/constants/portfolioThemes';
 
 type Props = {
   project: Project;
@@ -45,6 +48,18 @@ function ProjectCard({ project, isFocused, setError, onEdit }: Props) {
 
   const { data: repos } = useProjectRepos(project.id);
   const isSingleRepoProject = repos?.length === 1;
+
+  // Fetch portfolio if project has a portfolio_id
+  const { data: portfolios } = useQuery({
+    queryKey: ['portfolios'],
+    queryFn: portfoliosApi.getAll,
+    staleTime: 5 * 60 * 1000, // 5 minutes
+  });
+
+  const portfolio = portfolios?.find((p) => p.id === project.portfolio_id);
+  const themeStyles = portfolio?.theme
+    ? getPortfolioThemeStyles(portfolio.theme)
+    : null;
 
   const { unlinkProject } = useProjectMutations({
     onUnlinkError: (error) => {
@@ -106,14 +121,32 @@ function ProjectCard({ project, isFocused, setError, onEdit }: Props) {
 
   return (
     <Card
-      className={`hover:shadow-md transition-shadow cursor-pointer focus:ring-2 focus:ring-primary outline-none border`}
+      className={`hover:shadow-md transition-shadow cursor-pointer focus:ring-2 focus:ring-primary outline-none border-l-4 ${
+        themeStyles
+          ? `${themeStyles.border} ${themeStyles.bg}`
+          : 'border-l-transparent'
+      }`}
       onClick={() => navigate(`/projects/${project.id}/tasks`)}
       tabIndex={isFocused ? 0 : -1}
       ref={ref}
     >
       <CardHeader>
         <div className="flex items-start justify-between">
-          <CardTitle className="text-lg">{project.name}</CardTitle>
+          <div className="flex-1">
+            <CardTitle className="text-lg">{project.name}</CardTitle>
+            {portfolio && (
+              <div className="mt-1">
+                <span
+                  className={`inline-flex items-center px-2 py-0.5 rounded text-xs font-medium ${
+                    themeStyles?.badge ||
+                    'bg-gray-100 dark:bg-gray-800 text-gray-800 dark:text-gray-200'
+                  }`}
+                >
+                  {portfolio.name}
+                </span>
+              </div>
+            )}
+          </div>
           <div className="flex items-center gap-2">
             <DropdownMenu>
               <DropdownMenuTrigger asChild onClick={(e) => e.stopPropagation()}>
