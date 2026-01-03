@@ -41,6 +41,8 @@ export const AttemptHeaderActions = ({
             type="single"
             value={mode ?? ''}
             onValueChange={(v) => {
+              // Prevent deselection - if user clicks the active toggle, keep it active
+              if (v === '') return;
               const newMode = (v as LayoutMode) || null;
               onModeChange(newMode);
             }}
