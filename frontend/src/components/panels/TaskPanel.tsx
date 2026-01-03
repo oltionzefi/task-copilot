@@ -98,23 +98,33 @@ const TaskPanel = ({ task }: TaskPanelProps) => {
     },
   ];
 
+  const isConfluence = task.intent === 'confluence';
+
   return (
     <>
       <NewCardContent>
         <div className="p-6 flex flex-col h-full max-h-[calc(100vh-8rem)]">
-          <div className="space-y-3 overflow-y-auto flex-shrink min-h-0">
+          <div
+            className={`space-y-3 overflow-y-auto flex-shrink min-h-0 ${
+              isConfluence ? 'flex-shrink-0' : ''
+            }`}
+          >
             <WYSIWYGEditor value={titleContent} disabled />
             {descriptionContent && (
               <WYSIWYGEditor value={descriptionContent} disabled />
             )}
-            {task.intent === 'confluence' && task.status === 'inreview' && (
+            {isConfluence && task.status === 'inreview' && (
               <div className="pt-2">
                 <DbSchemaViewerButton task={task} />
               </div>
             )}
           </div>
 
-          <div className="mt-6 flex-shrink-0 space-y-4">
+          <div
+            className={`mt-6 space-y-4 ${
+              isConfluence ? 'flex-1 min-h-0 flex flex-col' : 'flex-shrink-0'
+            }`}
+          >
             {task.parent_workspace_id && (
               <DataTable
                 data={parentAttempt ? [parentAttempt] : []}
