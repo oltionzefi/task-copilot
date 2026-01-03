@@ -59,20 +59,20 @@
     "deleteError": "Failed to delete organization"
   },
   "loginRequired": {
-    "title": "ログインが必要です",
-    "description": "組織設定を管理するにはログインする必要があります。",
-    "action": "ログイン"
+    "title": "Login Required",
+    "description": "You need to be logged in to manage organization settings.",
+    "action": "Login"
   },
   "confirmRemoveMember": "Are you sure you want to remove this member from the organization?",
   "sharedProjects": {
-    "title": "共有プロジェクト",
-    "description": "{{orgName}}のリモートプロジェクトとローカルプロジェクトへのリンク",
-    "loading": "プロジェクトを読み込み中...",
-    "noProjects": "この組織に共有プロジェクトが見つかりません",
-    "notLinked": "リンクされていません",
-    "linkedTo": "リンク先: {{projectName}}",
-    "linked": "リンク済み",
-    "linkProject": "プロジェクトをリンク...",
-    "noAvailableProjects": "利用可能なプロジェクトがありません"
+    "title": "Shared Projects",
+    "description": "Remote projects in {{orgName}} and their links to local projects",
+    "loading": "Loading projects...",
+    "noProjects": "No shared projects found in this organization",
+    "notLinked": "Not linked",
+    "linkedTo": "Linked to: {{projectName}}",
+    "linked": "Linked",
+    "linkProject": "Link project...",
+    "noAvailableProjects": "No available projects"
   }
 }
