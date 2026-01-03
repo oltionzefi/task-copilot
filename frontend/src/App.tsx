@@ -15,6 +15,7 @@ import {
   GeneralSettings,
   McpSettings,
   OrganizationSettings,
+  PlatformSettings,
   ProjectSettings,
   SettingsLayout,
 } from '@/pages/settings/';
@@ -143,6 +144,7 @@ function AppContent() {
                     path="organizations"
                     element={<OrganizationSettings />}
                   />
+                  <Route path="platforms" element={<PlatformSettings />} />
                   <Route path="agents" element={<AgentSettings />} />
                   <Route path="mcp" element={<McpSettings />} />
                 </Route>

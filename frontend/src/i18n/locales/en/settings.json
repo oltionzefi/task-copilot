@@ -7,6 +7,8 @@
         "generalDesc": "Theme, notifications, and preferences",
         "projects": "Projects",
         "projectsDesc": "Project scripts and configuration",
+        "platforms": "Platforms",
+        "platformsDesc": "External platform integrations",
         "agents": "Agents",
         "agentsDesc": "Coding agent configurations",
         "mcp": "MCP Servers",
@@ -370,6 +372,52 @@
         "unsavedChanges": "• You have unsaved changes",
         "discard": "Discard",
         "confirmSwitch": "You have unsaved changes. Are you sure you want to switch projects? Your changes will be lost."
+      }
+    },
+    "platforms": {
+      "title": "Platform Integrations",
+      "description": "Configure external platform integrations.",
+      "loading": "Loading platform settings...",
+      "loadError": "Failed to load platform configuration.",
+      "save": {
+        "button": "Save Platform Settings",
+        "success": "✓ Platform settings saved successfully!",
+        "error": "Failed to save platform configuration",
+        "unsavedChanges": "• You have unsaved changes",
+        "discard": "Discard"
+      },
+      "jira": {
+        "title": "Jira Configuration",
+        "description": "Configure Jira integration for issue tracking.",
+        "enabled": {
+          "label": "Enable Jira Integration",
+          "helper": "Connect to Jira to sync issues and track tasks."
+        },
+        "baseUrl": {
+          "label": "Jira Base URL",
+          "placeholder": "https://your-domain.atlassian.net",
+          "helper": "Your Jira instance URL (e.g., https://your-domain.atlassian.net)"
+        },
+        "email": {
+          "label": "Email",
+          "placeholder": "your.email@example.com",
+          "helper": "The email address associated with your Jira account"
+        },
+        "apiToken": {
+          "label": "API Token",
+          "placeholder": "Enter your Jira API token",
+          "helper": "Generate an API token from your Jira account settings"
+        },
+        "ticketTemplate": {
+          "label": "Ticket Template",
+          "placeholder": "Enter template for standard tickets",
+          "helper": "Template for creating standard tickets in Jira. Use placeholders like {title} and {description}."
+        },
+        "bugTemplate": {
+          "label": "Bug Template",
+          "placeholder": "Enter template for bug reports",
+          "helper": "Template for creating bug reports in Jira. Use placeholders like {title} and {description}."
+        }
       }
     }
   },
