@@ -86,15 +86,17 @@ pub struct GetPrCommentsQuery {
     pub repo_id: Uuid,
 }
 
-pub const DEFAULT_PR_DESCRIPTION_PROMPT: &str = r#"Update the GitHub PR that was just created with a better title and description.
+pub const DEFAULT_PR_DESCRIPTION_PROMPT: &str = r#"Update the GitHub PR that was just created with a concise title and description.
 The PR number is #{pr_number} and the URL is {pr_url}.
 
-Analyze the changes in this branch and write:
-1. A concise, descriptive title that summarizes the changes
-2. A detailed description that explains:
-   - What changes were made
-   - Why they were made (based on the task context)
-   - Any important implementation details
+Create a simple, professional PR description with:
+1. A clear title that summarizes what was changed
+2. A brief description (2-4 sentences) covering:
+   - What was changed
+   - Why it was changed
+   - Key outcomes or impact
+
+Keep it concise - avoid listing every step or commit detail. Focus on the overall change and its purpose.
 
 Use `gh pr edit` to update the PR."#;
 
