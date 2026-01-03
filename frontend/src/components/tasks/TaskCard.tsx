@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { KanbanCard } from '@/components/ui/shadcn-io/kanban';
-import { Link, Loader2, XCircle } from 'lucide-react';
+import { Link, Loader2, XCircle, FileCheck } from 'lucide-react';
 import type { TaskWithAttemptStatus } from 'shared/types';
 import { ActionsDropdown } from '@/components/ui/actions-dropdown';
 import { Button } from '@/components/ui/button';
@@ -10,6 +10,7 @@ import { attemptsApi } from '@/lib/api';
 import type { SharedTaskRecord } from '@/hooks/useProjectTasks';
 import { TaskCardHeader } from './TaskCardHeader';
 import { DbSchemaViewerButton } from './DbSchemaViewerButton';
+import { JiraIntentTaskDialog } from '@/components/dialogs/tasks/JiraIntentTaskDialog';
 import { useTranslation } from 'react-i18next';
 import { useAuth } from '@/hooks';
 
@@ -101,7 +102,7 @@ export function TaskCard({
         <TaskCardHeader
           title={task.title}
           avatar={
-            sharedTask
+            sharedTask && !(task.intent === 'jira' && task.status === 'inreview')
               ? {
                   firstName: sharedTask.assignee_first_name ?? undefined,
                   lastName: sharedTask.assignee_last_name ?? undefined,
@@ -136,6 +137,26 @@ export function TaskCard({
         {task.intent === 'confluence' && task.status === 'inreview' && (
           <div className="pt-1">
             <DbSchemaViewerButton task={task} variant="ghost" size="sm" />
+          </div>
+        )}
+        {task.intent === 'jira' && task.status === 'inreview' && (
+          <div className="pt-1">
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={(e) => {
+                e.stopPropagation();
+                JiraIntentTaskDialog.show({ task });
+              }}
+              onPointerDown={(e) => e.stopPropagation()}
+              onMouseDown={(e) => e.stopPropagation()}
+              className="w-full text-blue-600 hover:text-blue-700 hover:bg-blue-50"
+            >
+              <FileCheck className="h-4 w-4 mr-2" />
+              {t('jiraIntentDialog.finalizeButton', {
+                defaultValue: 'Finalize',
+              })}
+            </Button>
           </div>
         )}
         {task.description && (

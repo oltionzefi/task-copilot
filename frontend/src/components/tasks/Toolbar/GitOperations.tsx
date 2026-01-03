@@ -7,6 +7,7 @@ import {
   AlertTriangle,
   CheckCircle,
   ExternalLink,
+  FileText,
 } from 'lucide-react';
 import { Button } from '@/components/ui/button.tsx';
 import {
@@ -285,7 +286,9 @@ function GitOperations({
     ? 'flex flex-wrap items-center gap-2'
     : 'shrink-0 flex flex-wrap items-center gap-2 overflow-y-hidden overflow-x-visible max-h-8';
 
-  const statusChips = (
+  const isJiraIntent = task.intent === 'jira';
+
+  const statusChips = !isJiraIntent ? (
     <div className="flex items-center gap-2 text-xs min-w-0 overflow-hidden whitespace-nowrap">
       {(() => {
         const commitsAhead = selectedRepoStatus?.commits_ahead ?? 0;
@@ -371,9 +374,9 @@ function GitOperations({
         );
       })()}
     </div>
-  );
+  ) : null;
 
-  const branchChips = (
+  const branchChips = !isJiraIntent ? (
     <>
       {/* Task branch chip */}
       <TooltipProvider>
@@ -433,7 +436,7 @@ function GitOperations({
         </TooltipProvider>
       </div>
     </>
-  );
+  ) : null;
 
   return (
     <div className="w-full border-b py-2">
@@ -476,7 +479,7 @@ function GitOperations({
         )}
 
         {/* Right: Actions */}
-        {selectedRepoStatus && (
+        {selectedRepoStatus && !isJiraIntent && (
           <div className={actionsClasses}>
             <Button
               onClick={handleMergeClick}
@@ -534,6 +537,21 @@ function GitOperations({
                 className={`h-3.5 w-3.5 ${rebasing ? 'animate-spin' : ''}`}
               />
               <span className="truncate max-w-[10ch]">{rebaseButtonLabel}</span>
+            </Button>
+          </div>
+        )}
+        {isJiraIntent && (
+          <div className={actionsClasses}>
+            <Button
+              onClick={handlePRButtonClick}
+              disabled={isAttemptRunning}
+              variant="outline"
+              size="xs"
+              className="border-info text-info hover:bg-info gap-1 shrink-0"
+              aria-label={prButtonLabel}
+            >
+              <FileText className="h-3.5 w-3.5" />
+              <span className="truncate max-w-[10ch]">{prButtonLabel}</span>
             </Button>
           </div>
         )}

@@ -85,3 +85,7 @@ dev_assets
 task-copilot-cloud/
 
 .jj
+
+# Jira ticket files (ignored by git but allowed to close tasks)
+jira/
+

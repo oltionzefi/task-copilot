@@ -8,8 +8,9 @@ import type { TaskWithAttemptStatus } from 'shared/types';
 import type { WorkspaceWithSession } from '@/types/attempt';
 import { NewCardContent } from '../ui/new-card';
 import { Button } from '../ui/button';
-import { PlusIcon } from 'lucide-react';
+import { PlusIcon, FileCheck } from 'lucide-react';
 import { CreateAttemptDialog } from '@/components/dialogs/tasks/CreateAttemptDialog';
+import { JiraIntentTaskDialog } from '@/components/dialogs/tasks/JiraIntentTaskDialog';
 import WYSIWYGEditor from '@/components/ui/wysiwyg';
 import { DataTable, type ColumnDef } from '@/components/ui/table';
 import { DbSchemaViewerButton } from '@/components/tasks/DbSchemaViewerButton';
@@ -99,6 +100,7 @@ const TaskPanel = ({ task }: TaskPanelProps) => {
   ];
 
   const isConfluence = task.intent === 'confluence';
+  const isJira = task.intent === 'jira';
 
   return (
     <>
@@ -116,6 +118,21 @@ const TaskPanel = ({ task }: TaskPanelProps) => {
             {isConfluence && task.status === 'inreview' && (
               <div className="pt-2">
                 <DbSchemaViewerButton task={task} />
+              </div>
+            )}
+            {isJira && task.status === 'inreview' && (
+              <div className="pt-2">
+                <Button
+                  variant="default"
+                  size="sm"
+                  onClick={() => JiraIntentTaskDialog.show({ task })}
+                  className="bg-blue-600 hover:bg-blue-700"
+                >
+                  <FileCheck className="h-4 w-4 mr-2" />
+                  {t('jiraIntentDialog.finalizeButton', {
+                    defaultValue: 'Finalize Jira Ticket',
+                  })}
+                </Button>
               </div>
             )}
           </div>
