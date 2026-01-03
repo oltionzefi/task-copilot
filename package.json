@@ -1,9 +1,9 @@
 {
-  "name": "vibe-kanban",
+  "name": "task-copilot",
   "version": "0.0.143",
   "private": true,
   "bin": {
-    "vibe-kanban": "npx-cli/bin/cli.js"
+    "task-copilot": "npx-cli/bin/cli.js"
   },
   "files": [
     "npx-cli/bin/cli.js",

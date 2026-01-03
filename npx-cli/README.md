@@ -1,20 +1,20 @@
-# Vibe Kanban
+# Task Copilot
 
-> A visual project management tool for developers that integrates with git repositories and coding agents like Claude Code and Amp.
+> A visual project management tool for developers that integrates with git repositories, coding agents like Claude Code and Amp, and productivity tools like Jira, Slack, and Microsoft Teams.
 
 ## Quick Start
 
-Run vibe kanban instantly without installation:
+Run Task Copilot instantly without installation:
 
 ```bash
-npx vibe-kanban
+npx task-copilot
 ```
 
 This will launch the application locally and open it in your browser automatically.
 
-## What is Vibe Kanban?
+## What is Task Copilot?
 
-Vibe Kanban is a modern project management tool designed specifically for developers. It helps you organize your coding projects with kanban-style task management while providing powerful integrations with git repositories and AI coding agents.
+Task Copilot is a modern project management tool designed specifically for developers. It helps you organize your coding projects with kanban-style task management while providing powerful integrations with git repositories, AI coding agents, and collaboration tools.
 
 ### ✨ Key Features
 
@@ -37,6 +37,12 @@ Vibe Kanban is a modern project management tool designed specifically for develo
 - Create tasks and immediately start agent execution
 - Follow-up task execution for iterative development
 
+**🔗 Integrations & Connectors**
+- **Jira**: Sync tasks with Jira issues, create and update tickets
+- **Slack**: Real-time notifications for task updates and code reviews
+- **Microsoft Teams**: Channel notifications and team collaboration
+- **Outlook**: Email notifications for task completion and reviews
+
 **⚡ Development Workflow**
 - Create isolated git worktrees for each task attempt
 - View diffs of changes made by agents
@@ -58,11 +64,12 @@ Vibe Kanban is a modern project management tool designed specifically for develo
 2. **Create Tasks**: Define what needs to be built or fixed
 3. **Execute with AI**: Let coding agents work on your tasks in isolated environments
 4. **Review Changes**: See exactly what was modified using git diffs
-5. **Merge Results**: Incorporate successful changes into your main codebase
+5. **Sync with Tools**: Push updates to Jira, notify team via Slack/Teams
+6. **Merge Results**: Incorporate successful changes into your main codebase
 
 ## Core Functionality
 
-Vibe Kanban provides a complete project management experience with these key capabilities:
+Task Copilot provides a complete project management experience with these key capabilities:
 
 **Project Repository Management**
 - Full CRUD operations for managing coding projects
@@ -75,6 +82,7 @@ Vibe Kanban provides a complete project management experience with these key cap
 - Track task progress through customizable status workflows
 - One-click task creation with immediate AI agent execution
 - Task attempt tracking with detailed execution history
+- Sync tasks with external tools (Jira, Linear, etc.)
 
 **AI Agent Execution Environment**
 - Isolated git worktrees for safe code experimentation
@@ -95,13 +103,21 @@ Vibe Kanban provides a complete project management experience with these key cap
 - Browse local filesystem to add new projects
 - Health monitoring for service availability
 
+**Collaboration & Notifications**
+- Real-time Slack notifications for task status changes
+- Microsoft Teams channel updates
+- Email notifications via Outlook integration
+- Jira issue synchronization
+
 ## Configuration
 
-Vibe Kanban supports customization through its configuration system:
+Task Copilot supports customization through its configuration system:
 
 - **Editor Integration**: Choose your preferred code editor
 - **Sound Notifications**: Customize completion sounds
 - **Project Defaults**: Set default setup and development scripts
+- **Jira Integration**: Configure Jira credentials and project mappings
+- **Communication Tools**: Set up Slack, Teams, and Outlook connectors
 
 ## Technical Architecture
 
@@ -110,6 +126,7 @@ Vibe Kanban supports customization through its configuration system:
 - **Database**: SQLite for local data storage
 - **Git Integration**: Native git operations for repository management
 - **Process Management**: Tokio-based async execution monitoring
+- **External APIs**: Jira REST API, Slack API, Microsoft Graph API
 
 ## Requirements
 
@@ -130,12 +147,14 @@ Vibe Kanban supports customization through its configuration system:
 - Create a task describing the bug
 - Let an AI agent analyze and fix the issue
 - Review the proposed changes
+- Update linked Jira ticket automatically
 - Merge if satisfied, or provide follow-up instructions
 
 **✨ Feature Development**
 - Break down features into manageable tasks
 - Use agents for initial implementation
 - Iterate with follow-up executions
+- Notify team via Slack when ready for review
 - Test using integrated development servers
 
 **🚀 Project Setup**
@@ -153,7 +172,7 @@ Vibe Kanban supports customization through its configuration system:
 **Ready to supercharge your development workflow?**
 
 ```bash
-npx vibe-kanban
+npx task-copilot
 ```
 
-*Start managing your projects with the power of AI coding agents today!*
+*Start managing your projects with the power of AI coding agents and seamless tool integrations today!*

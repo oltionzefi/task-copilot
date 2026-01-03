@@ -1,15 +1,15 @@
 {
-  "name": "Vibe Kanban",
-  "short_name": "VK",
+  "name": "Task Copilot",
+  "short_name": "TC",
   "icons": [
     {
-      "src": "/favicon-vk-light.svg",
+      "src": "/favicon-tc-light.svg",
       "sizes": "any",
       "purpose": "any",
       "type": "image/svg+xml"
     },
     {
-      "src": "/favicon-vk-light-maskable.svg",
+      "src": "/favicon-tc-light-maskable.svg",
       "sizes": "any",
       "purpose": "maskable",
       "type": "image/svg+xml"
