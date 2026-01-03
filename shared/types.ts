@@ -517,16 +517,14 @@ export type PatchType = { "type": "NORMALIZED_ENTRY", "content": NormalizedEntry
 
 export type JsonValue = number | string | boolean | Array<JsonValue> | { [key in string]?: JsonValue } | null;
 
-export const DEFAULT_PR_DESCRIPTION_PROMPT = `Update the GitHub PR that was just created with a concise title and description.
+export const DEFAULT_PR_DESCRIPTION_PROMPT = `Update the GitHub PR description for the PR that was just created.
 The PR number is #{pr_number} and the URL is {pr_url}.
 
-Create a simple, professional PR description with:
-1. A clear title that summarizes what was changed
-2. A brief description (2-4 sentences) covering:
+Create a simple, professional PR description (2-4 sentences) covering:
    - What was changed
    - Why it was changed
    - Key outcomes or impact
 
 Keep it concise - avoid listing every step or commit detail. Focus on the overall change and its purpose.
 
-Use \`gh pr edit\` to update the PR.`;
+Use \`gh pr edit #{pr_number} --body "your description here"\` to update ONLY the PR body/description. Do NOT change the title.`;
