@@ -7,6 +7,7 @@ import {
   AlertTriangle,
   Lightbulb,
   Eye,
+  ExternalLink,
 } from 'lucide-react';
 import {
   Dialog,
@@ -29,19 +30,25 @@ import {
 } from '@/components/ui/select';
 import NiceModal, { useModal } from '@ebay/nice-modal-react';
 import { defineModal } from '@/lib/modals';
-import type { TaskWithAttemptStatus } from 'shared/types';
+import type { TaskWithAttemptStatus, CreateJiraTicketRequest } from 'shared/types';
+import { tasksApi } from '@/lib/api';
 
 export interface JiraIntentTaskDialogProps {
   task: TaskWithAttemptStatus;
 }
 
 type JiraIssueType = 'Bug' | 'Task' | 'Story';
-type WorkflowStep = 'input' | 'generating' | 'review';
+type WorkflowStep = 'input' | 'generating' | 'review' | 'creating' | 'success';
 
 interface JiraTicketTemplate {
   description: string;
   acceptanceCriteria: string;
   additionalInformation: string;
+}
+
+interface CreatedTicket {
+  ticketId: string;
+  ticketUrl: string;
 }
 
 interface BestPractices {
@@ -107,6 +114,7 @@ const JiraIntentTaskDialogImpl = NiceModal.create<JiraIntentTaskDialogProps>(
       useState<JiraTicketTemplate | null>(null);
     const [error, setError] = useState<string | null>(null);
     const [isEditing, setIsEditing] = useState(false);
+    const [createdTicket, setCreatedTicket] = useState<CreatedTicket | null>(null);
 
     useEffect(() => {
       setTaskDescription(task.description || task.title);
@@ -236,9 +244,33 @@ This task addresses [problem or need] by [approach or solution].
       setIsEditing(false);
     };
 
-    const handleApprove = () => {
-      setGeneratedTemplate(null);
-      modal.hide();
+    const handleCreateTicket = async () => {
+      if (!generatedTemplate) return;
+
+      setError(null);
+      setWorkflowStep('creating');
+
+      try {
+        const payload: CreateJiraTicketRequest = {
+          issue_type: issueType,
+          description: generatedTemplate.description,
+          acceptance_criteria: generatedTemplate.acceptanceCriteria,
+          additional_information: generatedTemplate.additionalInformation,
+        };
+
+        const response = await tasksApi.createJiraTicket(task.id, payload);
+
+        setCreatedTicket({
+          ticketId: response.ticket_id,
+          ticketUrl: response.ticket_url,
+        });
+        setWorkflowStep('success');
+      } catch (err) {
+        setError(
+          err instanceof Error ? err.message : 'Failed to create Jira ticket'
+        );
+        setWorkflowStep('review');
+      }
     };
 
     const handleClose = () => {
@@ -507,15 +539,131 @@ This task addresses [problem or need] by [approach or solution].
                 {t('common:buttons.cancel', { defaultValue: 'Cancel' })}
               </Button>
               <Button
-                onClick={handleApprove}
+                onClick={handleCreateTicket}
                 className="bg-green-600 hover:bg-green-700"
               >
                 <CheckCircle2 className="h-4 w-4 mr-2" />
-                {t('jiraIntentDialog.approve', {
-                  defaultValue: 'Approve & Create',
+                {t('jiraIntentDialog.createTicket', {
+                  defaultValue: 'Create Ticket',
                 })}
               </Button>
             </div>
+          </div>
+        </>
+      );
+    };
+
+    const renderCreatingStep = () => (
+      <div className="flex flex-col items-center justify-center py-12 space-y-4">
+        <Loader2 className="h-12 w-12 animate-spin text-green-600" />
+        <div className="text-center space-y-2">
+          <h3 className="font-semibold">
+            {t('jiraIntentDialog.creatingTicket', {
+              defaultValue: 'Creating Jira Ticket...',
+            })}
+          </h3>
+          <p className="text-sm text-muted-foreground">
+            {t('jiraIntentDialog.creatingTicketDesc', {
+              defaultValue: 'Please wait while we create your Jira ticket...',
+            })}
+          </p>
+        </div>
+      </div>
+    );
+
+    const renderSuccessStep = () => {
+      if (!createdTicket) return null;
+
+      return (
+        <>
+          <div className="space-y-4">
+            <Alert className="bg-green-50 dark:bg-green-950 border-green-200 dark:border-green-800">
+              <CheckCircle2 className="h-4 w-4 text-green-600" />
+              <AlertDescription>
+                {t('jiraIntentDialog.ticketCreated', {
+                  defaultValue: 'Jira ticket created successfully!',
+                })}
+              </AlertDescription>
+            </Alert>
+
+            <div className="space-y-3 p-4 bg-muted/50 rounded-lg">
+              <div className="space-y-1">
+                <Label className="text-sm font-medium">
+                  {t('jiraIntentDialog.ticketId', {
+                    defaultValue: 'Ticket ID',
+                  })}
+                </Label>
+                <div className="text-lg font-semibold">{createdTicket.ticketId}</div>
+              </div>
+
+              <div className="space-y-1">
+                <Label className="text-sm font-medium">
+                  {t('jiraIntentDialog.ticketUrl', {
+                    defaultValue: 'Ticket URL',
+                  })}
+                </Label>
+                <a
+                  href={createdTicket.ticketUrl}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="flex items-center gap-2 text-blue-600 hover:text-blue-700 hover:underline"
+                >
+                  {createdTicket.ticketUrl}
+                  <ExternalLink className="h-4 w-4" />
+                </a>
+              </div>
+            </div>
+
+            {generatedTemplate && (
+              <>
+                <Separator />
+                <div className="space-y-2">
+                  <h3 className="font-semibold text-sm">
+                    {t('jiraIntentDialog.ticketContent', {
+                      defaultValue: 'Ticket Content',
+                    })}
+                  </h3>
+                  <div className="space-y-3 text-sm">
+                    <div>
+                      <Label className="font-medium">
+                        {t('jiraIntentDialog.fields.description', {
+                          defaultValue: 'Description',
+                        })}
+                      </Label>
+                      <div className="p-3 bg-muted/30 rounded text-muted-foreground whitespace-pre-wrap mt-1">
+                        {generatedTemplate.description}
+                      </div>
+                    </div>
+                    <div>
+                      <Label className="font-medium">
+                        {t('jiraIntentDialog.fields.acceptanceCriteria', {
+                          defaultValue: 'Acceptance Criteria',
+                        })}
+                      </Label>
+                      <div className="p-3 bg-muted/30 rounded text-muted-foreground whitespace-pre-wrap mt-1">
+                        {generatedTemplate.acceptanceCriteria}
+                      </div>
+                    </div>
+                    <div>
+                      <Label className="font-medium">
+                        {t('jiraIntentDialog.fields.additionalInfo', {
+                          defaultValue: 'Additional Information',
+                        })}
+                      </Label>
+                      <div className="p-3 bg-muted/30 rounded text-muted-foreground whitespace-pre-wrap mt-1">
+                        {generatedTemplate.additionalInformation}
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </>
+            )}
+          </div>
+
+          <div className="flex justify-end pt-4 border-t">
+            <Button onClick={handleClose} className="bg-blue-600 hover:bg-blue-700">
+              {t('common:buttons.close', { defaultValue: 'Close' })}
+            </Button>
           </div>
         </>
       );
@@ -545,12 +693,22 @@ This task addresses [problem or need] by [approach or solution].
                   defaultValue:
                     'Review the generated template and make any necessary edits.',
                 })}
+              {workflowStep === 'creating' &&
+                t('jiraIntentDialog.creatingTitle', {
+                  defaultValue: 'Creating your Jira ticket...',
+                })}
+              {workflowStep === 'success' &&
+                t('jiraIntentDialog.successTitle', {
+                  defaultValue: 'Your Jira ticket has been created successfully!',
+                })}
             </DialogDescription>
           </DialogHeader>
 
           {workflowStep === 'input' && renderInputStep()}
           {workflowStep === 'generating' && renderGeneratingStep()}
           {workflowStep === 'review' && renderReviewStep()}
+          {workflowStep === 'creating' && renderCreatingStep()}
+          {workflowStep === 'success' && renderSuccessStep()}
         </DialogContent>
       </Dialog>
     );
