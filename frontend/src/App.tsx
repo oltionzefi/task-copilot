@@ -36,6 +36,7 @@ import { OnboardingDialog } from '@/components/dialogs/global/OnboardingDialog';
 import { ReleaseNotesDialog } from '@/components/dialogs/global/ReleaseNotesDialog';
 import { ClickedElementsProvider } from './contexts/ClickedElementsProvider';
 import NiceModal from '@ebay/nice-modal-react';
+import { SentryTestDialog } from '@/components/dialogs/sentry-test-dialog';
 
 const SentryRoutes = Sentry.withSentryReactRouterV6Routing(Routes);
 
@@ -138,6 +139,17 @@ function AppContent() {
                   element={<ProjectTasks />}
                 />
                 <Route path="/faq" element={<FAQ />} />
+                {/* Development only: Sentry test page */}
+                {import.meta.env.DEV && (
+                  <Route
+                    path="/sentry-test"
+                    element={
+                      <div className="container mx-auto py-8 max-w-4xl">
+                        <SentryTestDialog />
+                      </div>
+                    }
+                  />
+                )}
                 <Route path="/settings/*" element={<SettingsLayout />}>
                   <Route index element={<Navigate to="general" replace />} />
                   <Route path="general" element={<GeneralSettings />} />
