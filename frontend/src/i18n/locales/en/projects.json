@@ -45,6 +45,7 @@
     }
   },
   "unlinkFromOrganization": "Unlink from Remote Project",
+  "linkToPortfolio": "Link to Portfolio",
   "projectNotFound": "The project you're looking for doesn't exist or has been deleted.",
   "viewProject": "View Project",
   "openInIDE": "Open in IDE",

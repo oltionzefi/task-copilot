@@ -12,6 +12,7 @@ import {
 } from '@/components/ui/dropdown-menu.tsx';
 import { Button } from '@/components/ui/button.tsx';
 import {
+  Briefcase,
   Calendar,
   Edit,
   ExternalLink,
@@ -194,6 +195,17 @@ function ProjectCard({ project, isFocused, setError, onEdit }: Props) {
                   >
                     <Link2 className="mr-2 h-4 w-4" />
                     {t('linkToOrganization')}
+                  </DropdownMenuItem>
+                )}
+                {project.portfolio_id && (
+                  <DropdownMenuItem
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      navigate('/settings/portfolios');
+                    }}
+                  >
+                    <Briefcase className="mr-2 h-4 w-4" />
+                    {t('linkToPortfolio')}
                   </DropdownMenuItem>
                 )}
                 <DropdownMenuItem
