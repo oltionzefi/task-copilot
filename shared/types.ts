@@ -240,6 +240,10 @@ export type ShareTaskResponse = { shared_task_id: string, };
 
 export type CreateAndStartTaskRequest = { task: CreateTask, executor_profile_id: ExecutorProfileId, repos: Array<WorkspaceRepoInput>, };
 
+export type GenerateJiraTemplateRequest = { issue_type: string, task_description: string, };
+
+export type GenerateJiraTemplateResponse = { description: string, acceptance_criteria: string, additional_information: string, };
+
 export type CreateJiraTicketRequest = { issue_type: string, description: string, acceptance_criteria: string, additional_information: string, };
 
 export type CreateJiraTicketResponse = { ticket_id: string, ticket_url: string, };

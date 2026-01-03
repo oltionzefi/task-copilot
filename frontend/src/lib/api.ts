@@ -94,6 +94,8 @@ import {
   Workspace,
   CreateJiraTicketRequest,
   CreateJiraTicketResponse,
+  GenerateJiraTemplateRequest,
+  GenerateJiraTemplateResponse,
 } from 'shared/types';
 import type { WorkspaceWithSession } from '@/types/attempt';
 import { createWorkspaceWithSession } from '@/types/attempt';
@@ -507,6 +509,20 @@ export const tasksApi = {
       body: JSON.stringify(data),
     });
     return handleApiResponse<Task | null>(response);
+  },
+
+  generateJiraTemplate: async (
+    taskId: string,
+    data: GenerateJiraTemplateRequest
+  ): Promise<GenerateJiraTemplateResponse> => {
+    const response = await makeRequest(
+      `/api/tasks/${taskId}/generate-jira-template`,
+      {
+        method: 'POST',
+        body: JSON.stringify(data),
+      }
+    );
+    return handleApiResponse<GenerateJiraTemplateResponse>(response);
   },
 
   createJiraTicket: async (
