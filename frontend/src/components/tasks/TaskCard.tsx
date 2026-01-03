@@ -9,6 +9,7 @@ import { paths } from '@/lib/paths';
 import { attemptsApi } from '@/lib/api';
 import type { SharedTaskRecord } from '@/hooks/useProjectTasks';
 import { TaskCardHeader } from './TaskCardHeader';
+import { DbSchemaViewerButton } from './DbSchemaViewerButton';
 import { useTranslation } from 'react-i18next';
 import { useAuth } from '@/hooks';
 
@@ -132,6 +133,11 @@ export function TaskCard({
             </>
           }
         />
+        {task.intent === 'confluence' && (
+          <div className="pt-1">
+            <DbSchemaViewerButton task={task} variant="ghost" size="sm" />
+          </div>
+        )}
         {task.description && (
           <p className="text-sm text-secondary-foreground break-words">
             {task.description.length > 130

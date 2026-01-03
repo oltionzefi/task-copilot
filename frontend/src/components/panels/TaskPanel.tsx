@@ -12,6 +12,7 @@ import { PlusIcon } from 'lucide-react';
 import { CreateAttemptDialog } from '@/components/dialogs/tasks/CreateAttemptDialog';
 import WYSIWYGEditor from '@/components/ui/wysiwyg';
 import { DataTable, type ColumnDef } from '@/components/ui/table';
+import { DbSchemaViewerButton } from '@/components/tasks/DbSchemaViewerButton';
 
 interface TaskPanelProps {
   task: TaskWithAttemptStatus | null;
@@ -105,6 +106,11 @@ const TaskPanel = ({ task }: TaskPanelProps) => {
             <WYSIWYGEditor value={titleContent} disabled />
             {descriptionContent && (
               <WYSIWYGEditor value={descriptionContent} disabled />
+            )}
+            {task.intent === 'confluence' && (
+              <div className="pt-2">
+                <DbSchemaViewerButton task={task} />
+              </div>
             )}
           </div>
 

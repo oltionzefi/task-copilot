@@ -97,6 +97,13 @@ export {
   type EditBranchNameDialogResult,
 } from './tasks/EditBranchNameDialog';
 export { CreateAttemptDialog } from './tasks/CreateAttemptDialog';
+export {
+  default as DbSchemaViewerDialog,
+  type DbSchemaViewerDialogProps,
+  type DbTable,
+  type DbColumn,
+  type DbRelation,
+} from './tasks/DbSchemaViewerDialog';
 
 // Auth dialogs
 export { GhCliSetupDialog } from './auth/GhCliSetupDialog';
