@@ -468,36 +468,34 @@ const TaskFormDialogImpl = NiceModal.create<TaskFormDialogProps>((props) => {
             </form.Field>
             
             {/* Intent selector */}
-            {!editMode && (
-              <form.Field name="intent">
-                {(field) => (
-                  <div className="space-y-2 pt-4">
-                    <Label
-                      htmlFor="task-intent"
-                      className="text-sm font-medium"
-                    >
-                      Intent
-                    </Label>
-                    <Select
-                      value={field.state.value}
-                      onValueChange={(value) =>
-                        field.handleChange(value as TaskIntent)
-                      }
-                      disabled={isSubmitting}
-                    >
-                      <SelectTrigger id="task-intent">
-                        <SelectValue />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="code">Code - Start code for the project</SelectItem>
-                        <SelectItem value="jira">Jira - Create tickets with description to create in Jira</SelectItem>
-                        <SelectItem value="confluence">Confluence - Create or edit documentation pages</SelectItem>
-                      </SelectContent>
-                    </Select>
-                  </div>
-                )}
-              </form.Field>
-            )}
+            <form.Field name="intent">
+              {(field) => (
+                <div className="space-y-2 pt-4">
+                  <Label
+                    htmlFor="task-intent"
+                    className="text-sm font-medium"
+                  >
+                    Intent
+                  </Label>
+                  <Select
+                    value={field.state.value}
+                    onValueChange={(value) =>
+                      field.handleChange(value as TaskIntent)
+                    }
+                    disabled={isSubmitting}
+                  >
+                    <SelectTrigger id="task-intent">
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="code">Code - Start code for the project</SelectItem>
+                      <SelectItem value="jira">Jira - Create tickets with description to create in Jira</SelectItem>
+                      <SelectItem value="confluence">Confluence - Create or edit documentation pages</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+              )}
+            </form.Field>
 
             {/* Edit mode status */}
             {editMode && (
