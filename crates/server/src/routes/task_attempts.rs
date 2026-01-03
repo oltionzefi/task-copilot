@@ -180,6 +180,18 @@ pub async fn create_task_attempt(
         .collect();
 
     WorkspaceRepo::create_many(pool, workspace.id, &workspace_repos).await?;
+    
+    // Create initial session for the workspace
+    let _session = Session::create(
+        pool,
+        &CreateSession {
+            executor: Some(executor_profile_id.to_string()),
+        },
+        Uuid::new_v4(),
+        workspace.id,
+    )
+    .await?;
+    
     if let Err(err) = deployment
         .container()
         .start_workspace(&workspace, executor_profile_id.clone())

@@ -218,6 +218,17 @@ pub async fn create_task_and_start(
         .collect();
     WorkspaceRepo::create_many(&deployment.db().pool, workspace.id, &workspace_repos).await?;
 
+    // Create initial session for the workspace
+    let _session = db::models::session::Session::create(
+        pool,
+        &db::models::session::CreateSession {
+            executor: Some(payload.executor_profile_id.to_string()),
+        },
+        Uuid::new_v4(),
+        workspace.id,
+    )
+    .await?;
+
     let is_attempt_running = deployment
         .container()
         .start_workspace(&workspace, payload.executor_profile_id.clone())
