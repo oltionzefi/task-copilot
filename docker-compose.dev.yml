@@ -27,7 +27,7 @@ services:
       retries: 5
 
   sentry:
-    image: sentry:24.1.5
+    image: getsentry/sentry:latest
     container_name: vibe-kanban-sentry
     restart: unless-stopped
     depends_on:
@@ -57,7 +57,7 @@ services:
              sentry run web"
 
   sentry-worker:
-    image: sentry:24.1.5
+    image: getsentry/sentry:latest
     container_name: vibe-kanban-sentry-worker
     restart: unless-stopped
     depends_on:
@@ -78,7 +78,7 @@ services:
     command: sentry run worker
 
   sentry-cron:
-    image: sentry:24.1.5
+    image: getsentry/sentry:latest
     container_name: vibe-kanban-sentry-cron
     restart: unless-stopped
     depends_on:
