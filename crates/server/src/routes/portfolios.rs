@@ -65,7 +65,7 @@ pub fn router(deployment: &DeploymentImpl) -> Router<DeploymentImpl> {
     Router::new()
         .route("/portfolios", get(get_portfolios).post(create_portfolio))
         .route(
-            "/portfolios/:id",
+            "/portfolios/{id}",
             get(get_portfolio)
                 .patch(update_portfolio)
                 .delete(delete_portfolio),

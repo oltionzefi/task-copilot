@@ -15,12 +15,12 @@ CREATE TABLE tasks_new (
     created_at TEXT NOT NULL DEFAULT (strftime('%Y-%m-%dT%H:%M:%fZ', 'now')),
     updated_at TEXT NOT NULL DEFAULT (strftime('%Y-%m-%dT%H:%M:%fZ', 'now')),
     FOREIGN KEY (project_id) REFERENCES projects(id) ON DELETE CASCADE,
-    FOREIGN KEY (parent_workspace_id) REFERENCES workspaces(id) ON DELETE SET NULL,
-    FOREIGN KEY (shared_task_id) REFERENCES shared_tasks(id) ON DELETE SET NULL
+    FOREIGN KEY (parent_workspace_id) REFERENCES workspaces(id) ON DELETE SET NULL
 );
 
 -- Copy data from old table to new table
-INSERT INTO tasks_new SELECT * FROM tasks;
+INSERT INTO tasks_new (id, project_id, title, description, status, intent, parent_workspace_id, shared_task_id, created_at, updated_at)
+SELECT id, project_id, title, description, status, intent, parent_workspace_id, shared_task_id, created_at, updated_at FROM tasks;
 
 -- Drop old table
 DROP TABLE tasks;
