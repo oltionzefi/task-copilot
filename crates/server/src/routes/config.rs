@@ -145,11 +145,6 @@ async fn update_config(
 async fn track_config_events(deployment: &DeploymentImpl, old: &Config, new: &Config) {
     let events = [
         (
-            !old.disclaimer_acknowledged && new.disclaimer_acknowledged,
-            "onboarding_disclaimer_accepted",
-            serde_json::json!({}),
-        ),
-        (
             !old.onboarding_acknowledged && new.onboarding_acknowledged,
             "onboarding_completed",
             serde_json::json!({
@@ -174,7 +169,7 @@ async fn track_config_events(deployment: &DeploymentImpl, old: &Config, new: &Co
 async fn handle_config_events(deployment: &DeploymentImpl, old: &Config, new: &Config) {
     track_config_events(deployment, old, new).await;
 
-    if !old.disclaimer_acknowledged && new.disclaimer_acknowledged {
+    if !old.onboarding_acknowledged && new.onboarding_acknowledged {
         // Spawn auto project setup as background task to avoid blocking config response
         let deployment_clone = deployment.clone();
         tokio::spawn(async move {
