@@ -893,14 +893,6 @@ pub trait ContainerService {
             .await?
             .ok_or(SqlxError::RowNotFound)?;
 
-        // Only allow coding agent execution for tasks with 'code' intent
-        if task.intent != db::models::task::TaskIntent::Code {
-            return Err(ContainerError::Other(anyhow::anyhow!(
-                "Cannot execute coding agent for task with intent '{:?}'. Only tasks with 'code' intent can generate code.",
-                task.intent
-            )));
-        }
-
         // Get parent project
         let project = task
             .parent_project(&self.db().pool)
