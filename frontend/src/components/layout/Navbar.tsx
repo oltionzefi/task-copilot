@@ -39,9 +39,17 @@ import { oauthApi } from '@/lib/api';
 
 const INTERNAL_NAV = [{ label: 'Projects', icon: FolderOpen, to: '/projects' }];
 
+const INTERNAL_LINKS = [
+  {
+    label: 'FAQ',
+    icon: MessageCircleQuestion,
+    to: '/faq',
+  },
+];
+
 const EXTERNAL_LINKS = [
   {
-    label: 'Support',
+    label: 'GitHub Issues',
     icon: MessageCircleQuestion,
     href: 'https://github.com/BloopAI/task-copilot/issues',
   },
@@ -225,6 +233,25 @@ export function Navbar() {
 
                 <DropdownMenuContent align="end">
                   {INTERNAL_NAV.map((item) => {
+                    const active = location.pathname.startsWith(item.to);
+                    const Icon = item.icon;
+                    return (
+                      <DropdownMenuItem
+                        key={item.to}
+                        asChild
+                        className={active ? 'bg-accent' : ''}
+                      >
+                        <Link to={item.to}>
+                          <Icon className="mr-2 h-4 w-4" />
+                          {item.label}
+                        </Link>
+                      </DropdownMenuItem>
+                    );
+                  })}
+
+                  <DropdownMenuSeparator />
+
+                  {INTERNAL_LINKS.map((item) => {
                     const active = location.pathname.startsWith(item.to);
                     const Icon = item.icon;
                     return (
