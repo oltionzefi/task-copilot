@@ -463,6 +463,39 @@
             "helper": "Remember previous messages in the conversation for contextual responses."
           }
         }
+      },
+      "confluence": {
+        "title": "Confluence Configuration",
+        "description": "Configure Confluence integration for documentation and knowledge management.",
+        "enabled": {
+          "label": "Enable Confluence Integration",
+          "helper": "Connect to Confluence to create and edit pages."
+        },
+        "baseUrl": {
+          "label": "Confluence Base URL",
+          "placeholder": "https://your-domain.atlassian.net/wiki",
+          "helper": "Your Confluence instance URL (e.g., https://your-domain.atlassian.net/wiki)"
+        },
+        "email": {
+          "label": "Email",
+          "placeholder": "your.email@example.com",
+          "helper": "The email address associated with your Confluence account"
+        },
+        "apiToken": {
+          "label": "API Token",
+          "placeholder": "Enter your Confluence API token",
+          "helper": "Generate an API token from your Atlassian account settings"
+        },
+        "spaceKey": {
+          "label": "Space Key",
+          "placeholder": "MYSPACE",
+          "helper": "The key of the Confluence space where pages will be created"
+        },
+        "parentPageId": {
+          "label": "Parent Page ID (Optional)",
+          "placeholder": "123456789",
+          "helper": "Default parent page ID for new pages. Leave empty to create pages at the space root."
+        }
       }
     }
   },

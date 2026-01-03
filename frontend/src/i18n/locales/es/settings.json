@@ -459,6 +459,39 @@
             "helper": "Recordar mensajes anteriores en la conversación para respuestas contextuales."
           }
         }
+      },
+      "confluence": {
+        "title": "Configuración de Confluence",
+        "description": "Configura la integración de Confluence para documentación y gestión del conocimiento.",
+        "enabled": {
+          "label": "Activar integración de Confluence",
+          "helper": "Conéctate a Confluence para crear y editar páginas."
+        },
+        "baseUrl": {
+          "label": "URL base de Confluence",
+          "placeholder": "https://tu-dominio.atlassian.net/wiki",
+          "helper": "URL de tu instancia de Confluence (ej., https://tu-dominio.atlassian.net/wiki)"
+        },
+        "email": {
+          "label": "Correo electrónico",
+          "placeholder": "tu.correo@ejemplo.com",
+          "helper": "La dirección de correo electrónico asociada con tu cuenta de Confluence"
+        },
+        "apiToken": {
+          "label": "Token de API",
+          "placeholder": "Ingresa tu token de API de Confluence",
+          "helper": "Genera un token de API desde la configuración de tu cuenta de Atlassian"
+        },
+        "spaceKey": {
+          "label": "Clave del espacio",
+          "placeholder": "MIESPACIO",
+          "helper": "La clave del espacio de Confluence donde se crearán las páginas"
+        },
+        "parentPageId": {
+          "label": "ID de página principal (Opcional)",
+          "placeholder": "123456789",
+          "helper": "ID de página principal predeterminado para nuevas páginas. Dejar vacío para crear páginas en la raíz del espacio."
+        }
       }
     }
   },

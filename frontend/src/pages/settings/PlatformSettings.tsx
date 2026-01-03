@@ -495,6 +495,158 @@ export function PlatformSettings() {
         </CardContent>
       </Card>
 
+      <Card>
+        <CardHeader>
+          <CardTitle>{t('settings.platforms.confluence.title')}</CardTitle>
+          <CardDescription>
+            {t('settings.platforms.confluence.description')}
+          </CardDescription>
+        </CardHeader>
+        <CardContent className="space-y-4">
+          <div className="flex items-center space-x-2">
+            <Checkbox
+              id="confluence-enabled"
+              checked={draft?.confluence?.enabled ?? false}
+              onCheckedChange={(checked: boolean) =>
+                updateDraft({
+                  confluence: {
+                    ...draft!.confluence,
+                    enabled: checked,
+                  },
+                })
+              }
+            />
+            <div className="space-y-0.5">
+              <Label htmlFor="confluence-enabled" className="cursor-pointer">
+                {t('settings.platforms.confluence.enabled.label')}
+              </Label>
+              <p className="text-sm text-muted-foreground">
+                {t('settings.platforms.confluence.enabled.helper')}
+              </p>
+            </div>
+          </div>
+
+          {draft?.confluence?.enabled && (
+            <>
+              <div className="space-y-2">
+                <Label htmlFor="confluence-base-url">
+                  {t('settings.platforms.confluence.baseUrl.label')}
+                </Label>
+                <Input
+                  id="confluence-base-url"
+                  type="url"
+                  placeholder={t('settings.platforms.confluence.baseUrl.placeholder')}
+                  value={draft?.confluence?.base_url || ''}
+                  onChange={(e) =>
+                    updateDraft({
+                      confluence: {
+                        ...draft!.confluence,
+                        base_url: e.target.value || null,
+                      },
+                    })
+                  }
+                />
+                <p className="text-sm text-muted-foreground">
+                  {t('settings.platforms.confluence.baseUrl.helper')}
+                </p>
+              </div>
+
+              <div className="space-y-2">
+                <Label htmlFor="confluence-email">
+                  {t('settings.platforms.confluence.email.label')}
+                </Label>
+                <Input
+                  id="confluence-email"
+                  type="email"
+                  placeholder={t('settings.platforms.confluence.email.placeholder')}
+                  value={draft?.confluence?.email || ''}
+                  onChange={(e) =>
+                    updateDraft({
+                      confluence: {
+                        ...draft!.confluence,
+                        email: e.target.value || null,
+                      },
+                    })
+                  }
+                />
+                <p className="text-sm text-muted-foreground">
+                  {t('settings.platforms.confluence.email.helper')}
+                </p>
+              </div>
+
+              <div className="space-y-2">
+                <Label htmlFor="confluence-api-token">
+                  {t('settings.platforms.confluence.apiToken.label')}
+                </Label>
+                <Input
+                  id="confluence-api-token"
+                  type="password"
+                  placeholder={t('settings.platforms.confluence.apiToken.placeholder')}
+                  value={draft?.confluence?.api_token || ''}
+                  onChange={(e) =>
+                    updateDraft({
+                      confluence: {
+                        ...draft!.confluence,
+                        api_token: e.target.value || null,
+                      },
+                    })
+                  }
+                />
+                <p className="text-sm text-muted-foreground">
+                  {t('settings.platforms.confluence.apiToken.helper')}
+                </p>
+              </div>
+
+              <div className="space-y-2">
+                <Label htmlFor="confluence-space-key">
+                  {t('settings.platforms.confluence.spaceKey.label')}
+                </Label>
+                <Input
+                  id="confluence-space-key"
+                  type="text"
+                  placeholder={t('settings.platforms.confluence.spaceKey.placeholder')}
+                  value={draft?.confluence?.space_key || ''}
+                  onChange={(e) =>
+                    updateDraft({
+                      confluence: {
+                        ...draft!.confluence,
+                        space_key: e.target.value || null,
+                      },
+                    })
+                  }
+                />
+                <p className="text-sm text-muted-foreground">
+                  {t('settings.platforms.confluence.spaceKey.helper')}
+                </p>
+              </div>
+
+              <div className="space-y-2">
+                <Label htmlFor="confluence-parent-page-id">
+                  {t('settings.platforms.confluence.parentPageId.label')}
+                </Label>
+                <Input
+                  id="confluence-parent-page-id"
+                  type="text"
+                  placeholder={t('settings.platforms.confluence.parentPageId.placeholder')}
+                  value={draft?.confluence?.parent_page_id || ''}
+                  onChange={(e) =>
+                    updateDraft({
+                      confluence: {
+                        ...draft!.confluence,
+                        parent_page_id: e.target.value || null,
+                      },
+                    })
+                  }
+                />
+                <p className="text-sm text-muted-foreground">
+                  {t('settings.platforms.confluence.parentPageId.helper')}
+                </p>
+              </div>
+            </>
+          )}
+        </CardContent>
+      </Card>
+
       <div className="sticky bottom-0 z-10 bg-background/80 backdrop-blur-sm border-t py-4">
         <div className="flex items-center justify-between">
           {hasUnsavedChanges ? (
