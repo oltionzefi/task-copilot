@@ -491,6 +491,7 @@ const TaskFormDialogImpl = NiceModal.create<TaskFormDialogProps>((props) => {
                       <SelectContent>
                         <SelectItem value="code">Code - Start code for the project</SelectItem>
                         <SelectItem value="jira">Jira - Create tickets with description to create in Jira</SelectItem>
+                        <SelectItem value="confluence">Confluence - Create or edit documentation pages</SelectItem>
                       </SelectContent>
                     </Select>
                   </div>

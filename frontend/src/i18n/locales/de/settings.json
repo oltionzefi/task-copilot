@@ -461,6 +461,39 @@
             "helper": "Remember previous messages in the conversation for contextual responses."
           }
         }
+      },
+      "confluence": {
+        "title": "Confluence-Konfiguration",
+        "description": "Confluence-Integration für Dokumentation und Wissensmanagement konfigurieren.",
+        "enabled": {
+          "label": "Confluence-Integration aktivieren",
+          "helper": "Verbinden Sie sich mit Confluence, um Seiten zu erstellen und zu bearbeiten."
+        },
+        "baseUrl": {
+          "label": "Confluence Basis-URL",
+          "placeholder": "https://ihre-domain.atlassian.net/wiki",
+          "helper": "Ihre Confluence-Instanz-URL (z.B. https://ihre-domain.atlassian.net/wiki)"
+        },
+        "email": {
+          "label": "E-Mail",
+          "placeholder": "ihre.email@beispiel.de",
+          "helper": "Die E-Mail-Adresse, die Ihrem Confluence-Konto zugeordnet ist"
+        },
+        "apiToken": {
+          "label": "API-Token",
+          "placeholder": "Geben Sie Ihr Confluence API-Token ein",
+          "helper": "Generieren Sie ein API-Token in Ihren Atlassian-Kontoeinstellungen"
+        },
+        "spaceKey": {
+          "label": "Space-Schlüssel",
+          "placeholder": "MEINSPACE",
+          "helper": "Der Schlüssel des Confluence-Space, in dem Seiten erstellt werden"
+        },
+        "parentPageId": {
+          "label": "Übergeordnete Seiten-ID (Optional)",
+          "placeholder": "123456789",
+          "helper": "Standard-ID der übergeordneten Seite für neue Seiten. Leer lassen, um Seiten im Space-Root zu erstellen."
+        }
       }
     }
   },

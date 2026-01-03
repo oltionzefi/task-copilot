@@ -41,6 +41,17 @@ pub struct SlackConfig {
     pub keep_context: bool,
 }
 
+#[derive(Clone, Debug, Serialize, Deserialize, TS, Default)]
+#[ts(export)]
+pub struct ConfluenceConfig {
+    pub enabled: bool,
+    pub api_token: Option<String>,
+    pub base_url: Option<String>,
+    pub email: Option<String>,
+    pub space_key: Option<String>,
+    pub parent_page_id: Option<String>,
+}
+
 #[derive(Clone, Debug, Serialize, Deserialize, TS)]
 pub struct Config {
     pub config_version: String,
@@ -55,6 +66,8 @@ pub struct Config {
     pub jira: JiraConfig,
     #[serde(default)]
     pub slack: SlackConfig,
+    #[serde(default)]
+    pub confluence: ConfluenceConfig,
     pub analytics_enabled: bool,
     pub workspace_dir: Option<String>,
     pub last_app_version: Option<String>,
@@ -84,6 +97,7 @@ impl Config {
             github: old_config.github,
             jira: JiraConfig::default(),
             slack: SlackConfig::default(),
+            confluence: ConfluenceConfig::default(),
             analytics_enabled: old_config.analytics_enabled,
             workspace_dir: old_config.workspace_dir,
             last_app_version: old_config.last_app_version,
@@ -136,6 +150,7 @@ impl Default for Config {
             github: GitHubConfig::default(),
             jira: JiraConfig::default(),
             slack: SlackConfig::default(),
+            confluence: ConfluenceConfig::default(),
             analytics_enabled: true,
             workspace_dir: None,
             last_app_version: None,

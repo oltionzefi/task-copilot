@@ -32,6 +32,7 @@ pub enum TaskIntent {
     #[default]
     Code,
     Jira,
+    Confluence,
 }
 
 #[derive(Debug, Clone, FromRow, Serialize, Deserialize, TS)]
