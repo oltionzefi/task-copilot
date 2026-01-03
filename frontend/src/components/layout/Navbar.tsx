@@ -44,12 +44,12 @@ const EXTERNAL_LINKS = [
   {
     label: 'Docs',
     icon: BookOpen,
-    href: 'https://vibekanban.com/docs',
+    href: 'https://taskcopilot.com/docs',
   },
   {
     label: 'Support',
     icon: MessageCircleQuestion,
-    href: 'https://github.com/BloopAI/vibe-kanban/issues',
+    href: 'https://github.com/BloopAI/task-copilot/issues',
   },
 ];
 
