@@ -80,13 +80,21 @@ const VirtualizedList = ({ attempt, task }: VirtualizedListProps) => {
   const [channelData, setChannelData] =
     useState<DataWithScrollModifier<PatchTypeWithKey> | null>(null);
   const [loading, setLoading] = useState(true);
-  const { setEntries, reset } = useEntries();
+  const { entries, setEntries, reset, setAttemptId } = useEntries();
 
   useEffect(() => {
+    setAttemptId(attempt.id);
     setLoading(true);
     setChannelData(null);
     reset();
-  }, [attempt.id, reset]);
+  }, [attempt.id, reset, setAttemptId]);
+
+  useEffect(() => {
+    if (entries.length > 0 && !channelData) {
+      setChannelData({ data: entries, scrollModifier: InitialDataScrollModifier });
+      setLoading(false);
+    }
+  }, [entries, channelData]);
 
   const onEntriesUpdated = (
     newEntries: PatchTypeWithKey[],
