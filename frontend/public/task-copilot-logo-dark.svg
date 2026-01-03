@@ -1,0 +1,9 @@
+<svg width="600" height="80" viewBox="0 0 600 80" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <!-- Task-Copilot text logo for dark backgrounds -->
+  <text x="10" y="55" font-family="system-ui, -apple-system, 'Segoe UI', sans-serif" font-size="48" font-weight="700" fill="#ffffff">Task-Copilot</text>
+  
+  <!-- Icon: Clipboard with checkmark -->
+  <rect x="520" y="15" width="40" height="50" rx="4" fill="none" stroke="#60a5fa" stroke-width="3"/>
+  <rect x="530" y="10" width="20" height="8" rx="2" fill="#60a5fa"/>
+  <polyline points="528,35 538,45 555,28" fill="none" stroke="#60a5fa" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+</svg>
