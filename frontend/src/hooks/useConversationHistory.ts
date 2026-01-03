@@ -667,8 +667,9 @@ export const useConversationHistory = ({
           delete state[id];
         });
       });
+      emitEntries(displayedExecutionProcesses.current, 'running', false);
     }
-  }, [attempt.id, idListKey, executionProcessesRaw]);
+  }, [attempt.id, idListKey, executionProcessesRaw, emitEntries]);
 
   // Reset state when attempt changes
   useEffect(() => {
