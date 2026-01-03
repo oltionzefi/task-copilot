@@ -188,18 +188,7 @@ pub async fn create_task_attempt(
         tracing::error!("Failed to start task attempt: {}", err);
     }
 
-    deployment
-        .track_if_analytics_allowed(
-            "task_attempt_started",
-            serde_json::json!({
-                "task_id": workspace.task_id.to_string(),
-                "variant": &executor_profile_id.variant,
-                "executor": &executor_profile_id.executor,
-                "workspace_id": workspace.id.to_string(),
-                "repository_count": payload.repos.len(),
-            }),
-        )
-        .await;
+    deployment;
 
     tracing::info!("Created attempt for task {}", task.id);
 
@@ -225,15 +214,7 @@ pub async fn run_agent_setup(
         _ => return Err(ApiError::Executor(ExecutorError::SetupHelperNotSupported)),
     }
 
-    deployment
-        .track_if_analytics_allowed(
-            "agent_setup_script_executed",
-            serde_json::json!({
-                "executor_profile_id": executor_profile_id.to_string(),
-                "workspace_id": workspace.id.to_string(),
-            }),
-        )
-        .await;
+    deployment;
 
     Ok(ResponseJson(ApiResponse::success(RunAgentSetupResponse {})))
 }
@@ -410,15 +391,7 @@ pub async fn merge_task_attempt(
         );
     }
 
-    deployment
-        .track_if_analytics_allowed(
-            "task_attempt_merged",
-            serde_json::json!({
-                "task_id": task.id.to_string(),
-                "workspace_id": workspace.id.to_string(),
-            }),
-        )
-        .await;
+    deployment;
 
     Ok(ResponseJson(ApiResponse::success(())))
 }
@@ -553,16 +526,7 @@ pub async fn open_task_attempt_in_editor(
                 if url.is_some() { " (remote mode)" } else { "" }
             );
 
-            deployment
-                .track_if_analytics_allowed(
-                    "task_attempt_editor_opened",
-                    serde_json::json!({
-                        "workspace_id": workspace.id.to_string(),
-                        "editor_type": payload.editor_type.as_ref(),
-                        "remote_mode": url.is_some(),
-                    }),
-                )
-                .await;
+            deployment;
 
             Ok(ResponseJson(ApiResponse::success(OpenEditorResponse {
                 url,
@@ -807,15 +771,7 @@ pub async fn change_target_branch(
             .git()
             .get_branch_status(&repo.path, &workspace.branch, &new_target_branch)?;
 
-    deployment
-        .track_if_analytics_allowed(
-            "task_attempt_target_branch_changed",
-            serde_json::json!({
-                "repo_id": repo_id.to_string(),
-                "workspace_id": workspace.id.to_string(),
-            }),
-        )
-        .await;
+    deployment;
 
     Ok(ResponseJson(ApiResponse::success(
         ChangeTargetBranchResponse {
@@ -952,14 +908,7 @@ pub async fn rename_branch(
         );
     }
 
-    deployment
-        .track_if_analytics_allowed(
-            "task_attempt_branch_renamed",
-            serde_json::json!({
-                "updated_children": updated_children_count,
-            }),
-        )
-        .await;
+    deployment;
 
     Ok(ResponseJson(ApiResponse::success(RenameBranchResponse {
         branch: new_branch_name.to_string(),
@@ -1050,15 +999,7 @@ pub async fn rebase_task_attempt(
         };
     }
 
-    deployment
-        .track_if_analytics_allowed(
-            "task_attempt_rebased",
-            serde_json::json!({
-                "workspace_id": workspace.id.to_string(),
-                "repo_id": payload.repo_id.to_string(),
-            }),
-        )
-        .await;
+    deployment;
 
     Ok(ResponseJson(ApiResponse::success(())))
 }
@@ -1190,16 +1131,7 @@ pub async fn start_dev_server(
         )
         .await?;
 
-    deployment
-        .track_if_analytics_allowed(
-            "dev_server_started",
-            serde_json::json!({
-                "task_id": task.id.to_string(),
-                "project_id": project.id.to_string(),
-                "workspace_id": workspace.id.to_string(),
-            }),
-        )
-        .await;
+    deployment;
 
     Ok(ResponseJson(ApiResponse::success(())))
 }
@@ -1210,16 +1142,7 @@ pub async fn get_task_attempt_children(
 ) -> Result<ResponseJson<ApiResponse<TaskRelationships>>, StatusCode> {
     match Task::find_relationships_for_workspace(&deployment.db().pool, &workspace).await {
         Ok(relationships) => {
-            deployment
-                .track_if_analytics_allowed(
-                    "task_attempt_children_viewed",
-                    serde_json::json!({
-                        "workspace_id": workspace.id.to_string(),
-                        "children_count": relationships.children.len(),
-                        "parent_count": if relationships.parent_task.is_some() { 1 } else { 0 },
-                    }),
-                )
-                .await;
+            deployment;
 
             Ok(ResponseJson(ApiResponse::success(relationships)))
         }
@@ -1240,14 +1163,7 @@ pub async fn stop_task_attempt_execution(
 ) -> Result<ResponseJson<ApiResponse<()>>, ApiError> {
     deployment.container().try_stop(&workspace, false).await;
 
-    deployment
-        .track_if_analytics_allowed(
-            "task_attempt_stopped",
-            serde_json::json!({
-                "workspace_id": workspace.id.to_string(),
-            }),
-        )
-        .await;
+    deployment;
 
     Ok(ResponseJson(ApiResponse::success(())))
 }
@@ -1330,16 +1246,7 @@ pub async fn run_setup_script(
         )
         .await?;
 
-    deployment
-        .track_if_analytics_allowed(
-            "setup_script_executed",
-            serde_json::json!({
-                "task_id": task.id.to_string(),
-                "project_id": project.id.to_string(),
-                "workspace_id": workspace.id.to_string(),
-            }),
-        )
-        .await;
+    deployment;
 
     Ok(ResponseJson(ApiResponse::success(execution_process)))
 }
@@ -1414,16 +1321,7 @@ pub async fn run_cleanup_script(
         )
         .await?;
 
-    deployment
-        .track_if_analytics_allowed(
-            "cleanup_script_executed",
-            serde_json::json!({
-                "task_id": task.id.to_string(),
-                "project_id": project.id.to_string(),
-                "workspace_id": workspace.id.to_string(),
-            }),
-        )
-        .await;
+    deployment;
 
     Ok(ResponseJson(ApiResponse::success(execution_process)))
 }
@@ -1435,14 +1333,7 @@ pub async fn gh_cli_setup_handler(
 ) -> Result<ResponseJson<ApiResponse<ExecutionProcess, GhCliSetupError>>, ApiError> {
     match gh_cli_setup::run_gh_cli_setup(&deployment, &workspace).await {
         Ok(execution_process) => {
-            deployment
-                .track_if_analytics_allowed(
-                    "gh_cli_setup_executed",
-                    serde_json::json!({
-                        "workspace_id": workspace.id.to_string(),
-                    }),
-                )
-                .await;
+            deployment;
 
             Ok(ResponseJson(ApiResponse::success(execution_process)))
         }

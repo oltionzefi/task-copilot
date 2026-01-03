@@ -41,7 +41,6 @@ use executors::{
 use futures::{FutureExt, TryStreamExt, stream::select};
 use serde_json::json;
 use services::services::{
-    analytics::AnalyticsContext,
     approvals::{Approvals, executor_approvals::ExecutorApprovalBridge},
     config::Config,
     container::{ContainerError, ContainerRef, ContainerService},
@@ -73,7 +72,6 @@ pub struct LocalContainerService {
     config: Arc<RwLock<Config>>,
     git: GitService,
     image_service: ImageService,
-    analytics: Option<AnalyticsContext>,
     approvals: Approvals,
     queued_message_service: QueuedMessageService,
     publisher: Result<SharePublisher, RemoteClientNotConfigured>,
@@ -88,7 +86,7 @@ impl LocalContainerService {
         config: Arc<RwLock<Config>>,
         git: GitService,
         image_service: ImageService,
-        analytics: Option<AnalyticsContext>,
+        _analytics: Option<()>,
         approvals: Approvals,
         queued_message_service: QueuedMessageService,
         publisher: Result<SharePublisher, RemoteClientNotConfigured>,
@@ -105,7 +103,6 @@ impl LocalContainerService {
             config,
             git,
             image_service,
-            analytics,
             approvals,
             queued_message_service,
             publisher,
@@ -351,7 +348,6 @@ impl LocalContainerService {
         let db = self.db.clone();
         let config = self.config.clone();
         let container = self.clone();
-        let analytics = self.analytics.clone();
         let publisher = self.publisher.clone();
 
         let mut process_exit_rx = self.spawn_os_exit_watcher(exec_id);
@@ -517,24 +513,6 @@ impl LocalContainerService {
                     } else {
                         container.finalize_task(publisher.as_ref().ok(), &ctx).await;
                     }
-                }
-
-                // Fire analytics event when CodingAgent execution has finished
-                if config.read().await.analytics_enabled
-                    && matches!(
-                        &ctx.execution_process.run_reason,
-                        ExecutionProcessRunReason::CodingAgent
-                    )
-                    && let Some(analytics) = &analytics
-                {
-                    analytics.analytics_service.track_event(&analytics.user_id, "task_attempt_finished", Some(json!({
-                        "task_id": ctx.task.id.to_string(),
-                        "project_id": ctx.task.project_id.to_string(),
-                        "workspace_id": ctx.workspace.id.to_string(),
-                        "session_id": ctx.session.id.to_string(),
-                        "execution_success": matches!(ctx.execution_process.status, ExecutionProcessStatus::Completed),
-                        "exit_code": ctx.execution_process.exit_code,
-                    })));
                 }
             }
 

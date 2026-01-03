@@ -51,9 +51,7 @@ pub async fn assign_shared_task(
         "shared_task_id": shared_task_id,
         "new_assignee_user_id": payload.new_assignee_user_id,
     });
-    deployment
-        .track_if_analytics_allowed("reassign_shared_task", props)
-        .await;
+    deployment;
 
     Ok(ResponseJson(ApiResponse::success(updated_shared_task)))
 }
@@ -71,9 +69,7 @@ pub async fn delete_shared_task(
     let props = serde_json::json!({
         "shared_task_id": shared_task_id,
     });
-    deployment
-        .track_if_analytics_allowed("stop_sharing_task", props)
-        .await;
+    deployment;
 
     Ok(ResponseJson(ApiResponse::success(())))
 }
@@ -94,9 +90,7 @@ pub async fn link_shared_task_to_local(
             "task_id": task.id,
             "project_id": task.project_id,
         });
-        deployment
-            .track_if_analytics_allowed("link_shared_task_to_local", props)
-            .await;
+        deployment;
     }
 
     Ok(ResponseJson(ApiResponse::success(task)))

@@ -14,9 +14,7 @@ use db::{
 use executors::executors::ExecutorError;
 use futures::{StreamExt, TryStreamExt};
 use git2::Error as Git2Error;
-use serde_json::Value;
 use services::services::{
-    analytics::{AnalyticsContext, AnalyticsService},
     approvals::Approvals,
     auth::AuthContext,
     config::{Config, ConfigError},
@@ -87,8 +85,6 @@ pub trait Deployment: Clone + Send + Sync + 'static {
 
     fn db(&self) -> &DBService;
 
-    fn analytics(&self) -> &Option<AnalyticsService>;
-
     fn container(&self) -> &impl ContainerService;
 
     fn git(&self) -> &GitService;
@@ -125,23 +121,8 @@ pub trait Deployment: Clone + Send + Sync + 'static {
 
     async fn spawn_pr_monitor_service(&self) -> tokio::task::JoinHandle<()> {
         let db = self.db().clone();
-        let analytics = self
-            .analytics()
-            .as_ref()
-            .map(|analytics_service| AnalyticsContext {
-                user_id: self.user_id().to_string(),
-                analytics_service: analytics_service.clone(),
-            });
         let publisher = self.share_publisher().ok();
-        PrMonitorService::spawn(db, analytics, publisher).await
-    }
-
-    async fn track_if_analytics_allowed(&self, event_name: &str, properties: Value) {
-        let analytics_enabled = self.config().read().await.analytics_enabled;
-        // Track events unless user has explicitly opted out
-        if analytics_enabled && let Some(analytics) = self.analytics() {
-            analytics.track_event(self.user_id(), event_name, Some(properties.clone()));
-        }
+        PrMonitorService::spawn(db, None, publisher).await
     }
 
     /// Trigger background auto-setup of default projects for new users
@@ -185,17 +166,6 @@ pub trait Deployment: Clone + Send + Sync + 'static {
                                 project.name,
                                 repo_path
                             );
-
-                            // Track project creation event
-                            self.track_if_analytics_allowed(
-                                "project_created",
-                                serde_json::json!({
-                                    "project_id": project.id.to_string(),
-                                    "repository_count": 1,
-                                    "trigger": "auto_setup",
-                                }),
-                            )
-                            .await;
                         }
                         Err(e) => {
                             tracing::warn!(
