@@ -8,7 +8,7 @@ import {
 } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import { Alert, AlertDescription } from '@/components/ui/alert';
-import { LogIn, Github, Loader2, Chrome } from 'lucide-react';
+import { LogIn, Loader2, Chrome } from 'lucide-react';
 import NiceModal, { useModal } from '@ebay/nice-modal-react';
 import { useState, useRef, useEffect } from 'react';
 import { useAuthMutations } from '@/hooks/auth/useAuthMutations';
@@ -18,7 +18,7 @@ import type { ProfileResponse } from 'shared/types';
 import { useTranslation } from 'react-i18next';
 import { defineModal, type NoProps } from '@/lib/modals';
 
-type OAuthProvider = 'github' | 'google';
+type OAuthProvider = 'google';
 
 type OAuthState =
   | { type: 'select' }
@@ -166,15 +166,6 @@ const OAuthDialogImpl = NiceModal.create<NoProps>(() => {
             </DialogHeader>
 
             <div className="space-y-3 py-4">
-              <Button
-                variant="outline"
-                className="w-full h-12 flex items-center justify-center gap-3"
-                onClick={() => handleProviderSelect('github')}
-              >
-                <Github className="h-5 w-5" />
-                <span>{t('oauth.continueWithGitHub')}</span>
-              </Button>
-
               <Button
                 variant="outline"
                 className="w-full h-12 flex items-center justify-center gap-3"
