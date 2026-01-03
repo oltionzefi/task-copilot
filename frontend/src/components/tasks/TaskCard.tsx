@@ -133,7 +133,7 @@ export function TaskCard({
             </>
           }
         />
-        {task.intent === 'confluence' && (
+        {task.intent === 'confluence' && task.status === 'inreview' && (
           <div className="pt-1">
             <DbSchemaViewerButton task={task} variant="ghost" size="sm" />
           </div>

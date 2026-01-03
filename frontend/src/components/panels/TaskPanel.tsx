@@ -107,7 +107,7 @@ const TaskPanel = ({ task }: TaskPanelProps) => {
             {descriptionContent && (
               <WYSIWYGEditor value={descriptionContent} disabled />
             )}
-            {task.intent === 'confluence' && (
+            {task.intent === 'confluence' && task.status === 'inreview' && (
               <div className="pt-2">
                 <DbSchemaViewerButton task={task} />
               </div>
