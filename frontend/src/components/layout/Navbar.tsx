@@ -47,13 +47,7 @@ const INTERNAL_LINKS = [
   },
 ];
 
-const EXTERNAL_LINKS = [
-  {
-    label: 'GitHub Issues',
-    icon: MessageCircleQuestion,
-    href: 'https://github.com/BloopAI/task-copilot/issues',
-  },
-];
+
 
 function NavDivider() {
   return (
@@ -264,24 +258,6 @@ export function Navbar() {
                           <Icon className="mr-2 h-4 w-4" />
                           {item.label}
                         </Link>
-                      </DropdownMenuItem>
-                    );
-                  })}
-
-                  <DropdownMenuSeparator />
-
-                  {EXTERNAL_LINKS.map((item) => {
-                    const Icon = item.icon;
-                    return (
-                      <DropdownMenuItem key={item.href} asChild>
-                        <a
-                          href={item.href}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                        >
-                          <Icon className="mr-2 h-4 w-4" />
-                          {item.label}
-                        </a>
                       </DropdownMenuItem>
                     );
                   })}
