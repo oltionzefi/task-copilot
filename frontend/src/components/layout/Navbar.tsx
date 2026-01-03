@@ -11,7 +11,6 @@ import {
 import {
   FolderOpen,
   Settings,
-  BookOpen,
   MessageCircleQuestion,
   Menu,
   Plus,
@@ -41,11 +40,6 @@ import { oauthApi } from '@/lib/api';
 const INTERNAL_NAV = [{ label: 'Projects', icon: FolderOpen, to: '/projects' }];
 
 const EXTERNAL_LINKS = [
-  {
-    label: 'Docs',
-    icon: BookOpen,
-    href: 'https://taskcopilot.com/docs',
-  },
   {
     label: 'Support',
     icon: MessageCircleQuestion,
