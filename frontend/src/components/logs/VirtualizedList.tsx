@@ -101,10 +101,7 @@ const VirtualizedList = ({ attempt, task }: VirtualizedListProps) => {
 
     setChannelData({ data: newEntries, scrollModifier });
     setEntries(newEntries);
-
-    if (loading) {
-      setLoading(newLoading);
-    }
+    setLoading(newLoading);
   };
 
   useConversationHistory({ attempt, onEntriesUpdated });
