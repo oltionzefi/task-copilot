@@ -22,7 +22,7 @@ use db::{
         project_repo::{ProjectRepo, ProjectRepoWithName},
         repo::Repo,
         session::{CreateSession, Session, SessionError},
-        task::{Task, TaskStatus},
+        task::{Task, TaskIntent, TaskStatus},
         workspace::{Workspace, WorkspaceError},
         workspace_repo::WorkspaceRepo,
     },
@@ -993,6 +993,15 @@ pub trait ContainerService {
             .parent_task(&self.db().pool)
             .await?
             .ok_or(SqlxError::RowNotFound)?;
+        
+        // Prevent coding when task intent is not Code
+        if run_reason == &ExecutionProcessRunReason::CodingAgent && task.intent != TaskIntent::Code {
+            return Err(ContainerError::Other(anyhow!(
+                "Cannot run coding agent on a task with intent '{}'. Only tasks with 'code' intent can execute coding agents.",
+                task.intent
+            )));
+        }
+        
         if task.status != TaskStatus::InProgress
             && run_reason != &ExecutionProcessRunReason::DevServer
         {
