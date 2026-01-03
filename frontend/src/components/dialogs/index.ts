@@ -119,3 +119,7 @@ export {
   FolderPickerDialog,
   type FolderPickerDialogProps,
 } from './shared/FolderPickerDialog';
+export {
+  MermaidDialog,
+  type MermaidDialogProps,
+} from './shared/MermaidDialog';
