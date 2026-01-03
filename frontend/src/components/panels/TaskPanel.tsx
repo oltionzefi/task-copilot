@@ -8,9 +8,10 @@ import type { TaskWithAttemptStatus } from 'shared/types';
 import type { WorkspaceWithSession } from '@/types/attempt';
 import { NewCardContent } from '../ui/new-card';
 import { Button } from '../ui/button';
-import { PlusIcon, FileEdit } from 'lucide-react';
+import { PlusIcon, FileEdit, CheckCircle2 } from 'lucide-react';
 import { CreateAttemptDialog } from '@/components/dialogs/tasks/CreateAttemptDialog';
-import { WrittenTaskDescriptionDialog } from '@/components/dialogs/tasks/WrittenTaskDescriptionDialog';
+import { JiraIntentTaskDialog } from '@/components/dialogs/tasks/JiraIntentTaskDialog';
+import { JiraReviewDialog } from '@/components/dialogs/tasks/JiraReviewDialog';
 import WYSIWYGEditor from '@/components/ui/wysiwyg';
 import { DataTable, type ColumnDef } from '@/components/ui/table';
 import { DbSchemaViewerButton } from '@/components/tasks/DbSchemaViewerButton';
@@ -121,17 +122,35 @@ const TaskPanel = ({ task }: TaskPanelProps) => {
               </div>
             )}
             {isJira && task.status === 'inreview' && (
-              <div className="pt-2">
-                <Button
-                  variant="outline"
-                  size="sm"
-                  onClick={() => WrittenTaskDescriptionDialog.show({ task })}
-                >
-                  <FileEdit className="h-4 w-4 mr-2" />
-                  {t('taskPanel.reviewDescription', {
-                    defaultValue: 'Review Description',
+              <div className="pt-4 space-y-3 border-t mt-4">
+                <h3 className="font-semibold text-sm">
+                  {t('taskPanel.summaryActions', {
+                    defaultValue: 'Summary & Actions',
                   })}
-                </Button>
+                </h3>
+                <div className="flex gap-2">
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() => JiraIntentTaskDialog.show({ task })}
+                  >
+                    <FileEdit className="h-4 w-4 mr-2" />
+                    {t('taskPanel.reviewJira', {
+                      defaultValue: 'Review Jira',
+                    })}
+                  </Button>
+                  <Button
+                    variant="default"
+                    size="sm"
+                    onClick={() => JiraReviewDialog.show({ task })}
+                    className="bg-green-600 hover:bg-green-700"
+                  >
+                    <CheckCircle2 className="h-4 w-4 mr-2" />
+                    {t('taskPanel.finalize', {
+                      defaultValue: 'Finalize',
+                    })}
+                  </Button>
+                </div>
               </div>
             )}
           </div>
