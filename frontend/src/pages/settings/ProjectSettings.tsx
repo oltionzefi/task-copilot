@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
-import { useQueryClient } from '@tanstack/react-query';
+import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { isEqual } from 'lodash';
 import {
   Card,
@@ -29,7 +29,7 @@ import { useScriptPlaceholders } from '@/hooks/useScriptPlaceholders';
 import { CopyFilesField } from '@/components/projects/CopyFilesField';
 import { AutoExpandingTextarea } from '@/components/ui/auto-expanding-textarea';
 import { RepoPickerDialog } from '@/components/dialogs/shared/RepoPickerDialog';
-import { projectsApi } from '@/lib/api';
+import { portfoliosApi, projectsApi } from '@/lib/api';
 import { repoBranchKeys } from '@/hooks/useRepoBranches';
 import type { Project, ProjectRepo, Repo, UpdateProject } from 'shared/types';
 
@@ -38,6 +38,7 @@ interface ProjectFormState {
   dev_script: string;
   dev_script_working_dir: string;
   default_agent_working_dir: string;
+  portfolio_id: string | null;
 }
 
 interface RepoScriptsFormState {
@@ -53,6 +54,7 @@ function projectToFormState(project: Project): ProjectFormState {
     dev_script: project.dev_script ?? '',
     dev_script_working_dir: project.dev_script_working_dir ?? '',
     default_agent_working_dir: project.default_agent_working_dir ?? '',
+    portfolio_id: project.portfolio_id ?? null,
   };
 }
 
@@ -79,6 +81,12 @@ export function ProjectSettings() {
     isLoading: projectsLoading,
     error: projectsError,
   } = useProjects();
+
+  // Fetch portfolios
+  const { data: portfolios } = useQuery({
+    queryKey: ['portfolios'],
+    queryFn: portfoliosApi.getAll,
+  });
 
   // Selected project state
   const [selectedProjectId, setSelectedProjectId] = useState<string>(
@@ -397,6 +405,7 @@ export function ProjectSettings() {
         dev_script_working_dir: draft.dev_script_working_dir.trim() || null,
         default_agent_working_dir:
           draft.default_agent_working_dir.trim() || null,
+        portfolio_id: draft.portfolio_id,
       };
 
       updateProject.mutate({
@@ -570,6 +579,35 @@ export function ProjectSettings() {
                 />
                 <p className="text-sm text-muted-foreground">
                   {t('settings.projects.general.name.helper')}
+                </p>
+              </div>
+
+              <div className="space-y-2">
+                <Label htmlFor="project-portfolio">Portfolio</Label>
+                <Select
+                  value={draft.portfolio_id ?? 'none'}
+                  onValueChange={(value) =>
+                    updateDraft({
+                      portfolio_id: value === 'none' ? null : value,
+                    })
+                  }
+                >
+                  <SelectTrigger id="project-portfolio">
+                    <SelectValue placeholder="No portfolio" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="none">No portfolio</SelectItem>
+                    {portfolios && portfolios.length > 0 ? (
+                      portfolios.map((portfolio) => (
+                        <SelectItem key={portfolio.id} value={portfolio.id}>
+                          {portfolio.name}
+                        </SelectItem>
+                      ))
+                    ) : null}
+                  </SelectContent>
+                </Select>
+                <p className="text-sm text-muted-foreground">
+                  Organize this project under a portfolio
                 </p>
               </div>
 

@@ -16,6 +16,9 @@ import {
   ExecutionProcess,
   ExecutionProcessRepoState,
   GitBranch,
+  Portfolio,
+  CreatePortfolio,
+  UpdatePortfolio,
   Project,
   ProjectRepo,
   Repo,
@@ -232,6 +235,44 @@ export const handleApiResponse = async <T, E = T>(
   }
 
   return result.data as T;
+};
+
+// Portfolio Management APIs
+export const portfoliosApi = {
+  getAll: async (): Promise<Portfolio[]> => {
+    const response = await makeRequest('/api/portfolios');
+    return handleApiResponse<Portfolio[]>(response);
+  },
+
+  getById: async (id: string): Promise<Portfolio> => {
+    const response = await makeRequest(`/api/portfolios/${id}`);
+    return handleApiResponse<Portfolio>(response);
+  },
+
+  create: async (data: CreatePortfolio): Promise<Portfolio> => {
+    const response = await makeRequest('/api/portfolios', {
+      method: 'POST',
+      body: JSON.stringify(data),
+    });
+    return handleApiResponse<Portfolio>(response);
+  },
+
+  update: async (id: string, data: UpdatePortfolio): Promise<Portfolio> => {
+    const response = await makeRequest(`/api/portfolios/${id}`, {
+      method: 'PATCH',
+      body: JSON.stringify(data),
+    });
+    return handleApiResponse<Portfolio>(response);
+  },
+
+  delete: async (id: string): Promise<void> => {
+    const response = await makeRequest(`/api/portfolios/${id}`, {
+      method: 'DELETE',
+    });
+    if (!response.ok) {
+      throw new ApiError('Failed to delete portfolio', response.status);
+    }
+  },
 };
 
 // Project Management APIs

@@ -1,6 +1,6 @@
 import { NavLink, Outlet } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
-import { Settings, Cpu, Server, X, FolderOpen, Building2, Puzzle } from 'lucide-react';
+import { Settings, Cpu, Server, X, FolderOpen, Building2, Puzzle, Briefcase } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
 import { useEffect } from 'react';
@@ -17,6 +17,10 @@ const settingsNavigation = [
   {
     path: 'projects',
     icon: FolderOpen,
+  },
+  {
+    path: 'portfolios',
+    icon: Briefcase,
   },
   {
     path: 'organizations',
