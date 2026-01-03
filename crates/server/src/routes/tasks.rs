@@ -37,6 +37,20 @@ use crate::{
     routes::task_attempts::WorkspaceRepoInput,
 };
 
+#[derive(Debug, Serialize, Deserialize, TS)]
+pub struct CreateJiraTicketRequest {
+    pub issue_type: String,
+    pub description: String,
+    pub acceptance_criteria: String,
+    pub additional_information: String,
+}
+
+#[derive(Debug, Serialize, Deserialize, TS)]
+pub struct CreateJiraTicketResponse {
+    pub ticket_id: String,
+    pub ticket_url: String,
+}
+
 #[derive(Debug, Serialize, Deserialize)]
 pub struct TaskQuery {
     pub project_id: Uuid,
@@ -413,11 +427,38 @@ pub async fn share_task(
     })))
 }
 
+pub async fn create_jira_ticket(
+    Extension(task): Extension<Task>,
+    State(_deployment): State<DeploymentImpl>,
+    Json(payload): Json<CreateJiraTicketRequest>,
+) -> Result<ResponseJson<ApiResponse<CreateJiraTicketResponse>>, ApiError> {
+    tracing::info!(
+        "Creating Jira ticket for task {} with type {}",
+        task.id,
+        payload.issue_type
+    );
+
+    // TODO: Implement actual Jira API integration
+    // For now, return a mock response
+    let ticket_id = format!("JIRA-{}", uuid::Uuid::new_v4().as_u128() % 10000);
+    let ticket_url = format!("https://your-domain.atlassian.net/browse/{}", ticket_id);
+
+    tracing::info!("Created Jira ticket {} for task {}", ticket_id, task.id);
+
+    Ok(ResponseJson(ApiResponse::success(
+        CreateJiraTicketResponse {
+            ticket_id,
+            ticket_url,
+        },
+    )))
+}
+
 pub fn router(deployment: &DeploymentImpl) -> Router<DeploymentImpl> {
     let task_actions_router = Router::new()
         .route("/", put(update_task))
         .route("/", delete(delete_task))
-        .route("/share", post(share_task));
+        .route("/share", post(share_task))
+        .route("/jira-ticket", post(create_jira_ticket));
 
     let task_id_router = Router::new()
         .route("/", get(get_task))

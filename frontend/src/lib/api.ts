@@ -92,6 +92,8 @@ import {
   AbortConflictsRequest,
   Session,
   Workspace,
+  CreateJiraTicketRequest,
+  CreateJiraTicketResponse,
 } from 'shared/types';
 import type { WorkspaceWithSession } from '@/types/attempt';
 import { createWorkspaceWithSession } from '@/types/attempt';
@@ -505,6 +507,17 @@ export const tasksApi = {
       body: JSON.stringify(data),
     });
     return handleApiResponse<Task | null>(response);
+  },
+
+  createJiraTicket: async (
+    taskId: string,
+    data: CreateJiraTicketRequest
+  ): Promise<CreateJiraTicketResponse> => {
+    const response = await makeRequest(`/api/tasks/${taskId}/jira-ticket`, {
+      method: 'POST',
+      body: JSON.stringify(data),
+    });
+    return handleApiResponse<CreateJiraTicketResponse>(response);
   },
 };
 
