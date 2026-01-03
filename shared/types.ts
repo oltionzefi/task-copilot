@@ -286,6 +286,16 @@ export type GetPrCommentsQuery = { repo_id: string, };
 
 export type UnifiedPrComment = { "comment_type": "general", id: string, author: string, author_association: string, body: string, created_at: string, url: string, } | { "comment_type": "review", id: bigint, author: string, author_association: string, body: string, created_at: string, url: string, path: string, line: bigint | null, diff_hunk: string, };
 
+export type JiraIssue = { id: string, key: string, summary: string, description: string | null, status: string, issue_type: string, assignee: JiraUser | null, reporter: JiraUser | null, created: string, updated: string, priority: string | null, };
+
+export type JiraProject = { id: string, key: string, name: string, description: string | null, lead: JiraUser | null, };
+
+export type JiraUser = { account_id: string, email: string | null, display_name: string, };
+
+export type JiraTransition = { id: string, name: string, to: JiraStatus, };
+
+export type JiraStatus = { id: string, name: string, };
+
 export type RepoBranchStatus = { repo_id: string, repo_name: string, commits_behind: number | null, commits_ahead: number | null, has_uncommitted_changes: boolean | null, head_oid: string | null, uncommitted_count: number | null, untracked_count: number | null, target_branch_name: string, remote_commits_behind: number | null, remote_commits_ahead: number | null, merges: Array<Merge>, 
 /**
  * True if a `git rebase` is currently in progress in this worktree
