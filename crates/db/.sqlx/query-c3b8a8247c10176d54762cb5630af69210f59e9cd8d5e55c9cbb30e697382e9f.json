@@ -1,6 +1,6 @@
 {
   "db_name": "SQLite",
-  "query": "SELECT id as \"id!: Uuid\", project_id as \"project_id!: Uuid\", title, description, status as \"status!: TaskStatus\", parent_workspace_id as \"parent_workspace_id: Uuid\", shared_task_id as \"shared_task_id: Uuid\", created_at as \"created_at!: DateTime<Utc>\", updated_at as \"updated_at!: DateTime<Utc>\"\n               FROM tasks\n               WHERE parent_workspace_id = $1\n               ORDER BY created_at DESC",
+  "query": "UPDATE tasks\n               SET title = $3, description = $4, status = $5, intent = $6, parent_workspace_id = $7\n               WHERE id = $1 AND project_id = $2\n               RETURNING id as \"id!: Uuid\", project_id as \"project_id!: Uuid\", title, description, status as \"status!: TaskStatus\", intent as \"intent!: TaskIntent\", parent_workspace_id as \"parent_workspace_id: Uuid\", shared_task_id as \"shared_task_id: Uuid\", created_at as \"created_at!: DateTime<Utc>\", updated_at as \"updated_at!: DateTime<Utc>\"",
   "describe": {
     "columns": [
       {
@@ -29,28 +29,33 @@
         "type_info": "Text"
       },
       {
-        "name": "parent_workspace_id: Uuid",
+        "name": "intent!: TaskIntent",
         "ordinal": 5,
-        "type_info": "Blob"
+        "type_info": "Text"
       },
       {
-        "name": "shared_task_id: Uuid",
+        "name": "parent_workspace_id: Uuid",
         "ordinal": 6,
         "type_info": "Blob"
       },
       {
-        "name": "created_at!: DateTime<Utc>",
+        "name": "shared_task_id: Uuid",
         "ordinal": 7,
+        "type_info": "Blob"
+      },
+      {
+        "name": "created_at!: DateTime<Utc>",
+        "ordinal": 8,
         "type_info": "Text"
       },
       {
         "name": "updated_at!: DateTime<Utc>",
-        "ordinal": 8,
+        "ordinal": 9,
         "type_info": "Text"
       }
     ],
     "parameters": {
-      "Right": 1
+      "Right": 7
     },
     "nullable": [
       true,
@@ -58,11 +63,12 @@
       false,
       true,
       false,
+      false,
       true,
       true,
       false,
       false
     ]
   },
-  "hash": "8540534cf071da7c5027111bc8464ff2044e3e1a2a50ff9eb8cfccdec2292ad2"
+  "hash": "c3b8a8247c10176d54762cb5630af69210f59e9cd8d5e55c9cbb30e697382e9f"
 }
