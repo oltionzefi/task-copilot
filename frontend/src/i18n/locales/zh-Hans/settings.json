@@ -371,6 +371,95 @@
         "discard": "放弃",
         "confirmSwitch": "您有未保存的更改。您确定要切换项目吗？您的更改将丢失。"
       }
+    },
+    "platforms": {
+      "title": "平台集成",
+      "description": "配置外部平台集成。",
+      "loading": "加载平台设置中...",
+      "loadError": "加载平台配置失败。",
+      "save": {
+        "button": "保存平台设置",
+        "success": "✓ 平台设置保存成功！",
+        "error": "保存平台配置失败",
+        "unsavedChanges": "• 您有未保存的更改",
+        "discard": "放弃"
+      },
+      "jira": {
+        "title": "Jira 配置",
+        "description": "配置 Jira 集成以进行问题跟踪。",
+        "enabled": {
+          "label": "启用 Jira 集成",
+          "helper": "连接到 Jira 以同步问题和跟踪任务。"
+        },
+        "baseUrl": {
+          "label": "Jira 基础 URL",
+          "placeholder": "https://your-domain.atlassian.net",
+          "helper": "您的 Jira 实例 URL（例如：https://your-domain.atlassian.net）"
+        },
+        "email": {
+          "label": "电子邮件",
+          "placeholder": "your.email@example.com",
+          "helper": "与您的 Jira 帐户关联的电子邮件地址"
+        },
+        "apiToken": {
+          "label": "API 令牌",
+          "placeholder": "输入您的 Jira API 令牌",
+          "helper": "从您的 Jira 帐户设置生成 API 令牌"
+        },
+        "ticketTemplate": {
+          "label": "工单模板",
+          "placeholder": "输入标准工单模板",
+          "helper": "在 Jira 中创建标准工单的模板。使用占位符如 {title} 和 {description}。"
+        },
+        "bugTemplate": {
+          "label": "错误模板",
+          "placeholder": "输入错误报告模板",
+          "helper": "在 Jira 中创建错误报告的模板。使用占位符如 {title} 和 {description}。"
+        }
+      },
+      "slack": {
+        "title": "Slack 配置",
+        "description": "配置 Slack 集成以进行团队沟通和自动回复。",
+        "enabled": {
+          "label": "启用 Slack 集成",
+          "helper": "连接到 Slack 以接收通知并启用自动回复。"
+        },
+        "botToken": {
+          "label": "机器人令牌",
+          "placeholder": "xoxb-your-bot-token",
+          "helper": "您的 Slack 机器人用户 OAuth 令牌。从您的 Slack 应用设置中获取。"
+        },
+        "autoreply": {
+          "enabled": {
+            "label": "启用自动回复",
+            "helper": "使用 AI 自动回复 Slack 中的消息。"
+          },
+          "tone": {
+            "label": "回复语气",
+            "placeholder": "例如：专业、友好、简洁",
+            "helper": "设置自动回复的语气（例如：专业、友好、随意）。"
+          },
+          "scope": {
+            "label": "自动回复范围"
+          },
+          "perMessage": {
+            "label": "按消息启用",
+            "helper": "允许为单个消息启用/禁用自动回复。"
+          },
+          "perChat": {
+            "label": "按聊天启用",
+            "helper": "允许为整个对话启用/禁用自动回复。"
+          },
+          "dmOnly": {
+            "label": "仅直接消息",
+            "helper": "仅自动回复直接消息（DM）。"
+          },
+          "keepContext": {
+            "label": "保持对话上下文",
+            "helper": "记住对话中的先前消息以进行上下文回复。"
+          }
+        }
+      }
     }
   },
   "integrations": {

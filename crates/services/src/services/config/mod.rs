@@ -25,6 +25,7 @@ pub type SoundFile = versions::v9::SoundFile;
 pub type EditorType = versions::v9::EditorType;
 pub type GitHubConfig = versions::v9::GitHubConfig;
 pub type JiraConfig = versions::v9::JiraConfig;
+pub type SlackConfig = versions::v9::SlackConfig;
 pub type UiLanguage = versions::v9::UiLanguage;
 pub type ShowcaseState = versions::v9::ShowcaseState;
 

@@ -28,6 +28,19 @@ pub struct JiraConfig {
     pub bug_template: Option<String>,
 }
 
+#[derive(Clone, Debug, Serialize, Deserialize, TS, Default)]
+#[ts(export)]
+pub struct SlackConfig {
+    pub enabled: bool,
+    pub bot_token: Option<String>,
+    pub autoreply_enabled: bool,
+    pub autoreply_tone: Option<String>,
+    pub autoreply_per_message: bool,
+    pub autoreply_per_chat: bool,
+    pub autoreply_dm_only: bool,
+    pub keep_context: bool,
+}
+
 #[derive(Clone, Debug, Serialize, Deserialize, TS)]
 pub struct Config {
     pub config_version: String,
@@ -40,6 +53,8 @@ pub struct Config {
     pub github: GitHubConfig,
     #[serde(default)]
     pub jira: JiraConfig,
+    #[serde(default)]
+    pub slack: SlackConfig,
     pub analytics_enabled: bool,
     pub workspace_dir: Option<String>,
     pub last_app_version: Option<String>,
@@ -68,6 +83,7 @@ impl Config {
             editor: old_config.editor,
             github: old_config.github,
             jira: JiraConfig::default(),
+            slack: SlackConfig::default(),
             analytics_enabled: old_config.analytics_enabled,
             workspace_dir: old_config.workspace_dir,
             last_app_version: old_config.last_app_version,
@@ -119,6 +135,7 @@ impl Default for Config {
             editor: EditorConfig::default(),
             github: GitHubConfig::default(),
             jira: JiraConfig::default(),
+            slack: SlackConfig::default(),
             analytics_enabled: true,
             workspace_dir: None,
             last_app_version: None,
