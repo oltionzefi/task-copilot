@@ -26,6 +26,7 @@ pub type EditorType = versions::v9::EditorType;
 pub type GitHubConfig = versions::v9::GitHubConfig;
 pub type JiraConfig = versions::v9::JiraConfig;
 pub type SlackConfig = versions::v9::SlackConfig;
+pub type ConfluenceConfig = versions::v9::ConfluenceConfig;
 pub type UiLanguage = versions::v9::UiLanguage;
 pub type ShowcaseState = versions::v9::ShowcaseState;
 
