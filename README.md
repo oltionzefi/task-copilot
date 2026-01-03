@@ -66,10 +66,6 @@ Please head to the [website](https://taskcopilot.com/docs) for the latest docume
 
 We use [GitHub Discussions](https://github.com/BloopAI/task-copilot/discussions) for feature requests. Please open a discussion to create a feature request. For bugs please open an issue on this repo.
 
-## Contributing
-
-We would prefer that ideas and changes are first raised with the core team via [GitHub Discussions](https://github.com/BloopAI/task-copilot/discussions) or [Discord](https://discord.gg/AC4nwVtJM3), where we can discuss implementation details and alignment with the existing roadmap. Please do not open PRs without first discussing your proposal with the team.
-
 ## Development
 
 ### Prerequisites
