@@ -8,6 +8,7 @@ import {
   TooltipTrigger,
 } from '@/components/ui/tooltip';
 import { cn } from '@/lib/utils';
+import { getPortfolioThemeStyles } from '@/constants/portfolioThemes';
 import type { DragEndEvent, Modifier } from '@dnd-kit/core';
 import {
   DndContext,
@@ -263,18 +264,22 @@ export type KanbanProviderProps = {
   children: ReactNode;
   onDragEnd: (event: DragEndEvent) => void;
   className?: string;
+  portfolioTheme?: string | null;
 };
 
 export const KanbanProvider = ({
   children,
   onDragEnd,
   className,
+  portfolioTheme,
 }: KanbanProviderProps) => {
   const sensors = useSensors(
     useSensor(PointerSensor, {
       activationConstraint: { distance: 8 },
     })
   );
+
+  const themeStyles = portfolioTheme ? getPortfolioThemeStyles(portfolioTheme) : null;
 
   return (
     <DndContext
@@ -286,6 +291,7 @@ export const KanbanProvider = ({
       <div
         className={cn(
           'inline-grid grid-flow-col auto-cols-[minmax(200px,400px)] divide-x border-x items-stretch min-h-full',
+          themeStyles?.bg,
           className
         )}
       >

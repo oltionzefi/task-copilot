@@ -35,6 +35,7 @@ interface TaskKanbanBoardProps {
   selectedSharedTaskId?: string | null;
   onCreateTask?: () => void;
   projectId: string;
+  portfolioTheme?: string | null;
 }
 
 function TaskKanbanBoard({
@@ -46,11 +47,12 @@ function TaskKanbanBoard({
   selectedSharedTaskId,
   onCreateTask,
   projectId,
+  portfolioTheme,
 }: TaskKanbanBoardProps) {
   const { userId } = useAuth();
 
   return (
-    <KanbanProvider onDragEnd={onDragEnd}>
+    <KanbanProvider onDragEnd={onDragEnd} portfolioTheme={portfolioTheme}>
       {Object.entries(columns).map(([status, items]) => {
         const statusKey = status as TaskStatus;
         return (

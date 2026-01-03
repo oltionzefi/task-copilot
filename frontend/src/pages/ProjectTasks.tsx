@@ -69,6 +69,8 @@ import {
 } from '@/components/ui/breadcrumb';
 import { AttemptHeaderActions } from '@/components/panels/AttemptHeaderActions';
 import { TaskPanelHeaderActions } from '@/components/panels/TaskPanelHeaderActions';
+import { useQuery } from '@tanstack/react-query';
+import { portfoliosApi } from '@/lib/api';
 
 import type { TaskWithAttemptStatus, TaskStatus } from 'shared/types';
 
@@ -147,7 +149,18 @@ export function ProjectTasks() {
     projectId,
     isLoading: projectLoading,
     error: projectError,
+    project,
   } = useProject();
+
+  // Fetch portfolio for theme
+  const { data: portfolios } = useQuery({
+    queryKey: ['portfolios'],
+    queryFn: portfoliosApi.getAll,
+    staleTime: 5 * 60 * 1000, // 5 minutes
+  });
+
+  const portfolio = portfolios?.find((p) => p.id === project?.portfolio_id);
+  const portfolioTheme = portfolio?.theme || null;
 
   useEffect(() => {
     enableScope(Scope.KANBAN);
@@ -816,6 +829,7 @@ export function ProjectTasks() {
           selectedSharedTaskId={selectedSharedTaskId}
           onCreateTask={handleCreateNewTask}
           projectId={projectId!}
+          portfolioTheme={portfolioTheme}
         />
       </div>
     );
