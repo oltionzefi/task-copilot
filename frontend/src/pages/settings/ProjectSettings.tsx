@@ -32,6 +32,7 @@ import { RepoPickerDialog } from '@/components/dialogs/shared/RepoPickerDialog';
 import { portfoliosApi, projectsApi } from '@/lib/api';
 import { repoBranchKeys } from '@/hooks/useRepoBranches';
 import type { Project, ProjectRepo, Repo, UpdateProject } from 'shared/types';
+import { getPortfolioThemeStyles } from '@/constants/portfolioThemes';
 
 interface ProjectFormState {
   name: string;
@@ -598,11 +599,23 @@ export function ProjectSettings() {
                   <SelectContent>
                     <SelectItem value="none">No portfolio</SelectItem>
                     {portfolios && portfolios.length > 0 ? (
-                      portfolios.map((portfolio) => (
-                        <SelectItem key={portfolio.id} value={portfolio.id}>
-                          {portfolio.name}
-                        </SelectItem>
-                      ))
+                      portfolios.map((portfolio) => {
+                        const themeStyles = getPortfolioThemeStyles(
+                          portfolio.theme
+                        );
+                        return (
+                          <SelectItem key={portfolio.id} value={portfolio.id}>
+                            <span className="flex items-center gap-2">
+                              {themeStyles && (
+                                <span
+                                  className={`inline-block w-3 h-3 rounded-full ${themeStyles.badge}`}
+                                />
+                              )}
+                              {portfolio.name}
+                            </span>
+                          </SelectItem>
+                        );
+                      })
                     ) : null}
                   </SelectContent>
                 </Select>

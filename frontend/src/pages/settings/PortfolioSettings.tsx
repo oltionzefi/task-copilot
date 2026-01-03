@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from 'react';
+import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import {
@@ -16,6 +16,17 @@ import { Loader2, Plus, Trash2, Edit2 } from 'lucide-react';
 import { portfoliosApi } from '@/lib/api';
 import type { Portfolio, CreatePortfolio, UpdatePortfolio } from 'shared/types';
 import { AutoExpandingTextarea } from '@/components/ui/auto-expanding-textarea';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select';
+import {
+  PORTFOLIO_THEME_OPTIONS,
+  getPortfolioThemeStyles,
+} from '@/constants/portfolioThemes';
 
 interface PortfolioFormData {
   name: string;
@@ -24,7 +35,7 @@ interface PortfolioFormData {
 }
 
 export function PortfolioSettings() {
-  const { t } = useTranslation('settings');
+  useTranslation('settings');
   const queryClient = useQueryClient();
 
   const [isCreating, setIsCreating] = useState(false);
@@ -189,8 +200,15 @@ export function PortfolioSettings() {
                       </div>
                     )}
                     {portfolio.theme && (
-                      <div className="text-xs text-muted-foreground mt-1">
-                        Theme: {portfolio.theme}
+                      <div className="mt-2">
+                        <span
+                          className={`inline-flex items-center px-2 py-1 rounded-md text-xs font-medium ${
+                            getPortfolioThemeStyles(portfolio.theme)?.badge ||
+                            'bg-gray-100 dark:bg-gray-800 text-gray-800 dark:text-gray-200'
+                          }`}
+                        >
+                          {portfolio.theme}
+                        </span>
                       </div>
                     )}
                   </div>
@@ -266,16 +284,33 @@ export function PortfolioSettings() {
 
               <div className="space-y-2">
                 <Label htmlFor="portfolio-theme">Theme</Label>
-                <Input
-                  id="portfolio-theme"
+                <Select
                   value={formData.theme}
-                  onChange={(e) =>
-                    setFormData({ ...formData, theme: e.target.value })
+                  onValueChange={(value) =>
+                    setFormData({ ...formData, theme: value })
                   }
-                  placeholder="e.g., blue, green, purple"
-                />
+                >
+                  <SelectTrigger id="portfolio-theme">
+                    <SelectValue placeholder="Select a theme" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {PORTFOLIO_THEME_OPTIONS.map((option) => (
+                      <SelectItem key={option.value} value={option.value}>
+                        <span className="flex items-center gap-2">
+                          <span
+                            className={`inline-block w-3 h-3 rounded-full ${
+                              getPortfolioThemeStyles(option.value)?.badge ||
+                              ''
+                            }`}
+                          />
+                          {option.label}
+                        </span>
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
                 <p className="text-sm text-muted-foreground">
-                  Optional theme identifier for visual organization
+                  Choose a theme color for visual organization
                 </p>
               </div>
 
