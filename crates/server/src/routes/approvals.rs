@@ -18,17 +18,7 @@ pub async fn respond_to_approval(
 
     match service.respond(&deployment.db().pool, &id, request).await {
         Ok((status, context)) => {
-            deployment
-                .track_if_analytics_allowed(
-                    "approval_responded",
-                    serde_json::json!({
-                        "approval_id": &id,
-                        "status": format!("{:?}", status),
-                        "tool_name": context.tool_name,
-                        "execution_process_id": context.execution_process_id.to_string(),
-                    }),
-                )
-                .await;
+            deployment;
 
             Ok(Json(status))
         }

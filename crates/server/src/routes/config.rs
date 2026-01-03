@@ -166,9 +166,7 @@ async fn track_config_events(deployment: &DeploymentImpl, old: &Config, new: &Co
 
     for (should_track, event_name, properties) in events {
         if should_track {
-            deployment
-                .track_if_analytics_allowed(event_name, properties)
-                .await;
+            deployment;
         }
     }
 }

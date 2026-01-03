@@ -203,14 +203,7 @@ async fn apply_remote_project_link(
         .link_to_remote(&deployment.db().pool, project.id, remote_project)
         .await?;
 
-    deployment
-        .track_if_analytics_allowed(
-            "project_linked_to_remote",
-            serde_json::json!({
-                "project_id": project.id.to_string(),
-            }),
-        )
-        .await;
+    deployment;
 
     Ok(updated_project)
 }
@@ -229,16 +222,7 @@ pub async fn create_project(
     {
         Ok(project) => {
             // Track project creation event
-            deployment
-                .track_if_analytics_allowed(
-                    "project_created",
-                    serde_json::json!({
-                        "project_id": project.id.to_string(),
-                        "repository_count": repo_count,
-                        "trigger": "manual",
-                    }),
-                )
-                .await;
+            deployment;
 
             Ok(ResponseJson(ApiResponse::success(project)))
         }
@@ -292,14 +276,7 @@ pub async fn delete_project(
             if rows_affected == 0 {
                 Err(StatusCode::NOT_FOUND)
             } else {
-                deployment
-                    .track_if_analytics_allowed(
-                        "project_deleted",
-                        serde_json::json!({
-                            "project_id": project.id.to_string(),
-                        }),
-                    )
-                    .await;
+                deployment;
 
                 Ok(ResponseJson(ApiResponse::success(())))
             }
@@ -358,16 +335,7 @@ pub async fn open_project_in_editor(
                 if url.is_some() { " (remote mode)" } else { "" }
             );
 
-            deployment
-                .track_if_analytics_allowed(
-                    "project_editor_opened",
-                    serde_json::json!({
-                        "project_id": project.id.to_string(),
-                        "editor_type": payload.as_ref().and_then(|req| req.editor_type.as_ref()),
-                        "remote_mode": url.is_some(),
-                    }),
-                )
-                .await;
+            deployment;
 
             Ok(ResponseJson(ApiResponse::success(OpenEditorResponse {
                 url,
@@ -454,15 +422,7 @@ pub async fn add_project_repository(
         .await
     {
         Ok(repository) => {
-            deployment
-                .track_if_analytics_allowed(
-                    "project_repository_added",
-                    serde_json::json!({
-                        "project_id": project.id.to_string(),
-                        "repository_id": repository.id.to_string(),
-                    }),
-                )
-                .await;
+            deployment;
 
             Ok(ResponseJson(ApiResponse::success(repository)))
         }
@@ -531,15 +491,7 @@ pub async fn delete_project_repository(
         .await
     {
         Ok(()) => {
-            deployment
-                .track_if_analytics_allowed(
-                    "project_repository_removed",
-                    serde_json::json!({
-                        "project_id": project_id.to_string(),
-                        "repository_id": repo_id.to_string(),
-                    }),
-                )
-                .await;
+            deployment;
 
             Ok(ResponseJson(ApiResponse::success(())))
         }

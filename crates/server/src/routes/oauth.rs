@@ -179,15 +179,6 @@ async fn handoff_complete(
             drop(config);
 
             tracing::info!("analytics automatically enabled after successful login");
-
-            // Track analytics_session_start event
-            if let Some(analytics) = deployment.analytics() {
-                analytics.track_event(
-                    deployment.user_id(),
-                    "analytics_session_start",
-                    Some(serde_json::json!({})),
-                );
-            }
         }
     } else {
         drop(config_guard);
@@ -195,18 +186,6 @@ async fn handoff_complete(
 
     // Fetch and cache the user's profile
     let _ = deployment.get_login_status().await;
-
-    if let Some(profile) = deployment.auth_context().cached_profile().await
-        && let Some(analytics) = deployment.analytics()
-    {
-        analytics.track_event(
-            deployment.user_id(),
-            "$identify",
-            Some(serde_json::json!({
-                "email": profile.email,
-            })),
-        );
-    }
 
     // Trigger shared task cleanup in background
     if let Ok(publisher) = deployment.share_publisher() {
