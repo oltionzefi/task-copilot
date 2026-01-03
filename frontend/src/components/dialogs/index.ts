@@ -44,6 +44,10 @@ export {
   type JiraReviewDialogProps,
 } from './tasks/JiraReviewDialog';
 export {
+  JiraIntentTaskDialog,
+  type JiraIntentTaskDialogProps,
+} from './tasks/JiraIntentTaskDialog';
+export {
   EditorSelectionDialog,
   type EditorSelectionDialogProps,
 } from './tasks/EditorSelectionDialog';
