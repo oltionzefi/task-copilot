@@ -62,6 +62,10 @@ export type CreateTask = { project_id: string, title: string, description: strin
 
 export type UpdateTask = { title: string | null, description: string | null, status: TaskStatus | null, intent: TaskIntent | null, parent_workspace_id: string | null, image_ids: Array<string> | null, };
 
+export type TaskHistory = { id: string, task_id: string, event_type: TaskHistoryEventType, old_value: string | null, new_value: string | null, metadata: string | null, created_at: string, };
+
+export type TaskHistoryEventType = "status_changed" | "description_changed" | "title_changed" | "pr_body_updated" | "other";
+
 export type DraftFollowUpData = { message: string, variant: string | null, };
 
 export type ScratchPayload = { "type": "DRAFT_TASK", "data": string } | { "type": "DRAFT_FOLLOW_UP", "data": DraftFollowUpData };
@@ -543,4 +547,6 @@ Create a simple, professional PR description (2-4 sentences) covering:
 
 Keep it concise - avoid listing every step or commit detail. Focus on the overall change and its purpose.
 
-Use \`gh pr edit #{pr_number} --body "your description here"\` to update ONLY the PR body/description. Do NOT change the title.`;
+Use \`gh pr edit #{pr_number} --body "your description here"\` to update ONLY the PR body/description. Do NOT change the title.
+
+After updating the PR description, the system will automatically log this change to the task history for tracking purposes.`;

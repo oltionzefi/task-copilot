@@ -40,6 +40,8 @@ fn generate_types_content() -> String {
         db::models::task::TaskRelationships::decl(),
         db::models::task::CreateTask::decl(),
         db::models::task::UpdateTask::decl(),
+        db::models::task_history::TaskHistory::decl(),
+        db::models::task_history::TaskHistoryEventType::decl(),
         db::models::scratch::DraftFollowUpData::decl(),
         db::models::scratch::ScratchPayload::decl(),
         db::models::scratch::ScratchType::decl(),

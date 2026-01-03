@@ -1,0 +1,56 @@
+{
+  "db_name": "SQLite",
+  "query": "SELECT \n                   id as \"id!: Uuid\",\n                   task_id as \"task_id!: Uuid\",\n                   event_type as \"event_type!: TaskHistoryEventType\",\n                   old_value,\n                   new_value,\n                   metadata,\n                   created_at as \"created_at!: DateTime<Utc>\"\n               FROM task_history\n               WHERE task_id = $1\n               ORDER BY created_at ASC",
+  "describe": {
+    "columns": [
+      {
+        "name": "id!: Uuid",
+        "ordinal": 0,
+        "type_info": "Blob"
+      },
+      {
+        "name": "task_id!: Uuid",
+        "ordinal": 1,
+        "type_info": "Blob"
+      },
+      {
+        "name": "event_type!: TaskHistoryEventType",
+        "ordinal": 2,
+        "type_info": "Text"
+      },
+      {
+        "name": "old_value",
+        "ordinal": 3,
+        "type_info": "Text"
+      },
+      {
+        "name": "new_value",
+        "ordinal": 4,
+        "type_info": "Text"
+      },
+      {
+        "name": "metadata",
+        "ordinal": 5,
+        "type_info": "Text"
+      },
+      {
+        "name": "created_at!: DateTime<Utc>",
+        "ordinal": 6,
+        "type_info": "Text"
+      }
+    ],
+    "parameters": {
+      "Right": 1
+    },
+    "nullable": [
+      true,
+      false,
+      false,
+      true,
+      true,
+      true,
+      false
+    ]
+  },
+  "hash": "bfb0bdf34e5f8861456e5792e7d847c6e32d89f3d84a06ae6ebeb151e0a3b2ce"
+}

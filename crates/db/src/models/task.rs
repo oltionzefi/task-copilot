@@ -5,7 +5,11 @@ use strum_macros::{Display, EnumString};
 use ts_rs::TS;
 use uuid::Uuid;
 
-use super::{project::Project, workspace::Workspace};
+use super::{
+    project::Project,
+    task_history::{CreateTaskHistory, TaskHistory, TaskHistoryEventType},
+    workspace::Workspace,
+};
 
 #[derive(
     Debug, Clone, Type, Serialize, Deserialize, PartialEq, TS, EnumString, Display, Default,
@@ -332,7 +336,10 @@ ORDER BY t.created_at DESC"#,
         intent: TaskIntent,
         parent_workspace_id: Option<Uuid>,
     ) -> Result<Self, sqlx::Error> {
-        sqlx::query_as!(
+        // Get the existing task for history tracking
+        let existing_task = Self::find_by_id(pool, id).await?;
+
+        let updated_task = sqlx::query_as!(
             Task,
             r#"UPDATE tasks
                SET title = $3, description = $4, status = $5, intent = $6, parent_workspace_id = $7
@@ -347,7 +354,54 @@ ORDER BY t.created_at DESC"#,
             parent_workspace_id
         )
         .fetch_one(pool)
-        .await
+        .await?;
+
+        // Log history for changed fields
+        if let Some(old_task) = existing_task {
+            if old_task.status != updated_task.status {
+                let _ = TaskHistory::create(
+                    pool,
+                    &CreateTaskHistory {
+                        task_id: id,
+                        event_type: TaskHistoryEventType::StatusChanged,
+                        old_value: Some(old_task.status.to_string()),
+                        new_value: Some(updated_task.status.to_string()),
+                        metadata: None,
+                    },
+                )
+                .await;
+            }
+
+            if old_task.title != updated_task.title {
+                let _ = TaskHistory::create(
+                    pool,
+                    &CreateTaskHistory {
+                        task_id: id,
+                        event_type: TaskHistoryEventType::TitleChanged,
+                        old_value: Some(old_task.title.clone()),
+                        new_value: Some(updated_task.title.clone()),
+                        metadata: None,
+                    },
+                )
+                .await;
+            }
+
+            if old_task.description != updated_task.description {
+                let _ = TaskHistory::create(
+                    pool,
+                    &CreateTaskHistory {
+                        task_id: id,
+                        event_type: TaskHistoryEventType::DescriptionChanged,
+                        old_value: old_task.description.clone(),
+                        new_value: updated_task.description.clone(),
+                        metadata: None,
+                    },
+                )
+                .await;
+            }
+        }
+
+        Ok(updated_task)
     }
 
     pub async fn update_status(
@@ -355,6 +409,9 @@ ORDER BY t.created_at DESC"#,
         id: Uuid,
         status: TaskStatus,
     ) -> Result<(), sqlx::Error> {
+        // Get the existing task for history tracking
+        let existing_task = Self::find_by_id(pool, id).await?;
+
         sqlx::query!(
             "UPDATE tasks SET status = $2, updated_at = CURRENT_TIMESTAMP WHERE id = $1",
             id,
@@ -362,6 +419,24 @@ ORDER BY t.created_at DESC"#,
         )
         .execute(pool)
         .await?;
+
+        // Log status change to history
+        if let Some(old_task) = existing_task {
+            if old_task.status != status {
+                let _ = TaskHistory::create(
+                    pool,
+                    &CreateTaskHistory {
+                        task_id: id,
+                        event_type: TaskHistoryEventType::StatusChanged,
+                        old_value: Some(old_task.status.to_string()),
+                        new_value: Some(status.to_string()),
+                        metadata: None,
+                    },
+                )
+                .await;
+            }
+        }
+
         Ok(())
     }
 
