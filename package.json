@@ -28,6 +28,10 @@
     "prepare-db:check": "node scripts/prepare-db.js --check",
     "build:npx": "bash ./local-build.sh",
     "prepack": "npm run build:npx",
+    "sentry:start": "bash scripts/sentry-local.sh start",
+    "sentry:stop": "bash scripts/sentry-local.sh stop",
+    "sentry:logs": "bash scripts/sentry-local.sh logs",
+    "sentry:status": "bash scripts/sentry-local.sh status",
     "remote:dev": "cd crates/remote && docker compose --env-file .env.remote up --build ; docker compose down -v",
     "remote:prepare-db": "cd crates/remote && bash scripts/prepare-db.sh",
     "remote:prepare-db:check": "cd crates/remote && bash scripts/prepare-db.sh --check"
