@@ -38,6 +38,19 @@ use crate::{
 };
 
 #[derive(Debug, Serialize, Deserialize, TS)]
+pub struct GenerateJiraTemplateRequest {
+    pub issue_type: String,
+    pub task_description: String,
+}
+
+#[derive(Debug, Serialize, Deserialize, TS)]
+pub struct GenerateJiraTemplateResponse {
+    pub description: String,
+    pub acceptance_criteria: String,
+    pub additional_information: String,
+}
+
+#[derive(Debug, Serialize, Deserialize, TS)]
 pub struct CreateJiraTicketRequest {
     pub issue_type: String,
     pub description: String,
@@ -427,6 +440,62 @@ pub async fn share_task(
     })))
 }
 
+pub async fn generate_jira_template(
+    Extension(task): Extension<Task>,
+    State(_deployment): State<DeploymentImpl>,
+    Json(payload): Json<GenerateJiraTemplateRequest>,
+) -> Result<ResponseJson<ApiResponse<GenerateJiraTemplateResponse>>, ApiError> {
+    tracing::info!(
+        "Generating Jira template for task {} with type {}",
+        task.id,
+        payload.issue_type
+    );
+
+    // TODO: Integrate with MCP/agent to generate the template content
+    // For now, generate structured templates based on issue type
+    let is_bug = payload.issue_type == "Bug";
+    let is_story = payload.issue_type == "Story";
+
+    let (description, acceptance_criteria, additional_information) = if is_bug {
+        (
+            format!(
+                "**Summary**\n{}\n\n**Steps to Reproduce**\n1. Navigate to the affected area\n2. Perform the action that triggers the issue\n3. Observe the incorrect behavior\n\n**Expected Behavior**\nThe system should function correctly without errors.\n\n**Actual Behavior**\n[Describe what actually happens]\n\n**Environment**\n- Browser: [e.g., Chrome 120]\n- OS: [e.g., macOS 14.2]\n- Version: [Application version]",
+                payload.task_description
+            ),
+            "- [ ] Bug can no longer be reproduced\n- [ ] Regression tests pass\n- [ ] No new issues introduced\n- [ ] Implementation review completed".to_string(),
+            "**Priority Justification**\n[Explain impact on users and business]\n\n**Related Issues**\n[Link to related tickets if any]\n\n**Screenshots/Logs**\n[Attach relevant visual evidence or error logs]".to_string()
+        )
+    } else if is_story {
+        (
+            format!(
+                "**User Story**\nAs a [user type], I want to [action] so that [benefit].\n\n**Background**\n{}\n\n**Goals**\n- [Primary goal]\n- [Secondary goal]\n\n**User Value**\nThis feature will allow users to [describe value].",
+                payload.task_description
+            ),
+            "- [ ] User can successfully [primary action]\n- [ ] System provides appropriate feedback\n- [ ] Feature works across all supported platforms\n- [ ] Edge cases are handled gracefully\n- [ ] Documentation is updated".to_string(),
+            "**Design Considerations**\n[UI/UX notes, mockups, or design references]\n\n**Technical Notes**\n[Implementation approach, dependencies, or constraints]\n\n**Out of Scope**\n[What this story explicitly does not include]".to_string()
+        )
+    } else {
+        (
+            format!(
+                "**Overview**\n{}\n\n**Context**\nThis task addresses [problem or need] by [approach or solution].\n\n**Key Actions Required**\n- [Key step or component 1]\n- [Key step or component 2]\n- [Key step or component 3]",
+                payload.task_description
+            ),
+            "- [ ] Primary objective completed\n- [ ] All tests passing\n- [ ] Documentation updated\n- [ ] Implementation reviewed and approved\n- [ ] No breaking changes introduced".to_string(),
+            "**Technical Requirements**\n- [Requirement 1]\n- [Requirement 2]\n\n**Dependencies**\n- [Dependency 1]\n- [Dependency 2]\n\n**Testing Notes**\n[How to test this task]".to_string()
+        )
+    };
+
+    tracing::info!("Generated Jira template for task {}", task.id);
+
+    Ok(ResponseJson(ApiResponse::success(
+        GenerateJiraTemplateResponse {
+            description,
+            acceptance_criteria,
+            additional_information,
+        },
+    )))
+}
+
 pub async fn create_jira_ticket(
     Extension(task): Extension<Task>,
     State(_deployment): State<DeploymentImpl>,
@@ -458,6 +527,7 @@ pub fn router(deployment: &DeploymentImpl) -> Router<DeploymentImpl> {
         .route("/", put(update_task))
         .route("/", delete(delete_task))
         .route("/share", post(share_task))
+        .route("/generate-jira-template", post(generate_jira_template))
         .route("/jira-ticket", post(create_jira_ticket));
 
     let task_id_router = Router::new()

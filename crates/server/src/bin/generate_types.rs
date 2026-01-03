@@ -120,6 +120,8 @@ fn generate_types_content() -> String {
         server::routes::shared_tasks::AssignSharedTaskRequest::decl(),
         server::routes::tasks::ShareTaskResponse::decl(),
         server::routes::tasks::CreateAndStartTaskRequest::decl(),
+        server::routes::tasks::GenerateJiraTemplateRequest::decl(),
+        server::routes::tasks::GenerateJiraTemplateResponse::decl(),
         server::routes::tasks::CreateJiraTicketRequest::decl(),
         server::routes::tasks::CreateJiraTicketResponse::decl(),
         server::routes::task_attempts::pr::CreateGitHubPrRequest::decl(),

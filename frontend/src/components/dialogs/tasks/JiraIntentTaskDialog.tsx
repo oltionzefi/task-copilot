@@ -120,104 +120,6 @@ const JiraIntentTaskDialogImpl = NiceModal.create<JiraIntentTaskDialogProps>(
       setTaskDescription(task.description || task.title);
     }, [task]);
 
-    const generateJiraTemplate = async (): Promise<JiraTicketTemplate> => {
-      await new Promise((resolve) => setTimeout(resolve, 2000));
-
-      const isBug = issueType === 'Bug';
-      const isStory = issueType === 'Story';
-
-      if (isBug) {
-        return {
-          description: `**Summary**
-${taskDescription}
-
-**Steps to Reproduce**
-1. Navigate to the affected area
-2. Perform the action that triggers the issue
-3. Observe the incorrect behavior
-
-**Expected Behavior**
-The system should function correctly without errors.
-
-**Actual Behavior**
-[Describe what actually happens]
-
-**Environment**
-- Browser: [e.g., Chrome 120]
-- OS: [e.g., macOS 14.2]
-- Version: [Application version]`,
-          acceptanceCriteria: `- [ ] Bug can no longer be reproduced
-- [ ] Regression tests pass
-- [ ] No new issues introduced
-- [ ] Implementation review completed`,
-          additionalInformation: `**Priority Justification**
-[Explain impact on users and business]
-
-**Related Issues**
-[Link to related tickets if any]
-
-**Screenshots/Logs**
-[Attach relevant visual evidence or error logs]`,
-        };
-      } else if (isStory) {
-        return {
-          description: `**User Story**
-As a [user type], I want to [action] so that [benefit].
-
-**Background**
-${taskDescription}
-
-**Goals**
-- [Primary goal]
-- [Secondary goal]
-
-**User Value**
-This feature will allow users to [describe value].`,
-          acceptanceCriteria: `- [ ] User can successfully [primary action]
-- [ ] System provides appropriate feedback
-- [ ] Feature works across all supported platforms
-- [ ] Edge cases are handled gracefully
-- [ ] Documentation is updated`,
-          additionalInformation: `**Design Considerations**
-[UI/UX notes, mockups, or design references]
-
-**Technical Notes**
-[Implementation approach, dependencies, or constraints]
-
-**Out of Scope**
-[What this story explicitly does not include]`,
-        };
-      } else {
-        return {
-          description: `**Overview**
-${taskDescription}
-
-**Context**
-This task addresses [problem or need] by [approach or solution].
-
-**Key Actions Required**
-- [Key step or component 1]
-- [Key step or component 2]
-- [Key step or component 3]`,
-          acceptanceCriteria: `- [ ] Primary objective completed
-- [ ] All tests passing
-- [ ] Documentation updated
-- [ ] Implementation reviewed and approved
-- [ ] No breaking changes introduced`,
-          additionalInformation: `**Technical Requirements**
-- [Requirement 1]
-- [Requirement 2]
-
-**Dependencies**
-- [Dependency 1]
-- [Dependency 2]
-
-**Testing Notes**
-[How to test this task]`,
-        };
-      }
-    };
-
     const handleGenerate = async () => {
       if (!taskDescription.trim()) {
         setError('Please provide a task description');
@@ -228,8 +130,16 @@ This task addresses [problem or need] by [approach or solution].
       setWorkflowStep('generating');
 
       try {
-        const template = await generateJiraTemplate();
-        setGeneratedTemplate(template);
+        const response = await tasksApi.generateJiraTemplate(task.id, {
+          issue_type: issueType,
+          task_description: taskDescription,
+        });
+        
+        setGeneratedTemplate({
+          description: response.description,
+          acceptanceCriteria: response.acceptance_criteria,
+          additionalInformation: response.additional_information,
+        });
         setWorkflowStep('review');
       } catch (err) {
         setError(
