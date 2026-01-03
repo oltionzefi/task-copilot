@@ -585,12 +585,7 @@ export const useConversationHistory = ({
   useEffect(() => {
     let cancelled = false;
     (async () => {
-      // Waiting for execution processes to load
-      if (
-        executionProcesses?.current.length === 0 ||
-        loadedInitialEntries.current
-      )
-        return;
+      if (loadedInitialEntries.current) return;
 
       // Initial entries
       const allInitialEntries = await loadInitialEntries();
