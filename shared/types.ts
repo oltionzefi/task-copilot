@@ -312,6 +312,14 @@ export type JiraTransition = { id: string, name: string, to: JiraStatus, };
 
 export type JiraStatus = { id: string, name: string, };
 
+export type FlowIntent = "code" | "jira" | "confluence";
+
+export type FlowAction = { name: string, description: string, status: FlowActionStatus, };
+
+export type FlowActionStatus = "pending" | "inprogress" | "completed" | "failed";
+
+export type FlowSummary = { intent: FlowIntent, description: string, actions: Array<FlowAction>, };
+
 export type RepoBranchStatus = { repo_id: string, repo_name: string, commits_behind: number | null, commits_ahead: number | null, has_uncommitted_changes: boolean | null, head_oid: string | null, uncommitted_count: number | null, untracked_count: number | null, target_branch_name: string, remote_commits_behind: number | null, remote_commits_ahead: number | null, merges: Array<Merge>, 
 /**
  * True if a `git rebase` is currently in progress in this worktree
