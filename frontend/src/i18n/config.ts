@@ -9,26 +9,21 @@ import enSettings from './locales/en/settings.json';
 import enProjects from './locales/en/projects.json';
 import enTasks from './locales/en/tasks.json';
 import enOrganization from './locales/en/organization.json';
-import jaCommon from './locales/ja/common.json';
-import jaSettings from './locales/ja/settings.json';
-import jaProjects from './locales/ja/projects.json';
-import jaTasks from './locales/ja/tasks.json';
-import jaOrganization from './locales/ja/organization.json';
 import esCommon from './locales/es/common.json';
 import esSettings from './locales/es/settings.json';
 import esProjects from './locales/es/projects.json';
 import esTasks from './locales/es/tasks.json';
 import esOrganization from './locales/es/organization.json';
-import koCommon from './locales/ko/common.json';
-import koSettings from './locales/ko/settings.json';
-import koProjects from './locales/ko/projects.json';
-import koTasks from './locales/ko/tasks.json';
-import koOrganization from './locales/ko/organization.json';
-import zhHansCommon from './locales/zh-Hans/common.json';
-import zhHansSettings from './locales/zh-Hans/settings.json';
-import zhHansProjects from './locales/zh-Hans/projects.json';
-import zhHansTasks from './locales/zh-Hans/tasks.json';
-import zhHansOrganization from './locales/zh-Hans/organization.json';
+import deCommon from './locales/de/common.json';
+import deSettings from './locales/de/settings.json';
+import deProjects from './locales/de/projects.json';
+import deTasks from './locales/de/tasks.json';
+import deOrganization from './locales/de/organization.json';
+import itCommon from './locales/it/common.json';
+import itSettings from './locales/it/settings.json';
+import itProjects from './locales/it/projects.json';
+import itTasks from './locales/it/tasks.json';
+import itOrganization from './locales/it/organization.json';
 
 const resources = {
   en: {
@@ -38,13 +33,6 @@ const resources = {
     tasks: enTasks,
     organization: enOrganization,
   },
-  ja: {
-    common: jaCommon,
-    settings: jaSettings,
-    projects: jaProjects,
-    tasks: jaTasks,
-    organization: jaOrganization,
-  },
   es: {
     common: esCommon,
     settings: esSettings,
@@ -52,19 +40,19 @@ const resources = {
     tasks: esTasks,
     organization: esOrganization,
   },
-  ko: {
-    common: koCommon,
-    settings: koSettings,
-    projects: koProjects,
-    tasks: koTasks,
-    organization: koOrganization,
+  de: {
+    common: deCommon,
+    settings: deSettings,
+    projects: deProjects,
+    tasks: deTasks,
+    organization: deOrganization,
   },
-  'zh-Hans': {
-    common: zhHansCommon,
-    settings: zhHansSettings,
-    projects: zhHansProjects,
-    tasks: zhHansTasks,
-    organization: zhHansOrganization,
+  it: {
+    common: itCommon,
+    settings: itSettings,
+    projects: itProjects,
+    tasks: itTasks,
+    organization: itOrganization,
   },
 };
 
@@ -73,14 +61,10 @@ i18n
   .use(initReactI18next)
   .init({
     resources,
-    fallbackLng: {
-      zh: ['zh-Hans'], // Map generic Chinese to Simplified Chinese
-      default: ['en'],
-    },
+    fallbackLng: 'en',
     defaultNS: 'common',
     debug: import.meta.env.DEV,
-    supportedLngs: [...SUPPORTED_I18N_CODES, 'zh'], // Include 'zh' for browser detection
-    nonExplicitSupportedLngs: true, // Accept zh -> zh-Hans mapping
+    supportedLngs: SUPPORTED_I18N_CODES,
     load: 'currentOnly', // Load exact language code
 
     interpolation: {

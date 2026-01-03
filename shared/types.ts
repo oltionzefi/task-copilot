@@ -336,7 +336,7 @@ export type SlackConfig = { enabled: boolean, bot_token: string | null, autorepl
 
 export enum SoundFile { ABSTRACT_SOUND1 = "ABSTRACT_SOUND1", ABSTRACT_SOUND2 = "ABSTRACT_SOUND2", ABSTRACT_SOUND3 = "ABSTRACT_SOUND3", ABSTRACT_SOUND4 = "ABSTRACT_SOUND4", COW_MOOING = "COW_MOOING", PHONE_VIBRATION = "PHONE_VIBRATION", ROOSTER = "ROOSTER" }
 
-export type UiLanguage = "BROWSER" | "EN" | "JA" | "ES" | "KO" | "ZH_HANS";
+export type UiLanguage = "BROWSER" | "EN" | "ES" | "DE" | "IT";
 
 export type ShowcaseState = { seen_features: Array<string>, };
 
