@@ -31,7 +31,6 @@ import { ThemeMode } from 'shared/types';
 import * as Sentry from '@sentry/react';
 import { Loader } from '@/components/ui/loader';
 
-import { DisclaimerDialog } from '@/components/dialogs/global/DisclaimerDialog';
 import { OnboardingDialog } from '@/components/dialogs/global/OnboardingDialog';
 import { ReleaseNotesDialog } from '@/components/dialogs/global/ReleaseNotesDialog';
 import { ClickedElementsProvider } from './contexts/ClickedElementsProvider';
@@ -55,17 +54,7 @@ function AppContent() {
     let cancelled = false;
 
     const showNextStep = async () => {
-      // 1) Disclaimer - first step
-      if (!config.disclaimer_acknowledged) {
-        await DisclaimerDialog.show();
-        if (!cancelled) {
-          await updateAndSaveConfig({ disclaimer_acknowledged: true });
-        }
-        DisclaimerDialog.hide();
-        return;
-      }
-
-      // 2) Onboarding - configure executor and editor
+      // 1) Onboarding - configure executor and editor
       if (!config.onboarding_acknowledged) {
         const result = await OnboardingDialog.show();
         if (!cancelled) {
