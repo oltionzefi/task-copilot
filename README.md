@@ -120,9 +120,21 @@ The following environment variables can be configured at build time or runtime:
 | `BACKEND_PORT` | Runtime | `0` (auto-assign) | Backend server port (dev mode only, overrides PORT+1) |
 | `FRONTEND_PORT` | Runtime | `3000` | Frontend dev server port (dev mode only, overrides PORT) |
 | `HOST` | Runtime | `127.0.0.1` | Backend server host |
+| `SENTRY_DSN` | Runtime | Empty | Sentry DSN for backend error tracking (disables Sentry if empty) |
+| `VITE_SENTRY_DSN` | Build/Runtime | Empty | Sentry DSN for frontend error tracking (disables Sentry if empty) |
 | `DISABLE_WORKTREE_ORPHAN_CLEANUP` | Runtime | Not set | Disable git worktree cleanup (for debugging) |
 
 **Build-time variables** must be set when running `pnpm run build`. **Runtime variables** are read when the application starts.
+
+### Local Sentry Setup
+
+For local development, you can run a Sentry instance using Docker Compose:
+
+```bash
+docker compose -f docker-compose.dev.yml up -d
+```
+
+This provides a local error tracking and monitoring solution. See [docs/LOCAL_SENTRY_SETUP.md](docs/LOCAL_SENTRY_SETUP.md) for detailed setup instructions.
 
 ### Remote Deployment
 

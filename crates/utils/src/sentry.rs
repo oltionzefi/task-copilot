@@ -3,8 +3,6 @@ use std::sync::OnceLock;
 use sentry_tracing::{EventFilter, SentryLayer};
 use tracing::Level;
 
-const SENTRY_DSN: &str = "https://1065a1d276a581316999a07d5dffee26@o4509603705192449.ingest.de.sentry.io/4509605576441937";
-
 static INIT_GUARD: OnceLock<sentry::ClientInitGuard> = OnceLock::new();
 
 #[derive(Clone, Copy, Debug)]
@@ -31,9 +29,16 @@ fn environment() -> &'static str {
 }
 
 pub fn init_once(source: SentrySource) {
+    let sentry_dsn = std::env::var("SENTRY_DSN").unwrap_or_default();
+    
+    if sentry_dsn.is_empty() {
+        tracing::warn!("SENTRY_DSN not set, Sentry integration disabled");
+        return;
+    }
+
     INIT_GUARD.get_or_init(|| {
         sentry::init((
-            SENTRY_DSN,
+            sentry_dsn,
             sentry::ClientOptions {
                 release: sentry::release_name!(),
                 environment: Some(environment().into()),
