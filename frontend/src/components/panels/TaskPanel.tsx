@@ -8,9 +8,10 @@ import type { TaskWithAttemptStatus } from 'shared/types';
 import type { WorkspaceWithSession } from '@/types/attempt';
 import { NewCardContent } from '../ui/new-card';
 import { Button } from '../ui/button';
-import { PlusIcon, FileCheck } from 'lucide-react';
+import { PlusIcon, FileCheck, FileEdit } from 'lucide-react';
 import { CreateAttemptDialog } from '@/components/dialogs/tasks/CreateAttemptDialog';
 import { JiraIntentTaskDialog } from '@/components/dialogs/tasks/JiraIntentTaskDialog';
+import { WrittenTaskDescriptionDialog } from '@/components/dialogs/tasks/WrittenTaskDescriptionDialog';
 import WYSIWYGEditor from '@/components/ui/wysiwyg';
 import { DataTable, type ColumnDef } from '@/components/ui/table';
 import { DbSchemaViewerButton } from '@/components/tasks/DbSchemaViewerButton';
@@ -121,7 +122,17 @@ const TaskPanel = ({ task }: TaskPanelProps) => {
               </div>
             )}
             {isJira && task.status === 'inreview' && (
-              <div className="pt-2">
+              <div className="pt-2 flex gap-2">
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => WrittenTaskDescriptionDialog.show({ task })}
+                >
+                  <FileEdit className="h-4 w-4 mr-2" />
+                  {t('taskPanel.reviewDescription', {
+                    defaultValue: 'Review Description',
+                  })}
+                </Button>
                 <Button
                   variant="default"
                   size="sm"

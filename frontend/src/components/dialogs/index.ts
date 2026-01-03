@@ -48,6 +48,10 @@ export {
   type JiraIntentTaskDialogProps,
 } from './tasks/JiraIntentTaskDialog';
 export {
+  WrittenTaskDescriptionDialog,
+  type WrittenTaskDescriptionDialogProps,
+} from './tasks/WrittenTaskDescriptionDialog';
+export {
   EditorSelectionDialog,
   type EditorSelectionDialogProps,
 } from './tasks/EditorSelectionDialog';

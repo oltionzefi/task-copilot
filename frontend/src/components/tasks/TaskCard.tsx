@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { KanbanCard } from '@/components/ui/shadcn-io/kanban';
-import { Link, Loader2, XCircle, FileCheck } from 'lucide-react';
+import { Link, Loader2, XCircle, FileCheck, FileEdit } from 'lucide-react';
 import type { TaskWithAttemptStatus } from 'shared/types';
 import { ActionsDropdown } from '@/components/ui/actions-dropdown';
 import { Button } from '@/components/ui/button';
@@ -11,6 +11,7 @@ import type { SharedTaskRecord } from '@/hooks/useProjectTasks';
 import { TaskCardHeader } from './TaskCardHeader';
 import { DbSchemaViewerButton } from './DbSchemaViewerButton';
 import { JiraIntentTaskDialog } from '@/components/dialogs/tasks/JiraIntentTaskDialog';
+import { WrittenTaskDescriptionDialog } from '@/components/dialogs/tasks/WrittenTaskDescriptionDialog';
 import { useTranslation } from 'react-i18next';
 import { useAuth } from '@/hooks';
 
@@ -140,7 +141,23 @@ export function TaskCard({
           </div>
         )}
         {task.intent === 'jira' && task.status === 'inreview' && (
-          <div className="pt-1">
+          <div className="pt-1 flex flex-col gap-1">
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={(e) => {
+                e.stopPropagation();
+                WrittenTaskDescriptionDialog.show({ task });
+              }}
+              onPointerDown={(e) => e.stopPropagation()}
+              onMouseDown={(e) => e.stopPropagation()}
+              className="w-full justify-start"
+            >
+              <FileEdit className="h-4 w-4 mr-2" />
+              {t('taskCard.reviewDescription', {
+                defaultValue: 'Review Description',
+              })}
+            </Button>
             <Button
               variant="ghost"
               size="sm"
