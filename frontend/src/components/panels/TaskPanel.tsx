@@ -8,9 +8,8 @@ import type { TaskWithAttemptStatus } from 'shared/types';
 import type { WorkspaceWithSession } from '@/types/attempt';
 import { NewCardContent } from '../ui/new-card';
 import { Button } from '../ui/button';
-import { PlusIcon, FileCheck, FileEdit } from 'lucide-react';
+import { PlusIcon, FileEdit } from 'lucide-react';
 import { CreateAttemptDialog } from '@/components/dialogs/tasks/CreateAttemptDialog';
-import { JiraIntentTaskDialog } from '@/components/dialogs/tasks/JiraIntentTaskDialog';
 import { WrittenTaskDescriptionDialog } from '@/components/dialogs/tasks/WrittenTaskDescriptionDialog';
 import WYSIWYGEditor from '@/components/ui/wysiwyg';
 import { DataTable, type ColumnDef } from '@/components/ui/table';
@@ -122,7 +121,7 @@ const TaskPanel = ({ task }: TaskPanelProps) => {
               </div>
             )}
             {isJira && task.status === 'inreview' && (
-              <div className="pt-2 flex gap-2">
+              <div className="pt-2">
                 <Button
                   variant="outline"
                   size="sm"
@@ -131,17 +130,6 @@ const TaskPanel = ({ task }: TaskPanelProps) => {
                   <FileEdit className="h-4 w-4 mr-2" />
                   {t('taskPanel.reviewDescription', {
                     defaultValue: 'Review Description',
-                  })}
-                </Button>
-                <Button
-                  variant="default"
-                  size="sm"
-                  onClick={() => JiraIntentTaskDialog.show({ task })}
-                  className="bg-blue-600 hover:bg-blue-700"
-                >
-                  <FileCheck className="h-4 w-4 mr-2" />
-                  {t('jiraIntentDialog.finalizeButton', {
-                    defaultValue: 'Finalize Jira Ticket',
                   })}
                 </Button>
               </div>

@@ -1,5 +1,5 @@
 import { useTranslation } from 'react-i18next';
-import { Loader2, CheckCircle2, FileText, Tag, User } from 'lucide-react';
+import { Loader2, CheckCircle2, FileText, Tag, User, ExternalLink } from 'lucide-react';
 import {
   Dialog,
   DialogContent,
@@ -15,7 +15,8 @@ import { Separator } from '@/components/ui/separator';
 import { useState } from 'react';
 import NiceModal, { useModal } from '@ebay/nice-modal-react';
 import { defineModal } from '@/lib/modals';
-import type { TaskWithAttemptStatus } from 'shared/types';
+import type { TaskWithAttemptStatus, CreateJiraTicketRequest } from 'shared/types';
+import { tasksApi } from '@/lib/api';
 
 export interface JiraReviewDialogProps {
   task: TaskWithAttemptStatus;
@@ -29,15 +30,24 @@ interface JiraTicketParts {
   assignee: boolean;
 }
 
+interface CreatedTicket {
+  ticketId: string;
+  ticketUrl: string;
+}
+
+type WorkflowState = 'reviewing' | 'creating' | 'success';
+
 const JiraReviewDialogImpl = NiceModal.create<JiraReviewDialogProps>(
   ({ task }) => {
     const modal = useModal();
     const { t } = useTranslation('tasks');
+    const [workflowState, setWorkflowState] = useState<WorkflowState>('reviewing');
     const [generating, setGenerating] = useState(false);
     const [generatedParts, setGeneratedParts] = useState<Set<string>>(
       new Set()
     );
     const [error, setError] = useState<string | null>(null);
+    const [createdTicket, setCreatedTicket] = useState<CreatedTicket | null>(null);
 
     const [selectedParts, setSelectedParts] = useState<JiraTicketParts>({
       summary: true,
@@ -116,8 +126,131 @@ const JiraReviewDialogImpl = NiceModal.create<JiraReviewDialogProps>(
       modal.hide();
     };
 
+    const handleCreateJiraTicket = async () => {
+      setError(null);
+      setWorkflowState('creating');
+
+      try {
+        // Get markdown content from task description
+        const markdownContent = task.description || task.title;
+
+        // Create the Jira ticket with markdown content
+        const payload: CreateJiraTicketRequest = {
+          issue_type: 'Task',
+          description: markdownContent,
+          acceptance_criteria: '',
+          additional_information: '',
+        };
+
+        const response = await tasksApi.createJiraTicket(task.id, payload);
+
+        setCreatedTicket({
+          ticketId: response.ticket_id,
+          ticketUrl: response.ticket_url,
+        });
+        setWorkflowState('success');
+      } catch (err) {
+        setError(
+          err instanceof Error ? err.message : 'Failed to create Jira ticket'
+        );
+        setWorkflowState('reviewing');
+      }
+    };
+
     const allGenerated = generatedParts.size === 5;
     const someSelected = Object.values(selectedParts).some((v) => v);
+    const isCreating = workflowState === 'creating';
+    const isSuccess = workflowState === 'success';
+
+    if (isSuccess && createdTicket) {
+      return (
+        <Dialog open={modal.visible} onOpenChange={handleClose}>
+          <DialogContent className="sm:max-w-2xl">
+            <DialogHeader>
+              <DialogTitle>
+                {t('jiraReviewDialog.successTitle', {
+                  defaultValue: 'Jira Ticket Created',
+                })}
+              </DialogTitle>
+              <DialogDescription>
+                {t('jiraReviewDialog.successDescription', {
+                  defaultValue: 'Your Jira ticket has been created successfully.',
+                })}
+              </DialogDescription>
+            </DialogHeader>
+
+            <div className="space-y-4 py-4">
+              <Alert className="bg-green-50 dark:bg-green-950 border-green-200 dark:border-green-800">
+                <CheckCircle2 className="h-4 w-4 text-green-600" />
+                <AlertDescription>
+                  {t('jiraReviewDialog.ticketCreatedSuccess', {
+                    defaultValue: 'Jira ticket created successfully!',
+                  })}
+                </AlertDescription>
+              </Alert>
+
+              <div className="space-y-3 p-4 bg-muted/50 rounded-lg">
+                <div className="space-y-1">
+                  <span className="text-sm font-medium">
+                    {t('jiraReviewDialog.ticketId', {
+                      defaultValue: 'Ticket ID',
+                    })}
+                  </span>
+                  <div className="text-lg font-semibold">{createdTicket.ticketId}</div>
+                </div>
+
+                <div className="space-y-1">
+                  <span className="text-sm font-medium">
+                    {t('jiraReviewDialog.ticketUrl', {
+                      defaultValue: 'Ticket URL',
+                    })}
+                  </span>
+                  <a
+                    href={createdTicket.ticketUrl}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="flex items-center gap-2 text-blue-600 hover:text-blue-700 hover:underline"
+                  >
+                    {createdTicket.ticketUrl}
+                    <ExternalLink className="h-4 w-4" />
+                  </a>
+                </div>
+              </div>
+            </div>
+
+            <div className="flex justify-end pt-4 border-t">
+              <Button onClick={handleClose} className="bg-blue-600 hover:bg-blue-700">
+                {t('common:buttons.close', { defaultValue: 'Close' })}
+              </Button>
+            </div>
+          </DialogContent>
+        </Dialog>
+      );
+    }
+
+    if (isCreating) {
+      return (
+        <Dialog open={modal.visible} onOpenChange={handleClose}>
+          <DialogContent className="sm:max-w-2xl">
+            <div className="flex flex-col items-center justify-center py-12 space-y-4">
+              <Loader2 className="h-12 w-12 animate-spin text-blue-600" />
+              <div className="text-center space-y-2">
+                <h3 className="font-semibold">
+                  {t('jiraReviewDialog.creatingTicket', {
+                    defaultValue: 'Creating Jira Ticket...',
+                  })}
+                </h3>
+                <p className="text-sm text-muted-foreground">
+                  {t('jiraReviewDialog.creatingTicketDesc', {
+                    defaultValue: 'Please wait while we create your Jira ticket...',
+                  })}
+                </p>
+              </div>
+            </div>
+          </DialogContent>
+        </Dialog>
+      );
+    }
 
     return (
       <Dialog open={modal.visible} onOpenChange={handleClose}>
@@ -311,6 +444,17 @@ const JiraReviewDialogImpl = NiceModal.create<JiraReviewDialogProps>(
               {t('common:buttons.close', { defaultValue: 'Close' })}
             </Button>
             <div className="flex gap-2">
+              <Button
+                onClick={handleCreateJiraTicket}
+                disabled={generating}
+                variant="default"
+                className="bg-green-600 hover:bg-green-700"
+              >
+                <CheckCircle2 className="h-4 w-4 mr-2" />
+                {t('jiraReviewDialog.createJiraTicket', {
+                  defaultValue: 'Create Jira Ticket',
+                })}
+              </Button>
               <Button
                 onClick={handleGenerateSelected}
                 disabled={generating || !someSelected}
