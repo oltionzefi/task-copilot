@@ -37,7 +37,7 @@ This command will:
    - Click "Projects" in the left sidebar
    - Click "Create Project" button
    - Select platform: **"JavaScript"** (for React frontend)
-   - Enter project name: `vibe-kanban-frontend` (or any name you prefer)
+   - Enter project name: `task-copilot-frontend` (or any name you prefer)
    - Click "Create Project"
 
 5. After creating the project, you'll see the project setup page with your DSN
@@ -224,7 +224,7 @@ For production builds, source maps are generated automatically by Vite and can b
 2. **Verify project ID** in DSN matches the project in Sentry UI
 3. **Check Sentry worker logs** for processing errors:
    ```bash
-   docker logs vibe-kanban-sentry-worker
+   docker logs task-copilot-sentry-worker
    ```
 
 ## Management Commands

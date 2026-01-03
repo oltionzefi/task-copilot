@@ -36,7 +36,7 @@ Login with the default credentials above.
 1. After logging in, create a new project:
    - Click "Projects" → "Create Project"
    - Select "JavaScript" for frontend or "Rust" for backend
-   - Name it (e.g., "vibe-kanban-dev")
+   - Name it (e.g., "task-copilot-dev")
    - Click "Create Project"
 
 2. Copy the DSN from the project settings:

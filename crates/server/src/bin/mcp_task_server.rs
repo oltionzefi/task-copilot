@@ -41,7 +41,7 @@ fn main() -> anyhow::Result<()> {
                         })?
                     }
                     Err(_) => {
-                        let port = read_port_file("vibe-kanban").await?;
+                        let port = read_port_file("task-copilot").await?;
                         tracing::info!("[MCP] Using port from port file: {}", port);
                         port
                     }

@@ -387,7 +387,7 @@ if !["image/jpeg", "image/png", "image/gif", "image/webp"]
 
 **Issue:**
 ```yaml
-SENTRY_SECRET_KEY: ${SENTRY_SECRET_KEY:-vibe-kanban-local-dev-secret-key-change-in-production}
+SENTRY_SECRET_KEY: ${SENTRY_SECRET_KEY:-task-copilot-local-dev-secret-key-change-in-production}
 ```
 
 **Risk:** Weak default could be used in production.
