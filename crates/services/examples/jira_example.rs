@@ -1,7 +1,7 @@
 // Example usage of the Jira integration module
 // This file demonstrates how to use the Jira client in the Vibe Kanban project
 
-use services::jira::{
+use services::services::jira::{
     CreateJiraIssueRequest, JiraClient, JiraError, UpdateJiraIssueRequest,
 };
 

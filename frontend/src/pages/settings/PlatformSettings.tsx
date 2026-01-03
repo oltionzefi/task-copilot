@@ -285,6 +285,216 @@ export function PlatformSettings() {
         </CardContent>
       </Card>
 
+      <Card>
+        <CardHeader>
+          <CardTitle>{t('settings.platforms.slack.title')}</CardTitle>
+          <CardDescription>
+            {t('settings.platforms.slack.description')}
+          </CardDescription>
+        </CardHeader>
+        <CardContent className="space-y-4">
+          <div className="flex items-center space-x-2">
+            <Checkbox
+              id="slack-enabled"
+              checked={draft?.slack?.enabled ?? false}
+              onCheckedChange={(checked: boolean) =>
+                updateDraft({
+                  slack: {
+                    ...draft!.slack,
+                    enabled: checked,
+                  },
+                })
+              }
+            />
+            <div className="space-y-0.5">
+              <Label htmlFor="slack-enabled" className="cursor-pointer">
+                {t('settings.platforms.slack.enabled.label')}
+              </Label>
+              <p className="text-sm text-muted-foreground">
+                {t('settings.platforms.slack.enabled.helper')}
+              </p>
+            </div>
+          </div>
+
+          {draft?.slack?.enabled && (
+            <>
+              <div className="space-y-2">
+                <Label htmlFor="slack-bot-token">
+                  {t('settings.platforms.slack.botToken.label')}
+                </Label>
+                <Input
+                  id="slack-bot-token"
+                  type="password"
+                  placeholder={t('settings.platforms.slack.botToken.placeholder')}
+                  value={draft?.slack?.bot_token || ''}
+                  onChange={(e) =>
+                    updateDraft({
+                      slack: {
+                        ...draft!.slack,
+                        bot_token: e.target.value || null,
+                      },
+                    })
+                  }
+                />
+                <p className="text-sm text-muted-foreground">
+                  {t('settings.platforms.slack.botToken.helper')}
+                </p>
+              </div>
+
+              <div className="space-y-4 border-t pt-4">
+                <div className="flex items-center space-x-2">
+                  <Checkbox
+                    id="slack-autoreply-enabled"
+                    checked={draft?.slack?.autoreply_enabled ?? false}
+                    onCheckedChange={(checked: boolean) =>
+                      updateDraft({
+                        slack: {
+                          ...draft!.slack,
+                          autoreply_enabled: checked,
+                        },
+                      })
+                    }
+                  />
+                  <div className="space-y-0.5">
+                    <Label htmlFor="slack-autoreply-enabled" className="cursor-pointer">
+                      {t('settings.platforms.slack.autoreply.enabled.label')}
+                    </Label>
+                    <p className="text-sm text-muted-foreground">
+                      {t('settings.platforms.slack.autoreply.enabled.helper')}
+                    </p>
+                  </div>
+                </div>
+
+                {draft?.slack?.autoreply_enabled && (
+                  <>
+                    <div className="space-y-2">
+                      <Label htmlFor="slack-autoreply-tone">
+                        {t('settings.platforms.slack.autoreply.tone.label')}
+                      </Label>
+                      <Input
+                        id="slack-autoreply-tone"
+                        type="text"
+                        placeholder={t('settings.platforms.slack.autoreply.tone.placeholder')}
+                        value={draft?.slack?.autoreply_tone || ''}
+                        onChange={(e) =>
+                          updateDraft({
+                            slack: {
+                              ...draft!.slack,
+                              autoreply_tone: e.target.value || null,
+                            },
+                          })
+                        }
+                      />
+                      <p className="text-sm text-muted-foreground">
+                        {t('settings.platforms.slack.autoreply.tone.helper')}
+                      </p>
+                    </div>
+
+                    <div className="space-y-3">
+                      <Label className="text-base">
+                        {t('settings.platforms.slack.autoreply.scope.label')}
+                      </Label>
+                      
+                      <div className="flex items-center space-x-2">
+                        <Checkbox
+                          id="slack-autoreply-per-message"
+                          checked={draft?.slack?.autoreply_per_message ?? false}
+                          onCheckedChange={(checked: boolean) =>
+                            updateDraft({
+                              slack: {
+                                ...draft!.slack,
+                                autoreply_per_message: checked,
+                              },
+                            })
+                          }
+                        />
+                        <div className="space-y-0.5">
+                          <Label htmlFor="slack-autoreply-per-message" className="cursor-pointer font-normal">
+                            {t('settings.platforms.slack.autoreply.perMessage.label')}
+                          </Label>
+                          <p className="text-sm text-muted-foreground">
+                            {t('settings.platforms.slack.autoreply.perMessage.helper')}
+                          </p>
+                        </div>
+                      </div>
+
+                      <div className="flex items-center space-x-2">
+                        <Checkbox
+                          id="slack-autoreply-per-chat"
+                          checked={draft?.slack?.autoreply_per_chat ?? false}
+                          onCheckedChange={(checked: boolean) =>
+                            updateDraft({
+                              slack: {
+                                ...draft!.slack,
+                                autoreply_per_chat: checked,
+                              },
+                            })
+                          }
+                        />
+                        <div className="space-y-0.5">
+                          <Label htmlFor="slack-autoreply-per-chat" className="cursor-pointer font-normal">
+                            {t('settings.platforms.slack.autoreply.perChat.label')}
+                          </Label>
+                          <p className="text-sm text-muted-foreground">
+                            {t('settings.platforms.slack.autoreply.perChat.helper')}
+                          </p>
+                        </div>
+                      </div>
+
+                      <div className="flex items-center space-x-2">
+                        <Checkbox
+                          id="slack-autoreply-dm-only"
+                          checked={draft?.slack?.autoreply_dm_only ?? false}
+                          onCheckedChange={(checked: boolean) =>
+                            updateDraft({
+                              slack: {
+                                ...draft!.slack,
+                                autoreply_dm_only: checked,
+                              },
+                            })
+                          }
+                        />
+                        <div className="space-y-0.5">
+                          <Label htmlFor="slack-autoreply-dm-only" className="cursor-pointer font-normal">
+                            {t('settings.platforms.slack.autoreply.dmOnly.label')}
+                          </Label>
+                          <p className="text-sm text-muted-foreground">
+                            {t('settings.platforms.slack.autoreply.dmOnly.helper')}
+                          </p>
+                        </div>
+                      </div>
+                    </div>
+
+                    <div className="flex items-center space-x-2">
+                      <Checkbox
+                        id="slack-keep-context"
+                        checked={draft?.slack?.keep_context ?? false}
+                        onCheckedChange={(checked: boolean) =>
+                          updateDraft({
+                            slack: {
+                              ...draft!.slack,
+                              keep_context: checked,
+                            },
+                          })
+                        }
+                      />
+                      <div className="space-y-0.5">
+                        <Label htmlFor="slack-keep-context" className="cursor-pointer">
+                          {t('settings.platforms.slack.autoreply.keepContext.label')}
+                        </Label>
+                        <p className="text-sm text-muted-foreground">
+                          {t('settings.platforms.slack.autoreply.keepContext.helper')}
+                        </p>
+                      </div>
+                    </div>
+                  </>
+                )}
+              </div>
+            </>
+          )}
+        </CardContent>
+      </Card>
+
       <div className="sticky bottom-0 z-10 bg-background/80 backdrop-blur-sm border-t py-4">
         <div className="flex items-center justify-between">
           {hasUnsavedChanges ? (

@@ -371,6 +371,95 @@
         "discard": "破棄",
         "confirmSwitch": "未保存の変更があります。本当にプロジェクトを切り替えますか？変更は失われます。"
       }
+    },
+    "platforms": {
+      "title": "プラットフォーム統合",
+      "description": "外部プラットフォームの統合を設定します。",
+      "loading": "プラットフォーム設定を読み込み中...",
+      "loadError": "プラットフォーム設定の読み込みに失敗しました。",
+      "save": {
+        "button": "プラットフォーム設定を保存",
+        "success": "✓ プラットフォーム設定が正常に保存されました！",
+        "error": "プラットフォーム設定の保存に失敗しました",
+        "unsavedChanges": "• 未保存の変更があります",
+        "discard": "破棄"
+      },
+      "jira": {
+        "title": "Jira設定",
+        "description": "課題追跡のためのJira統合を設定します。",
+        "enabled": {
+          "label": "Jira統合を有効にする",
+          "helper": "Jiraに接続して、課題を同期し、タスクを追跡します。"
+        },
+        "baseUrl": {
+          "label": "JiraベースURL",
+          "placeholder": "https://your-domain.atlassian.net",
+          "helper": "JiraインスタンスのURL（例：https://your-domain.atlassian.net）"
+        },
+        "email": {
+          "label": "メールアドレス",
+          "placeholder": "your.email@example.com",
+          "helper": "Jiraアカウントに関連付けられたメールアドレス"
+        },
+        "apiToken": {
+          "label": "APIトークン",
+          "placeholder": "JiraAPIトークンを入力",
+          "helper": "Jiraアカウント設定からAPIトークンを生成してください"
+        },
+        "ticketTemplate": {
+          "label": "チケットテンプレート",
+          "placeholder": "標準チケットのテンプレートを入力",
+          "helper": "Jiraで標準チケットを作成するためのテンプレート。{title}や{description}などのプレースホルダーを使用します。"
+        },
+        "bugTemplate": {
+          "label": "バグテンプレート",
+          "placeholder": "バグレポートのテンプレートを入力",
+          "helper": "Jiraでバグレポートを作成するためのテンプレート。{title}や{description}などのプレースホルダーを使用します。"
+        }
+      },
+      "slack": {
+        "title": "Slack設定",
+        "description": "チームコミュニケーションと自動応答のためのSlack統合を設定します。",
+        "enabled": {
+          "label": "Slack統合を有効にする",
+          "helper": "Slackに接続して通知を受け取り、自動応答を有効にします。"
+        },
+        "botToken": {
+          "label": "ボットトークン",
+          "placeholder": "xoxb-your-bot-token",
+          "helper": "SlackボットユーザーOAuthトークン。Slackアプリの設定から取得してください。"
+        },
+        "autoreply": {
+          "enabled": {
+            "label": "自動応答を有効にする",
+            "helper": "AIを使用してSlackのメッセージに自動的に応答します。"
+          },
+          "tone": {
+            "label": "返信トーン",
+            "placeholder": "例：プロフェッショナル、フレンドリー、簡潔",
+            "helper": "自動応答のトーンを設定します（例：プロフェッショナル、フレンドリー、カジュアル）。"
+          },
+          "scope": {
+            "label": "自動応答スコープ"
+          },
+          "perMessage": {
+            "label": "メッセージごとに有効化",
+            "helper": "個々のメッセージに対して自動応答の有効/無効を許可します。"
+          },
+          "perChat": {
+            "label": "チャットごとに有効化",
+            "helper": "会話全体に対して自動応答の有効/無効を許可します。"
+          },
+          "dmOnly": {
+            "label": "ダイレクトメッセージのみ",
+            "helper": "ダイレクトメッセージ（DM）にのみ自動応答します。"
+          },
+          "keepContext": {
+            "label": "会話のコンテキストを保持",
+            "helper": "文脈に応じた応答のために会話の前のメッセージを記憶します。"
+          }
+        }
+      }
     }
   },
   "integrations": {

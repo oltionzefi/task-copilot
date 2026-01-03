@@ -418,6 +418,49 @@
           "placeholder": "Enter template for bug reports",
           "helper": "Template for creating bug reports in Jira. Use placeholders like {title} and {description}."
         }
+      },
+      "slack": {
+        "title": "Slack Configuration",
+        "description": "Configure Slack integration for team communication and automated responses.",
+        "enabled": {
+          "label": "Enable Slack Integration",
+          "helper": "Connect to Slack to receive notifications and enable automated responses."
+        },
+        "botToken": {
+          "label": "Bot Token",
+          "placeholder": "xoxb-your-bot-token",
+          "helper": "Your Slack Bot User OAuth Token. Get this from your Slack app settings."
+        },
+        "autoreply": {
+          "enabled": {
+            "label": "Enable Auto-Reply",
+            "helper": "Automatically respond to messages in Slack using AI."
+          },
+          "tone": {
+            "label": "Reply Tone",
+            "placeholder": "e.g., professional, friendly, concise",
+            "helper": "Set the tone for automated replies (e.g., professional, friendly, casual)."
+          },
+          "scope": {
+            "label": "Auto-Reply Scope"
+          },
+          "perMessage": {
+            "label": "Enable per message",
+            "helper": "Allow enabling/disabling auto-reply for individual messages."
+          },
+          "perChat": {
+            "label": "Enable per chat",
+            "helper": "Allow enabling/disabling auto-reply for entire conversations."
+          },
+          "dmOnly": {
+            "label": "Direct messages only",
+            "helper": "Only auto-reply to direct messages (DMs)."
+          },
+          "keepContext": {
+            "label": "Keep conversation context",
+            "helper": "Remember previous messages in the conversation for contextual responses."
+          }
+        }
       }
     }
   },

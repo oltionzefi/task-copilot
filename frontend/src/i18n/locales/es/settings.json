@@ -371,6 +371,95 @@
         "discard": "Descartar",
         "confirmSwitch": "Tienes cambios sin guardar. ¿Estás seguro de que quieres cambiar de proyecto? Tus cambios se perderán."
       }
+    },
+    "platforms": {
+      "title": "Integraciones de Plataformas",
+      "description": "Configure integraciones de plataformas externas.",
+      "loading": "Cargando configuración de plataformas...",
+      "loadError": "Error al cargar la configuración de plataformas.",
+      "save": {
+        "button": "Guardar Configuración de Plataformas",
+        "success": "✓ ¡Configuración de plataformas guardada exitosamente!",
+        "error": "Error al guardar la configuración de plataformas",
+        "unsavedChanges": "• Tienes cambios sin guardar",
+        "discard": "Descartar"
+      },
+      "jira": {
+        "title": "Configuración de Jira",
+        "description": "Configure la integración de Jira para seguimiento de incidencias.",
+        "enabled": {
+          "label": "Habilitar Integración de Jira",
+          "helper": "Conéctate a Jira para sincronizar incidencias y rastrear tareas."
+        },
+        "baseUrl": {
+          "label": "URL Base de Jira",
+          "placeholder": "https://tu-dominio.atlassian.net",
+          "helper": "URL de tu instancia de Jira (ej., https://tu-dominio.atlassian.net)"
+        },
+        "email": {
+          "label": "Correo Electrónico",
+          "placeholder": "tu.correo@ejemplo.com",
+          "helper": "La dirección de correo asociada con tu cuenta de Jira"
+        },
+        "apiToken": {
+          "label": "Token de API",
+          "placeholder": "Ingresa tu token de API de Jira",
+          "helper": "Genera un token de API desde la configuración de tu cuenta de Jira"
+        },
+        "ticketTemplate": {
+          "label": "Plantilla de Ticket",
+          "placeholder": "Ingresa plantilla para tickets estándar",
+          "helper": "Plantilla para crear tickets estándar en Jira. Usa marcadores como {title} y {description}."
+        },
+        "bugTemplate": {
+          "label": "Plantilla de Error",
+          "placeholder": "Ingresa plantilla para reportes de errores",
+          "helper": "Plantilla para crear reportes de errores en Jira. Usa marcadores como {title} y {description}."
+        }
+      },
+      "slack": {
+        "title": "Configuración de Slack",
+        "description": "Configure la integración de Slack para comunicación de equipo y respuestas automatizadas.",
+        "enabled": {
+          "label": "Habilitar Integración de Slack",
+          "helper": "Conéctate a Slack para recibir notificaciones y habilitar respuestas automatizadas."
+        },
+        "botToken": {
+          "label": "Token de Bot",
+          "placeholder": "xoxb-tu-token-de-bot",
+          "helper": "Tu Token OAuth de Usuario Bot de Slack. Obtén esto desde la configuración de tu app de Slack."
+        },
+        "autoreply": {
+          "enabled": {
+            "label": "Habilitar Respuesta Automática",
+            "helper": "Responder automáticamente a mensajes en Slack usando IA."
+          },
+          "tone": {
+            "label": "Tono de Respuesta",
+            "placeholder": "ej., profesional, amigable, conciso",
+            "helper": "Establece el tono para las respuestas automatizadas (ej., profesional, amigable, casual)."
+          },
+          "scope": {
+            "label": "Alcance de Respuesta Automática"
+          },
+          "perMessage": {
+            "label": "Habilitar por mensaje",
+            "helper": "Permitir habilitar/deshabilitar respuesta automática para mensajes individuales."
+          },
+          "perChat": {
+            "label": "Habilitar por chat",
+            "helper": "Permitir habilitar/deshabilitar respuesta automática para conversaciones completas."
+          },
+          "dmOnly": {
+            "label": "Solo mensajes directos",
+            "helper": "Solo responder automáticamente a mensajes directos (DMs)."
+          },
+          "keepContext": {
+            "label": "Mantener contexto de conversación",
+            "helper": "Recordar mensajes anteriores en la conversación para respuestas contextuales."
+          }
+        }
+      }
     }
   },
   "integrations": {
