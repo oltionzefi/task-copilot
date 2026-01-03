@@ -203,7 +203,7 @@ export function PreviewPanel() {
                   <li>
                     {t('preview.troubleAlert.item3')}{' '}
                     <a
-                      href="https://github.com/BloopAI/vibe-kanban-web-companion"
+                      href="https://github.com/BloopAI/task-copilot-web-companion"
                       target="_blank"
                       className="underline font-bold"
                     >

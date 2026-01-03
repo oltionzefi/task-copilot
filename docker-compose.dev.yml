@@ -1,7 +1,7 @@
 services:
   sentry-redis:
     image: redis:7-alpine
-    container_name: vibe-kanban-sentry-redis
+    container_name: task-copilot-sentry-redis
     restart: unless-stopped
     volumes:
       - sentry-redis-data:/data
@@ -10,7 +10,7 @@ services:
 
   sentry-postgres:
     image: postgres:16-alpine
-    container_name: vibe-kanban-sentry-postgres
+    container_name: task-copilot-sentry-postgres
     restart: unless-stopped
     environment:
       POSTGRES_USER: sentry
@@ -28,7 +28,7 @@ services:
 
   sentry:
     image: getsentry/sentry:latest
-    container_name: vibe-kanban-sentry
+    container_name: task-copilot-sentry
     restart: unless-stopped
     depends_on:
       sentry-postgres:
@@ -36,7 +36,7 @@ services:
       sentry-redis:
         condition: service_started
     environment:
-      SENTRY_SECRET_KEY: ${SENTRY_SECRET_KEY:-vibe-kanban-local-dev-secret-key-change-in-production}
+      SENTRY_SECRET_KEY: ${SENTRY_SECRET_KEY:-task-copilot-local-dev-secret-key-change-in-production}
       SENTRY_POSTGRES_HOST: sentry-postgres
       SENTRY_POSTGRES_PORT: 5432
       SENTRY_DB_NAME: sentry
@@ -55,17 +55,17 @@ services:
       - sentry-network
     command: >
       sh -c "sentry upgrade --noinput && 
-             sentry createuser --email admin@vibekanban.local --password admin --superuser --no-input || true &&
+             sentry createuser --email admin@taskcopilot.local --password admin --superuser --no-input || true &&
              sentry run web"
 
   sentry-worker:
     image: getsentry/sentry:latest
-    container_name: vibe-kanban-sentry-worker
+    container_name: task-copilot-sentry-worker
     restart: unless-stopped
     depends_on:
       - sentry
     environment:
-      SENTRY_SECRET_KEY: ${SENTRY_SECRET_KEY:-vibe-kanban-local-dev-secret-key-change-in-production}
+      SENTRY_SECRET_KEY: ${SENTRY_SECRET_KEY:-task-copilot-local-dev-secret-key-change-in-production}
       SENTRY_POSTGRES_HOST: sentry-postgres
       SENTRY_POSTGRES_PORT: 5432
       SENTRY_DB_NAME: sentry
@@ -83,12 +83,12 @@ services:
 
   sentry-cron:
     image: getsentry/sentry:latest
-    container_name: vibe-kanban-sentry-cron
+    container_name: task-copilot-sentry-cron
     restart: unless-stopped
     depends_on:
       - sentry
     environment:
-      SENTRY_SECRET_KEY: ${SENTRY_SECRET_KEY:-vibe-kanban-local-dev-secret-key-change-in-production}
+      SENTRY_SECRET_KEY: ${SENTRY_SECRET_KEY:-task-copilot-local-dev-secret-key-change-in-production}
       SENTRY_POSTGRES_HOST: sentry-postgres
       SENTRY_POSTGRES_PORT: 5432
       SENTRY_DB_NAME: sentry

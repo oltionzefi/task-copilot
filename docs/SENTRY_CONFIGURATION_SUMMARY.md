@@ -94,7 +94,7 @@ This interactive wizard will:
 3. **Create Project:**
    - Click "Projects" → "Create Project"
    - Select platform: "JavaScript"
-   - Name: `vibe-kanban-frontend`
+   - Name: `task-copilot-frontend`
    - Copy the DSN
 
 4. **Configure Environment:**
@@ -211,7 +211,7 @@ Use this checklist to verify Sentry is working correctly:
 1. DSN is correctly set in `.env` file
 2. Dev server was restarted after adding DSN
 3. Browser console for any Sentry errors
-4. Sentry worker logs: `docker logs vibe-kanban-sentry-worker`
+4. Sentry worker logs: `docker logs task-copilot-sentry-worker`
 
 ### Issue: Sentry Services Not Starting
 
