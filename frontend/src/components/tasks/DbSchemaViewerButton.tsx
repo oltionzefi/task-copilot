@@ -18,8 +18,8 @@ export function DbSchemaViewerButton({
   size = 'sm',
   className,
 }: DbSchemaViewerButtonProps) {
-  // Only show button for confluence tasks
-  if (task.intent !== 'confluence') {
+  // Only show button for confluence tasks in review status
+  if (task.intent !== 'confluence' || task.status !== 'inreview') {
     return null;
   }
 
