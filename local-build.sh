@@ -16,28 +16,28 @@ cargo build --release --bin mcp_task_server --manifest-path Cargo.toml
 echo "📦 Creating distribution package..."
 
 # Copy the main binary
-cp target/release/server vibe-kanban
-zip -q vibe-kanban.zip vibe-kanban
-rm -f vibe-kanban 
-mv vibe-kanban.zip npx-cli/dist/macos-arm64/vibe-kanban.zip
+cp target/release/server task-copilot
+zip -q task-copilot.zip task-copilot
+rm -f task-copilot 
+mv task-copilot.zip npx-cli/dist/macos-arm64/task-copilot.zip
 
 # Copy the MCP binary
-cp target/release/mcp_task_server vibe-kanban-mcp
-zip -q vibe-kanban-mcp.zip vibe-kanban-mcp
-rm -f vibe-kanban-mcp
-mv vibe-kanban-mcp.zip npx-cli/dist/macos-arm64/vibe-kanban-mcp.zip
+cp target/release/mcp_task_server task-copilot-mcp
+zip -q task-copilot-mcp.zip task-copilot-mcp
+rm -f task-copilot-mcp
+mv task-copilot-mcp.zip npx-cli/dist/macos-arm64/task-copilot-mcp.zip
 
 # Copy the Review CLI binary
-cp target/release/review vibe-kanban-review
-zip -q vibe-kanban-review.zip vibe-kanban-review
-rm -f vibe-kanban-review
-mv vibe-kanban-review.zip npx-cli/dist/macos-arm64/vibe-kanban-review.zip
+cp target/release/review task-copilot-review
+zip -q task-copilot-review.zip task-copilot-review
+rm -f task-copilot-review
+mv task-copilot-review.zip npx-cli/dist/macos-arm64/task-copilot-review.zip
 
 echo "✅ Build complete!"
 echo "📁 Files created:"
-echo "   - npx-cli/dist/macos-arm64/vibe-kanban.zip"
-echo "   - npx-cli/dist/macos-arm64/vibe-kanban-mcp.zip"
-echo "   - npx-cli/dist/macos-arm64/vibe-kanban-review.zip"
+echo "   - npx-cli/dist/macos-arm64/task-copilot.zip"
+echo "   - npx-cli/dist/macos-arm64/task-copilot-mcp.zip"
+echo "   - npx-cli/dist/macos-arm64/task-copilot-review.zip"
 echo ""
 echo "🚀 To test locally, run:"
 echo "   cd npx-cli && node bin/cli.js"

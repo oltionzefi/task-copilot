@@ -1,6 +1,6 @@
 # Jira Integration Module
 
-The Jira integration module provides a Rust client for connecting to Atlassian Jira using API tokens. This allows users to interact with Jira projects, issues, and workflows programmatically.
+The Jira integration module provides a Rust client for connecting to Atlassian Jira using API tokens. This allows Task Copilot users to interact with Jira projects, issues, and workflows programmatically.
 
 ## Features
 
@@ -10,6 +10,8 @@ The Jira integration module provides a Rust client for connecting to Atlassian J
 - **Workflow Operations**: Transition issues between statuses
 - **Comments**: Add comments to issues
 - **JQL Support**: Search issues using Jira Query Language
+- **Bidirectional Sync**: Sync tasks between Task Copilot and Jira
+- **Real-time Updates**: Receive notifications when Jira issues change
 
 ## Configuration
 
@@ -129,6 +131,41 @@ The module automatically generates TypeScript types for use in the frontend:
 
 These types are exported via `ts-rs` and can be found in the shared types file after running `pnpm run generate-types`.
 
+## Integration with Task Copilot
+
+When configured in Task Copilot settings, the Jira integration enables:
+
+1. **Automatic Issue Creation**: Create Jira issues directly from Task Copilot tasks
+2. **Status Synchronization**: Keep task status in sync with Jira workflow states
+3. **Comment Threading**: Add task updates as Jira comments
+4. **Issue Linking**: Link Task Copilot tasks to existing Jira issues
+
+### Configuration in Task Copilot
+
+Navigate to Settings → Integrations → Jira and provide:
+- Jira Base URL (e.g., `https://your-domain.atlassian.net`)
+- Email address associated with your Jira account
+- API token (create at https://id.atlassian.com/manage-profile/security/api-tokens)
+
+## Communication Integrations
+
+In addition to Jira, Task Copilot supports:
+
+### Slack Integration
+- Send task notifications to Slack channels
+- Real-time updates on code reviews and agent activity
+- Direct message notifications for task assignments
+
+### Microsoft Teams Integration
+- Channel notifications for task status changes
+- Mention team members for reviews
+- Integration with Teams workflows
+
+### Outlook Integration
+- Email notifications for task completion
+- Calendar integration for task deadlines
+- Review request emails with direct links
+
 ## Security Considerations
 
 - API tokens are sensitive credentials and should never be committed to version control
@@ -154,3 +191,6 @@ Potential future additions:
 - Bulk operations
 - Webhooks integration
 - Rate limiting and retry logic improvements
+- Enhanced Slack/Teams bot commands
+- Two-way sync with calendar applications
+- Custom notification rules and filters

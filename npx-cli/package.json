@@ -1,15 +1,15 @@
 {
-  "name": "vibe-kanban",
+  "name": "task-copilot",
   "private": false,
   "version": "0.0.143",
   "main": "index.js",
   "bin": {
-    "vibe-kanban": "bin/cli.js"
+    "task-copilot": "bin/cli.js"
   },
   "keywords": [],
   "author": "bloop",
   "license": "",
-  "description": "NPX wrapper around vibe-kanban and vibe-kanban-mcp",
+  "description": "NPX wrapper around task-copilot and task-copilot-mcp",
   "dependencies": {
     "adm-zip": "^0.5.16"
   },
