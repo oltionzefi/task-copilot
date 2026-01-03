@@ -2,7 +2,7 @@
 
 ## Overview
 
-The Jira Intent Task feature provides an intelligent workflow for creating well-structured Jira tickets from task descriptions. It follows best practices for different issue types and generates professional, comprehensive ticket templates.
+The Jira Intent Task feature provides an intelligent workflow for creating well-structured Jira tickets from task descriptions. It generates professional ticket templates with descriptions, acceptance criteria, and documentation text—**no code is generated or read**, only descriptive content for Jira tickets. The feature follows best practices for different issue types.
 
 ## Features
 
@@ -30,7 +30,7 @@ The dialog provides contextual best practices based on the selected issue type:
 - Testable acceptance criteria
 
 ### 3. **Template Generation**
-Automatically generates structured templates with three main sections:
+Automatically generates structured templates with descriptive text and documentation only. **No code is generated—only descriptions, acceptance criteria, and additional information text** suitable for Jira tickets:
 
 #### For Bugs:
 - **Description**: Summary, steps to reproduce, expected/actual behavior, environment
@@ -150,11 +150,12 @@ interface JiraTicketTemplate {
 ## Design Principles
 
 1. **No Code Reading**: The feature does not read project code files
-2. **No Code Generation**: Does not generate code for the project
-3. **Template-Based**: Uses predefined templates for consistency
-4. **Fallback Support**: Defaults to standard template if custom templates unavailable
-5. **Memory Safety**: Clears all stored content upon approval or cancellation
-6. **User Control**: Allows full revision and editing capabilities
+2. **No Code Generation**: Does not generate code - only creates descriptive documentation text
+3. **Description & Text Only**: Generates Jira ticket descriptions, acceptance criteria, and documentation
+4. **Template-Based**: Uses predefined templates for consistency
+5. **Fallback Support**: Defaults to standard template if custom templates unavailable
+6. **Memory Safety**: Clears all stored content upon approval or cancellation
+7. **User Control**: Allows full revision and editing capabilities
 
 ## Best Practices for Usage
 

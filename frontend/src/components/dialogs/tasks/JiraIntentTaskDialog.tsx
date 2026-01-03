@@ -141,7 +141,7 @@ The system should function correctly without errors.
           acceptanceCriteria: `- [ ] Bug can no longer be reproduced
 - [ ] Regression tests pass
 - [ ] No new issues introduced
-- [ ] Code review completed`,
+- [ ] Implementation review completed`,
           additionalInformation: `**Priority Justification**
 [Explain impact on users and business]
 
@@ -187,14 +187,14 @@ ${taskDescription}
 **Context**
 This task addresses [problem or need] by [approach or solution].
 
-**Implementation Details**
+**Key Actions Required**
 - [Key step or component 1]
 - [Key step or component 2]
 - [Key step or component 3]`,
           acceptanceCriteria: `- [ ] Primary objective completed
 - [ ] All tests passing
 - [ ] Documentation updated
-- [ ] Code reviewed and approved
+- [ ] Implementation reviewed and approved
 - [ ] No breaking changes introduced`,
           additionalInformation: `**Technical Requirements**
 - [Requirement 1]

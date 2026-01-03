@@ -170,9 +170,9 @@ The component is designed to be easily extended with:
 ✅ Checks/displays best practices  
 ✅ Uses templates (Bug, Task, Story)  
 ✅ Provides default template fallback  
-✅ Does not read project code  
-✅ Does not generate code  
-✅ Generates Jira-appropriate descriptions  
+✅ **Does not read project code**  
+✅ **Does not generate code - only descriptions and text**  
+✅ Generates Jira-appropriate descriptions and documentation  
 ✅ Moves to review when template filled  
 ✅ Provides view of generated content  
 ✅ Stores content in memory for revision  
