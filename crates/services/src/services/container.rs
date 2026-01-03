@@ -413,6 +413,7 @@ pub trait ContainerService {
                                 } else {
                                     project.default_agent_working_dir.clone()
                                 },
+                                portfolio_id: project.portfolio_id,
                             },
                         )
                         .await?;
