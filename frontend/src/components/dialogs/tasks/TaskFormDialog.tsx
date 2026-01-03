@@ -47,6 +47,7 @@ import { useHotkeysContext } from 'react-hotkeys-hook';
 import { cn } from '@/lib/utils';
 import type {
   TaskStatus,
+  TaskIntent,
   ExecutorProfileId,
   ImageResponse,
 } from 'shared/types';
@@ -57,6 +58,7 @@ interface Task {
   title: string;
   description: string | null;
   status: TaskStatus;
+  intent: TaskIntent;
   created_at: string;
   updated_at: string;
 }
@@ -78,6 +80,7 @@ type TaskFormValues = {
   title: string;
   description: string;
   status: TaskStatus;
+  intent: TaskIntent;
   executorProfileId: ExecutorProfileId | null;
   repoBranches: RepoBranch[];
   autoStart: boolean;
@@ -133,6 +136,7 @@ const TaskFormDialogImpl = NiceModal.create<TaskFormDialogProps>((props) => {
           title: props.task.title,
           description: props.task.description || '',
           status: props.task.status,
+          intent: props.task.intent || 'code',
           executorProfileId: baseProfile,
           repoBranches: defaultRepoBranches,
           autoStart: false,
@@ -143,6 +147,7 @@ const TaskFormDialogImpl = NiceModal.create<TaskFormDialogProps>((props) => {
           title: props.initialTask.title,
           description: props.initialTask.description || '',
           status: 'todo',
+          intent: props.initialTask.intent || 'code',
           executorProfileId: baseProfile,
           repoBranches: defaultRepoBranches,
           autoStart: true,
@@ -155,6 +160,7 @@ const TaskFormDialogImpl = NiceModal.create<TaskFormDialogProps>((props) => {
           title: '',
           description: '',
           status: 'todo',
+          intent: 'code',
           executorProfileId: baseProfile,
           repoBranches: defaultRepoBranches,
           autoStart: true,
@@ -172,6 +178,7 @@ const TaskFormDialogImpl = NiceModal.create<TaskFormDialogProps>((props) => {
             title: value.title,
             description: value.description,
             status: value.status,
+            intent: value.intent,
             parent_workspace_id: null,
             image_ids: images.length > 0 ? images.map((img) => img.id) : null,
           },
@@ -186,6 +193,7 @@ const TaskFormDialogImpl = NiceModal.create<TaskFormDialogProps>((props) => {
         title: value.title,
         description: value.description,
         status: null,
+        intent: value.intent,
         parent_workspace_id:
           mode === 'subtask' ? props.parentTaskAttemptId : null,
         image_ids: imageIds,
@@ -458,6 +466,38 @@ const TaskFormDialogImpl = NiceModal.create<TaskFormDialogProps>((props) => {
                 />
               )}
             </form.Field>
+            
+            {/* Intent selector */}
+            {!editMode && (
+              <form.Field name="intent">
+                {(field) => (
+                  <div className="space-y-2 pt-4">
+                    <Label
+                      htmlFor="task-intent"
+                      className="text-sm font-medium"
+                    >
+                      Intent
+                    </Label>
+                    <Select
+                      value={field.state.value}
+                      onValueChange={(value) =>
+                        field.handleChange(value as TaskIntent)
+                      }
+                      disabled={isSubmitting}
+                    >
+                      <SelectTrigger id="task-intent">
+                        <SelectValue />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="code">Code - Start code for the project</SelectItem>
+                        <SelectItem value="jira">Jira - Create tickets with description to create in Jira</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+                )}
+              </form.Field>
+            )}
+
             {/* Edit mode status */}
             {editMode && (
               <form.Field name="status">
