@@ -287,7 +287,7 @@ fn branches_match(target: &str, session_branch: &str) -> bool {
         return true;
     }
 
-    // Check if the slug portions match (e.g., "feature-auth" matches "vk/feature-auth")
+    // Check if the slug portions match (e.g., "feature-auth" matches "feature/feature-auth")
     let target_slug = extract_branch_slug(&target_normalized);
     let session_slug = extract_branch_slug(&session_normalized);
 
@@ -488,8 +488,8 @@ mod tests {
 
         // Regression tests: substring matches should NOT match
         // (these were incorrectly matching before the fix)
-        assert!(!branches_match("vk/d13f-remove-compare-c", "c"));
-        assert!(!branches_match("vk/d13f-remove-compare-c", "compare"));
+        assert!(!branches_match("feature/d13f-remove-compare-c", "c"));
+        assert!(!branches_match("feature/d13f-remove-compare-c", "compare"));
         assert!(!branches_match("feature-auth", "auth"));
         assert!(!branches_match("feature-auth", "feature"));
     }
@@ -498,7 +498,7 @@ mod tests {
     fn test_normalize_branch() {
         assert_eq!(normalize_branch("refs/heads/main"), "main");
         assert_eq!(normalize_branch("Feature-Auth"), "feature-auth");
-        assert_eq!(normalize_branch("vk/feature-auth"), "vk/feature-auth");
+        assert_eq!(normalize_branch("feature/feature-auth"), "feature/feature-auth");
     }
 
     #[test]
