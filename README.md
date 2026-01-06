@@ -8,19 +8,6 @@
   </a>
 </p>
 
-<p align="center">Get 10X more out of Claude Code, Gemini CLI, Codex, Amp and other coding agents...</p>
-<p align="center">
-  <a href="https://www.npmjs.com/package/task-copilot"><img alt="npm" src="https://img.shields.io/npm/v/task-copilot?style=flat-square" /></a>
-  <a href="https://github.com/BloopAI/task-copilot/blob/main/.github/workflows/publish.yml"><img alt="Build status" src="https://img.shields.io/github/actions/workflow/status/BloopAI/task-copilot/.github%2Fworkflows%2Fpublish.yml" /></a>
-  <a href="https://deepwiki.com/BloopAI/task-copilot"><img src="https://deepwiki.com/badge.svg" alt="Ask DeepWiki"></a>
-</p>
-
-<h1 align="center">
-  <a href="https://jobs.polymer.co/task-copilot?source=github"><strong>We're hiring!</strong></a>
-</h1>
-
-![](frontend/public/task-copilot-screenshot-overview.png)
-
 ## Overview
 
 AI coding agents are increasingly writing the world's code and human engineers now spend the majority of their time planning, reviewing, and orchestrating tasks. Task Copilot streamlines this process, enabling you to:
@@ -49,22 +36,6 @@ Task Copilot provides native integrations with popular productivity and communic
 - **Outlook**: Email notifications for task completion and review requests
 
 These integrations allow you to maintain your existing workflows while leveraging AI coding agents.
-
-## Installation
-
-Make sure you have authenticated with your favourite coding agent. A full list of supported coding agents can be found in the [docs](https://taskcopilot.com/docs). Then in your terminal run:
-
-```bash
-npx task-copilot
-```
-
-## Documentation
-
-Please head to the [website](https://taskcopilot.com/docs) for the latest documentation and user guides.
-
-## Support
-
-We use [GitHub Discussions](https://github.com/BloopAI/task-copilot/discussions) for feature requests. Please open a discussion to create a feature request. For bugs please open an issue on this repo.
 
 ## Development
 
@@ -101,12 +72,6 @@ To build just the frontend:
 cd frontend
 pnpm build
 ```
-
-### Build from source (macOS)
-
-1. Run `./local-build.sh`
-2. Test with `cd npx-cli && node bin/cli.js`
-
 
 ### Environment Variables
 
@@ -166,25 +131,3 @@ pnpm run sentry:stop    # Stop Sentry services
 pnpm run sentry:status  # Check service status
 pnpm run sentry:logs    # View logs
 ```
-
-**Documentation:**
-- **Quick Start**: [docs/SENTRY_QUICK_START.md](docs/SENTRY_QUICK_START.md)
-- **Frontend Setup & Testing**: [docs/SENTRY_FRONTEND_SETUP.md](docs/SENTRY_FRONTEND_SETUP.md)
-- **Detailed Configuration**: [docs/LOCAL_SENTRY_SETUP.md](docs/LOCAL_SENTRY_SETUP.md)
-
-### Remote Deployment
-
-When running Task Copilot on a remote server (e.g., via systemctl, Docker, or cloud hosting), you can configure your editor to open projects via SSH:
-
-1. **Access via tunnel**: Use Cloudflare Tunnel, ngrok, or similar to expose the web UI
-2. **Configure remote SSH** in Settings → Editor Integration:
-   - Set **Remote SSH Host** to your server hostname or IP
-   - Set **Remote SSH User** to your SSH username (optional)
-3. **Prerequisites**:
-   - SSH access from your local machine to the remote server
-   - SSH keys configured (passwordless authentication)
-   - VSCode Remote-SSH extension
-
-When configured, the "Open in VSCode" buttons will generate URLs like `vscode://vscode-remote/ssh-remote+user@host/path` that open your local editor and connect to the remote server.
-
-See the [documentation](https://taskcopilot.com/docs/configuration-customisation/global-settings#remote-ssh-configuration) for detailed setup instructions.

@@ -130,7 +130,6 @@ show_help() {
     echo "  3. Create a project and copy the DSN"
     echo "  4. Set SENTRY_DSN and VITE_SENTRY_DSN in your .env file"
     echo ""
-    echo "See docs/LOCAL_SENTRY_SETUP.md for detailed documentation."
 }
 
 # Main command handler

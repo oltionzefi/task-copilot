@@ -9,7 +9,6 @@
 - `assets/`, `dev_assets_seed/`, `dev_assets/`: Packaged and local dev assets.
 - `npx-cli/`: Files published to the npm CLI package.
 - `scripts/`: Dev helpers (ports, DB preparation).
-- `docs/`: Documentation files.
 
 ## Managing Shared Types Between Rust and TypeScript
 
