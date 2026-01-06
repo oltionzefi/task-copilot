@@ -291,28 +291,16 @@ export function FAQ() {
         {/* Help Footer */}
         <div className="mt-12 p-6 bg-muted rounded-lg">
           <h3 className="font-semibold mb-2">Still have questions?</h3>
-          <p className="text-sm text-muted-foreground mb-4">
-            Visit our documentation for detailed guides, or reach out to the
-            community for support.
+          <p className="text-sm text-muted-foreground">
+            Have a question or need assistance? Feel free to reach out to us at{' '}
+            <a
+              href="mailto:contact@oltionzefi.com"
+              className="text-primary hover:underline font-medium"
+            >
+              contact@oltionzefi.com
+            </a>{' '}
+            with your question topic and a brief description.
           </p>
-          <div className="flex gap-3">
-            <a
-              href="https://taskcopilot.com/docs"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="px-4 py-2 bg-primary text-primary-foreground rounded-md text-sm font-medium hover:bg-primary/90 transition-colors"
-            >
-              View Documentation
-            </a>
-            <a
-              href="https://github.com/BloopAI/task-copilot/discussions"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="px-4 py-2 bg-secondary text-secondary-foreground rounded-md text-sm font-medium hover:bg-secondary/80 transition-colors"
-            >
-              GitHub Discussions
-            </a>
-          </div>
         </div>
       </div>
     </div>
