@@ -31,6 +31,7 @@ use executors::{
     actions::{
         ExecutorAction, ExecutorActionType,
         coding_agent_initial::CodingAgentInitialRequest,
+        review_agent::ReviewAgentRequest,
         script::{ScriptContext, ScriptRequest, ScriptRequestLanguage},
     },
     executors::{ExecutorError, StandardCodingAgentExecutor},
@@ -129,10 +130,10 @@ pub trait ContainerService {
     /// - Never when a setup script has no next_action (parallel mode)
     /// - The next action is None (no follow-up actions)
     fn should_finalize(&self, ctx: &ExecutionContext) -> bool {
-        // Never finalize DevServer processes
+        // Never finalize DevServer or ReviewAgent processes
         if matches!(
             ctx.execution_process.run_reason,
-            ExecutionProcessRunReason::DevServer
+            ExecutionProcessRunReason::DevServer | ExecutionProcessRunReason::ReviewAgent
         ) {
             return false;
         }
@@ -161,7 +162,7 @@ pub trait ContainerService {
         action.next_action.is_none()
     }
 
-    /// Finalize task execution by updating status to InReview and sending notifications
+    /// Finalize task execution by updating status to InReview, triggering review agent, and sending notifications
     async fn finalize_task(
         &self,
         share_publisher: Option<&SharePublisher>,
@@ -176,6 +177,15 @@ pub trait ContainerService {
                         ?err,
                         "Failed to propagate shared task update for {}",
                         ctx.task.id
+                    );
+                }
+
+                // Trigger automatic review agent
+                if let Err(err) = self.trigger_review_agent(ctx).await {
+                    tracing::warn!(
+                        "Failed to trigger review agent for task {}: {}",
+                        ctx.task.id,
+                        err
                     );
                 }
             }
@@ -208,6 +218,71 @@ pub trait ContainerService {
             }
         };
         self.notification_service().notify(&title, &message).await;
+    }
+
+    /// Trigger automatic review agent when task moves to InReview
+    async fn trigger_review_agent(&self, ctx: &ExecutionContext) -> Result<(), ContainerError> {
+        // Only trigger for coding agent executions that completed
+        if !matches!(
+            ctx.execution_process.run_reason,
+            ExecutionProcessRunReason::CodingAgent
+        ) {
+            return Ok(());
+        }
+
+        // Use the same executor profile as the coding agent
+        let action = ctx.execution_process.executor_action()?;
+        let executor_profile_id = match action.typ() {
+            ExecutorActionType::CodingAgentInitialRequest(req) => req.executor_profile_id.clone(),
+            ExecutorActionType::CodingAgentFollowUpRequest(req) => {
+                req.executor_profile_id.clone()
+            }
+            _ => {
+                // Fallback to default if not a coding agent action
+                return Ok(());
+            }
+        };
+
+        // Create review agent request
+        let review_request = ReviewAgentRequest::new(
+            executor_profile_id,
+            ctx.task.to_prompt(),
+            None, // Use workspace root
+        );
+
+        let review_action = ExecutorAction::new(
+            ExecutorActionType::ReviewAgentRequest(review_request),
+            None, // No next action
+        );
+
+        // Start review execution
+        tracing::info!(
+            "Triggering automatic review agent for task {} (workspace {})",
+            ctx.task.id,
+            ctx.workspace.id
+        );
+
+        match self
+            .start_execution(
+                &ctx.workspace,
+                &ctx.session,
+                &review_action,
+                &ExecutionProcessRunReason::ReviewAgent,
+            )
+            .await
+        {
+            Ok(_) => {
+                tracing::info!(
+                    "Review agent started successfully for task {}",
+                    ctx.task.id
+                );
+                Ok(())
+            }
+            Err(e) => {
+                tracing::error!("Failed to start review agent: {}", e);
+                Err(e)
+            }
+        }
     }
 
     /// Cleanup executions marked as running in the db, call at startup
@@ -546,6 +621,7 @@ pub trait ContainerService {
                     // Skip dev server processes unless explicitly included
                     if !include_dev_server
                         && process.run_reason == ExecutionProcessRunReason::DevServer
+                        || process.run_reason == ExecutionProcessRunReason::ReviewAgent
                     {
                         continue;
                     }
@@ -995,6 +1071,7 @@ pub trait ContainerService {
             .ok_or(SqlxError::RowNotFound)?;
         if task.status != TaskStatus::InProgress
             && run_reason != &ExecutionProcessRunReason::DevServer
+            && run_reason != &ExecutionProcessRunReason::ReviewAgent
         {
             Task::update_status(&self.db().pool, task.id, TaskStatus::InProgress).await?;
 
@@ -1183,6 +1260,11 @@ pub trait ContainerService {
                 ExecutorActionType::CodingAgentFollowUpRequest(_)
                 | ExecutorActionType::CodingAgentInitialRequest(_),
             ) => ExecutionProcessRunReason::CodingAgent,
+            // Review agents should never be chained
+            (ExecutorActionType::ReviewAgentRequest(_), _) | (_, ExecutorActionType::ReviewAgentRequest(_)) => {
+                tracing::warn!("Review agents cannot be chained as next actions, skipping");
+                return Ok(());
+            }
         };
 
         self.start_execution(&ctx.workspace, &ctx.session, next_action, &next_run_reason)
