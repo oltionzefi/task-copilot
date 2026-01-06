@@ -23,6 +23,8 @@ import { ReassignDialog } from '@/components/dialogs/tasks/ReassignDialog';
 import { StopShareTaskDialog } from '@/components/dialogs/tasks/StopShareTaskDialog';
 import { useProject } from '@/contexts/ProjectContext';
 import { openTaskForm } from '@/lib/openTaskForm';
+import { tasksApi } from '@/lib/api';
+import { useState } from 'react';
 
 import { useNavigate } from 'react-router-dom';
 import type { SharedTaskRecord } from '@/hooks/useProjectTasks';
@@ -44,11 +46,13 @@ export function ActionsDropdown({
   const openInEditor = useOpenInEditor(attempt?.id);
   const navigate = useNavigate();
   const { userId, isSignedIn } = useAuth();
+  const [isReviewTriggering, setIsReviewTriggering] = useState(false);
 
   const hasAttemptActions = Boolean(attempt);
   const hasTaskActions = Boolean(task);
   const isShared = Boolean(sharedTask);
   const canEditShared = (!isShared && !task?.shared_task_id) || isSignedIn;
+  const isInReview = task?.status === 'inreview';
 
   const handleEdit = (e: React.MouseEvent) => {
     e.stopPropagation();
@@ -158,6 +162,20 @@ export function ActionsDropdown({
     StopShareTaskDialog.show({ sharedTask });
   };
 
+  const handleTriggerReview = async (e: React.MouseEvent) => {
+    e.stopPropagation();
+    if (!task?.id || isReviewTriggering) return;
+    
+    setIsReviewTriggering(true);
+    try {
+      await tasksApi.triggerReview(task.id);
+    } catch (error) {
+      console.error('Failed to trigger review:', error);
+    } finally {
+      setIsReviewTriggering(false);
+    }
+  };
+
   const canReassign =
     Boolean(task) &&
     Boolean(sharedTask) &&
@@ -229,6 +247,17 @@ export function ActionsDropdown({
           {hasTaskActions && (
             <>
               <DropdownMenuLabel>{t('actionsMenu.task')}</DropdownMenuLabel>
+              {isInReview && (
+                <DropdownMenuItem
+                  disabled={!task?.id || isReviewTriggering}
+                  onClick={handleTriggerReview}
+                >
+                  {isReviewTriggering 
+                    ? t('actionsMenu.triggeringReview', { defaultValue: 'Triggering Review...' })
+                    : t('actionsMenu.triggerReview', { defaultValue: 'Trigger Agentic Review' })
+                  }
+                </DropdownMenuItem>
+              )}
               <DropdownMenuItem
                 disabled={!task || isShared}
                 onClick={handleShare}
