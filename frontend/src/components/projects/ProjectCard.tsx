@@ -31,6 +31,7 @@ import { useProjectMutations } from '@/hooks/useProjectMutations';
 import { useQuery } from '@tanstack/react-query';
 import { portfoliosApi } from '@/lib/api';
 import { getPortfolioThemeStyles } from '@/constants/portfolioThemes';
+import { LinkPortfolioDialog } from '@/components/dialogs/projects/LinkPortfolioDialog';
 
 type Props = {
   project: Project;
@@ -107,6 +108,19 @@ function ProjectCard({ project, isFocused, setError, onEdit }: Props) {
     }
   };
 
+  const handleLinkPortfolio = async (e: React.MouseEvent) => {
+    e.stopPropagation();
+    try {
+      await LinkPortfolioDialog.show({
+        projectId: project.id,
+        projectName: project.name,
+        currentPortfolioId: project.portfolio_id,
+      });
+    } catch (error) {
+      // User cancelled - do nothing
+    }
+  };
+
   return (
     <Card
       className={`hover:shadow-md transition-shadow cursor-pointer focus:ring-2 focus:ring-primary outline-none border-l-4 ${
@@ -174,17 +188,10 @@ function ProjectCard({ project, isFocused, setError, onEdit }: Props) {
                     {t('unlinkFromOrganization')}
                   </DropdownMenuItem>
                 )}
-                {project.portfolio_id && (
-                  <DropdownMenuItem
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      navigate('/settings/portfolios');
-                    }}
-                  >
-                    <Briefcase className="mr-2 h-4 w-4" />
-                    {t('linkToPortfolio')}
-                  </DropdownMenuItem>
-                )}
+                <DropdownMenuItem onClick={handleLinkPortfolio}>
+                  <Briefcase className="mr-2 h-4 w-4" />
+                  {t('linkToPortfolio')}
+                </DropdownMenuItem>
                 <DropdownMenuItem
                   onClick={(e) => {
                     e.stopPropagation();

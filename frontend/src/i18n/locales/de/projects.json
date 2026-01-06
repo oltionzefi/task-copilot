@@ -46,6 +46,26 @@
   },
   "unlinkFromOrganization": "Unlink from Remote Project",
   "linkToPortfolio": "Link to Portfolio",
+  "portfolioDialog": {
+    "title": "Link Project to Portfolio",
+    "description": "Select a portfolio to organize this project. Projects in portfolios can be easily filtered and managed.",
+    "projectLabel": "Project",
+    "currentPortfolio": "Currently Linked Portfolio",
+    "changePortfolio": "Change Portfolio",
+    "selectPortfolio": "Select Portfolio",
+    "selectPortfolioPlaceholder": "Choose a portfolio",
+    "loadingPortfolios": "Loading portfolios...",
+    "noPortfolios": "No portfolios available. Create a portfolio first in Settings.",
+    "linking": "Linking...",
+    "unlinking": "Unlinking...",
+    "linkButton": "Link to Portfolio",
+    "unlinkButton": "Unlink Portfolio",
+    "errors": {
+      "selectPortfolio": "Please select a portfolio",
+      "linkFailed": "Failed to link project to portfolio",
+      "unlinkFailed": "Failed to unlink project from portfolio"
+    }
+  },
   "projectNotFound": "The project you're looking for doesn't exist or has been deleted.",
   "viewProject": "View Project",
   "openInIDE": "Open in IDE",

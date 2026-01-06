@@ -46,6 +46,26 @@
   },
   "unlinkFromOrganization": "Desvincular de Proyecto Remoto",
   "linkToPortfolio": "Enlace al Portafolio",
+  "portfolioDialog": {
+    "title": "Vincular Proyecto a Portafolio",
+    "description": "Selecciona un portafolio para organizar este proyecto. Los proyectos en portafolios se pueden filtrar y gestionar fácilmente.",
+    "projectLabel": "Proyecto",
+    "currentPortfolio": "Portafolio Vinculado Actualmente",
+    "changePortfolio": "Cambiar Portafolio",
+    "selectPortfolio": "Seleccionar Portafolio",
+    "selectPortfolioPlaceholder": "Elige un portafolio",
+    "loadingPortfolios": "Cargando portafolios...",
+    "noPortfolios": "No hay portafolios disponibles. Crea un portafolio primero en Configuración.",
+    "linking": "Vinculando...",
+    "unlinking": "Desvinculando...",
+    "linkButton": "Vincular a Portafolio",
+    "unlinkButton": "Desvincular Portafolio",
+    "errors": {
+      "selectPortfolio": "Por favor selecciona un portafolio",
+      "linkFailed": "Error al vincular el proyecto al portafolio",
+      "unlinkFailed": "Error al desvincular el proyecto del portafolio"
+    }
+  },
   "projectNotFound": "El proyecto que buscas no existe o ha sido eliminado.",
   "viewProject": "Ver Proyecto",
   "openInIDE": "Abrir en IDE",
