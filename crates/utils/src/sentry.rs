@@ -36,12 +36,18 @@ pub fn init_once(source: SentrySource) {
         return;
     }
 
+    let traces_sample_rate = std::env::var("SENTRY_TRACES_SAMPLE_RATE")
+        .ok()
+        .and_then(|s| s.parse::<f32>().ok())
+        .unwrap_or(1.0);
+
     INIT_GUARD.get_or_init(|| {
         sentry::init((
             sentry_dsn,
             sentry::ClientOptions {
                 release: sentry::release_name!(),
                 environment: Some(environment().into()),
+                traces_sample_rate,
                 ..Default::default()
             },
         ))

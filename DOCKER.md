@@ -71,6 +71,9 @@ The Docker setup includes a complete Sentry stack for error tracking and monitor
    ```bash
    SENTRY_DSN=http://abc123@localhost:9000/1
    VITE_SENTRY_DSN=http://abc123@localhost:9000/1
+   
+   # Optional: Adjust trace sampling rate (0.0 to 1.0, defaults to 1.0)
+   SENTRY_TRACES_SAMPLE_RATE=1.0
    ```
 4. Restart the application: `pnpm run docker:restart`
 

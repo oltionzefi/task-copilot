@@ -129,6 +129,7 @@ The following environment variables can be configured at build time or runtime:
 | `HOST` | Runtime | `127.0.0.1` | Backend server host |
 | `SENTRY_DSN` | Runtime | Empty | Sentry DSN for backend error tracking (disables Sentry if empty) |
 | `VITE_SENTRY_DSN` | Build/Runtime | Empty | Sentry DSN for frontend error tracking (disables Sentry if empty) |
+| `SENTRY_TRACES_SAMPLE_RATE` | Runtime | `1.0` | Backend trace sampling rate (0.0 to 1.0) |
 | `DISABLE_WORKTREE_ORPHAN_CLEANUP` | Runtime | Not set | Disable git worktree cleanup (for debugging) |
 
 **Build-time variables** must be set when running `pnpm run build`. **Runtime variables** are read when the application starts.

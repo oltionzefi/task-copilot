@@ -17,22 +17,37 @@ import {
   matchRoutes,
 } from 'react-router-dom';
 
-Sentry.init({
-  dsn: import.meta.env.VITE_SENTRY_DSN || '',
-  enabled: false, // Temporarily disabled
-  tracesSampleRate: 1.0,
-  environment: import.meta.env.MODE === 'development' ? 'dev' : 'production',
-  integrations: [
-    Sentry.reactRouterV6BrowserTracingIntegration({
-      useEffect: React.useEffect,
-      useLocation,
-      useNavigationType,
-      createRoutesFromChildren,
-      matchRoutes,
-    }),
-  ],
-});
-Sentry.setTag('source', 'frontend');
+const sentryDsn = import.meta.env.VITE_SENTRY_DSN || '';
+const isSentryEnabled = Boolean(sentryDsn);
+
+try {
+  Sentry.init({
+    dsn: sentryDsn,
+    enabled: isSentryEnabled,
+    tracesSampleRate: 1.0,
+    environment: import.meta.env.MODE === 'development' ? 'dev' : 'production',
+    integrations: [
+      Sentry.reactRouterV6BrowserTracingIntegration({
+        useEffect: React.useEffect,
+        useLocation,
+        useNavigationType,
+        createRoutesFromChildren,
+        matchRoutes,
+      }),
+    ],
+    beforeSend(event) {
+      // If Sentry API has issues, fail gracefully
+      return event;
+    },
+  });
+  
+  if (isSentryEnabled) {
+    Sentry.setTag('source', 'frontend');
+  }
+} catch (error) {
+  // Fail silently if Sentry initialization fails
+  console.warn('Sentry initialization failed:', error);
+}
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -48,7 +63,11 @@ ReactDOM.createRoot(document.getElementById('root')!).render(
     <QueryClientProvider client={queryClient}>
       <Sentry.ErrorBoundary
         fallback={<p>{i18n.t('common:states.error')}</p>}
-        showDialog
+        showDialog={isSentryEnabled}
+        onError={(error) => {
+          // Log to console if Sentry fails
+          console.error('Error caught by boundary:', error);
+        }}
       >
         <ClickToComponent />
         <VibeKanbanWebCompanion />
