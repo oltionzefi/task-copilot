@@ -55,7 +55,7 @@ start_sentry() {
     print_header "Starting Local Sentry Services"
     
     echo "Starting containers..."
-    docker compose -f docker-compose.dev.yml up -d
+    docker compose up -d
     
     print_success "Sentry services started!"
     echo ""
@@ -77,20 +77,20 @@ start_sentry() {
 # Stop Sentry services
 stop_sentry() {
     print_header "Stopping Local Sentry Services"
-    docker compose -f docker-compose.dev.yml down
+    docker compose down
     print_success "Sentry services stopped!"
 }
 
 # Show Sentry logs
 show_logs() {
     print_header "Sentry Logs"
-    docker compose -f docker-compose.dev.yml logs -f
+    docker compose logs -f
 }
 
 # Show status
 show_status() {
     print_header "Sentry Services Status"
-    docker compose -f docker-compose.dev.yml ps
+    docker compose ps
 }
 
 # Reset everything
@@ -106,7 +106,7 @@ reset_sentry() {
     fi
     
     echo "Stopping and removing containers and volumes..."
-    docker compose -f docker-compose.dev.yml down -v
+    docker compose down -v
     print_success "Sentry reset complete!"
 }
 
