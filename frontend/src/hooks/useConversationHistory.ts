@@ -47,8 +47,8 @@ interface UseConversationHistoryParams {
 
 interface UseConversationHistoryResult {}
 
-const MIN_INITIAL_ENTRIES = 10;
-const REMAINING_BATCH_SIZE = 50;
+const MIN_INITIAL_ENTRIES = 20;
+const REMAINING_BATCH_SIZE = 100;
 
 const makeLoadingPatch = (executionProcessId: string): PatchTypeWithKey => ({
   type: 'NORMALIZED_ENTRY',
@@ -139,7 +139,7 @@ export const useConversationHistory = ({
           resolve(allEntries);
         },
         onError: (err) => {
-          console.warn!(
+          console.warn(
             `Error loading entries for historic execution process ${executionProcess.id}`,
             err
           );
@@ -415,6 +415,9 @@ export const useConversationHistory = ({
     []
   );
 
+  const pendingEmitTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const lastEmittedEntriesCountRef = useRef<number>(0);
+
   const emitEntries = useCallback(
     (
       executionProcessState: ExecutionProcessStateStore,
@@ -422,9 +425,46 @@ export const useConversationHistory = ({
       loading: boolean
     ) => {
       const entries = flattenEntriesForEmit(executionProcessState);
+      
+      // Skip emit if entries haven't changed significantly (within 5% or 10 entries)
+      const entriesCount = entries.length;
+      const lastCount = lastEmittedEntriesCountRef.current;
+      const threshold = Math.max(10, Math.floor(lastCount * 0.05));
+      
+      if (
+        addEntryType === 'historic' &&
+        lastCount > 0 &&
+        Math.abs(entriesCount - lastCount) < threshold
+      ) {
+        return;
+      }
+      
+      lastEmittedEntriesCountRef.current = entriesCount;
       onEntriesUpdatedRef.current?.(entries, addEntryType, loading);
     },
     [flattenEntriesForEmit]
+  );
+
+  const emitEntriesDebounced = useCallback(
+    (
+      executionProcessState: ExecutionProcessStateStore,
+      addEntryType: AddEntryType,
+      loading: boolean,
+      delay: number = 0
+    ) => {
+      if (pendingEmitTimeoutRef.current) {
+        clearTimeout(pendingEmitTimeoutRef.current);
+      }
+
+      if (delay === 0) {
+        emitEntries(executionProcessState, addEntryType, loading);
+      } else {
+        pendingEmitTimeoutRef.current = setTimeout(() => {
+          emitEntries(executionProcessState, addEntryType, loading);
+        }, delay);
+      }
+    },
+    [emitEntries]
   );
 
   // This emits its own events as they are streamed
@@ -596,15 +636,31 @@ export const useConversationHistory = ({
       emitEntries(displayedExecutionProcesses.current, 'initial', false);
       loadedInitialEntries.current = true;
 
-      // Then load the remaining in batches
-      while (
-        !cancelled &&
-        (await loadRemainingEntriesInBatches(REMAINING_BATCH_SIZE))
-      ) {
-        if (cancelled) return;
-      }
-      await new Promise((resolve) => setTimeout(resolve, 100));
-      emitEntries(displayedExecutionProcesses.current, 'historic', false);
+      // Then load the remaining in batches asynchronously
+      (async () => {
+        let batchCount = 0;
+        while (
+          !cancelled &&
+          (await loadRemainingEntriesInBatches(REMAINING_BATCH_SIZE))
+        ) {
+          if (cancelled) return;
+          batchCount++;
+          // Emit updates every 3 batches to reduce overhead
+          if (batchCount % 3 === 0) {
+            await new Promise((resolve) => setTimeout(resolve, 50));
+            emitEntriesDebounced(
+              displayedExecutionProcesses.current,
+              'historic',
+              false,
+              200
+            );
+          }
+        }
+        if (!cancelled) {
+          await new Promise((resolve) => setTimeout(resolve, 100));
+          emitEntries(displayedExecutionProcesses.current, 'historic', false);
+        }
+      })();
     })();
     return () => {
       cancelled = true;
@@ -615,6 +671,7 @@ export const useConversationHistory = ({
     loadInitialEntries,
     loadRemainingEntriesInBatches,
     emitEntries,
+    emitEntriesDebounced,
   ]); // include idListKey so new processes trigger reload
 
   useEffect(() => {
@@ -676,6 +733,11 @@ export const useConversationHistory = ({
     displayedExecutionProcesses.current = {};
     loadedInitialEntries.current = false;
     streamingProcessIdsRef.current.clear();
+    lastEmittedEntriesCountRef.current = 0;
+    if (pendingEmitTimeoutRef.current) {
+      clearTimeout(pendingEmitTimeoutRef.current);
+      pendingEmitTimeoutRef.current = null;
+    }
     emitEntries(displayedExecutionProcesses.current, 'initial', true);
   }, [attempt.id, emitEntries]);
 

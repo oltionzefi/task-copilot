@@ -81,20 +81,32 @@ const VirtualizedList = ({ attempt, task }: VirtualizedListProps) => {
     useState<DataWithScrollModifier<PatchTypeWithKey> | null>(null);
   const [loading, setLoading] = useState(true);
   const { entries, setEntries, reset, setAttemptId } = useEntries();
+  const prevEntriesLengthRef = useRef(0);
+  const hasInitializedRef = useRef(false);
 
   useEffect(() => {
     setAttemptId(attempt.id);
     setLoading(true);
     setChannelData(null);
+    hasInitializedRef.current = false;
+    prevEntriesLengthRef.current = 0;
     reset();
   }, [attempt.id, reset, setAttemptId]);
 
   useEffect(() => {
-    if (entries.length > 0 && !channelData) {
+    // Only update if entries actually changed meaningfully
+    if (entries.length > 0 && !hasInitializedRef.current) {
       setChannelData({ data: entries, scrollModifier: InitialDataScrollModifier });
       setLoading(false);
+      hasInitializedRef.current = true;
+      prevEntriesLengthRef.current = entries.length;
+    } else if (
+      hasInitializedRef.current &&
+      entries.length !== prevEntriesLengthRef.current
+    ) {
+      prevEntriesLengthRef.current = entries.length;
     }
-  }, [entries, channelData]);
+  }, [entries]);
 
   const onEntriesUpdated = (
     newEntries: PatchTypeWithKey[],
@@ -107,8 +119,19 @@ const VirtualizedList = ({ attempt, task }: VirtualizedListProps) => {
       scrollModifier = AutoScrollToBottom;
     }
 
-    setChannelData({ data: newEntries, scrollModifier });
-    setEntries(newEntries);
+    // Only update if meaningfully different to avoid excessive re-renders
+    const isDifferent =
+      newEntries.length !== entries.length ||
+      (newEntries.length > 0 &&
+        entries.length > 0 &&
+        newEntries[newEntries.length - 1].patchKey !==
+          entries[entries.length - 1]?.patchKey);
+
+    if (isDifferent || addType === 'initial') {
+      setChannelData({ data: newEntries, scrollModifier });
+      setEntries(newEntries);
+    }
+    
     setLoading(newLoading);
   };
 
