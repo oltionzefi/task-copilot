@@ -505,6 +505,17 @@ executor_profile_id: ExecutorProfileId,
  */
 working_dir: string | null, };
 
+export type ReviewAgentRequest = { prompt: string, 
+/**
+ * Executor profile specification
+ */
+executor_profile_id: ExecutorProfileId, 
+/**
+ * Optional relative path to execute the agent in (relative to container_ref).
+ * If None, uses the container_ref directory directly.
+ */
+working_dir: string | null, };
+
 export type CommandExitStatus = { "type": "exit_code", code: number, } | { "type": "success", success: boolean, };
 
 export type CommandRunResult = { exit_status: CommandExitStatus | null, output: string | null, };

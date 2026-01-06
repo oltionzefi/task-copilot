@@ -213,6 +213,7 @@ fn generate_types_content() -> String {
         executors::executors::AppendPrompt::decl(),
         executors::actions::coding_agent_initial::CodingAgentInitialRequest::decl(),
         executors::actions::coding_agent_follow_up::CodingAgentFollowUpRequest::decl(),
+        executors::actions::review_agent::ReviewAgentRequest::decl(),
         executors::logs::CommandExitStatus::decl(),
         executors::logs::CommandRunResult::decl(),
         executors::logs::NormalizedEntry::decl(),

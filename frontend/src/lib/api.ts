@@ -117,16 +117,82 @@ export class ApiError<E = unknown> extends Error {
   }
 }
 
+// Request manager to handle cancellation of duplicate requests
+class RequestManager {
+  private pendingRequests = new Map<string, AbortController>();
+
+  /**
+   * Cancel any pending request to the same endpoint
+   */
+  cancelPending(key: string): void {
+    const controller = this.pendingRequests.get(key);
+    if (controller) {
+      controller.abort();
+      this.pendingRequests.delete(key);
+    }
+  }
+
+  /**
+   * Register a new request and get its abort controller
+   */
+  register(key: string): AbortController {
+    this.cancelPending(key);
+    const controller = new AbortController();
+    this.pendingRequests.set(key, controller);
+    return controller;
+  }
+
+  /**
+   * Unregister a request (call when it completes)
+   */
+  unregister(key: string): void {
+    this.pendingRequests.delete(key);
+  }
+}
+
+const requestManager = new RequestManager();
+
 const makeRequest = async (url: string, options: RequestInit = {}) => {
   const headers = new Headers(options.headers ?? {});
   if (!headers.has('Content-Type')) {
     headers.set('Content-Type', 'application/json');
   }
 
-  return fetch(url, {
-    ...options,
-    headers,
-  });
+  // Create a request key from method + URL
+  const method = options.method || 'GET';
+  const requestKey = `${method}:${url}`;
+
+  // For POST/PUT/DELETE requests to the same endpoint, cancel previous ones
+  // This prevents duplicate operations like creating multiple Jira tickets
+  if (method === 'POST' || method === 'PUT' || method === 'DELETE') {
+    const controller = requestManager.register(requestKey);
+    options.signal = controller.signal;
+  }
+
+  try {
+    const response = await fetch(url, {
+      ...options,
+      headers,
+    });
+    
+    // Unregister on successful completion
+    if (method === 'POST' || method === 'PUT' || method === 'DELETE') {
+      requestManager.unregister(requestKey);
+    }
+    
+    return response;
+  } catch (error) {
+    // Unregister on error (but don't throw AbortError)
+    if (method === 'POST' || method === 'PUT' || method === 'DELETE') {
+      requestManager.unregister(requestKey);
+    }
+    
+    // Re-throw non-abort errors
+    if (error instanceof Error && error.name === 'AbortError') {
+      throw new ApiError('Request cancelled', 0);
+    }
+    throw error;
+  }
 };
 
 export type Ok<T> = { success: true; data: T };

@@ -150,6 +150,13 @@ const JiraReviewDialogImpl = NiceModal.create<JiraReviewDialogProps>(
         });
         setWorkflowState('success');
       } catch (err) {
+        // Don't show error for cancelled requests
+        if (err instanceof Error && err.message === 'Request cancelled') {
+          console.log('Jira ticket creation was cancelled');
+          setWorkflowState('reviewing');
+          return;
+        }
+        
         setError(
           err instanceof Error ? err.message : 'Failed to create Jira ticket'
         );

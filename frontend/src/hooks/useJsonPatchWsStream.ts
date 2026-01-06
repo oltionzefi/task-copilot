@@ -57,16 +57,24 @@ export const useJsonPatchWsStream = <T extends object>(
   }
 
   useEffect(() => {
+    // Close existing connection if endpoint changes or disabled
+    if (wsRef.current) {
+      const ws = wsRef.current;
+      ws.onopen = null;
+      ws.onmessage = null;
+      ws.onerror = null;
+      ws.onclose = null;
+      ws.close();
+      wsRef.current = null;
+    }
+
+    if (retryTimerRef.current) {
+      window.clearTimeout(retryTimerRef.current);
+      retryTimerRef.current = null;
+    }
+
     if (!enabled || !endpoint) {
-      // Close connection and reset state
-      if (wsRef.current) {
-        wsRef.current.close();
-        wsRef.current = null;
-      }
-      if (retryTimerRef.current) {
-        window.clearTimeout(retryTimerRef.current);
-        retryTimerRef.current = null;
-      }
+      // Reset state when disabled
       retryAttemptsRef.current = 0;
       finishedRef.current = false;
       setData(undefined);
@@ -86,89 +94,94 @@ export const useJsonPatchWsStream = <T extends object>(
       }
     }
 
-    // Create WebSocket if it doesn't exist
-    if (!wsRef.current) {
-      // Reset finished flag for new connection
-      finishedRef.current = false;
+    // Reset finished flag for new connection
+    finishedRef.current = false;
 
-      // Convert HTTP endpoint to WebSocket endpoint
-      const wsEndpoint = endpoint.replace(/^http/, 'ws');
-      const ws = new WebSocket(wsEndpoint);
+    // Convert HTTP endpoint to WebSocket endpoint
+    const wsEndpoint = endpoint.replace(/^http/, 'ws');
+    const ws = new WebSocket(wsEndpoint);
 
-      ws.onopen = () => {
-        setError(null);
-        setIsConnected(true);
-        // Reset backoff on successful connection
-        retryAttemptsRef.current = 0;
-        if (retryTimerRef.current) {
-          window.clearTimeout(retryTimerRef.current);
-          retryTimerRef.current = null;
+    ws.onopen = () => {
+      setError(null);
+      setIsConnected(true);
+      // Reset backoff on successful connection
+      retryAttemptsRef.current = 0;
+      if (retryTimerRef.current) {
+        window.clearTimeout(retryTimerRef.current);
+        retryTimerRef.current = null;
+      }
+    };
+
+    ws.onmessage = (event) => {
+      try {
+        const msg: WsMsg = JSON.parse(event.data);
+
+        // Handle JsonPatch messages (same as SSE json_patch event)
+        if ('JsonPatch' in msg) {
+          const patches: Operation[] = msg.JsonPatch;
+          const filtered = deduplicatePatches
+            ? deduplicatePatches(patches)
+            : patches;
+
+          const current = dataRef.current;
+          if (!filtered.length || !current) return;
+
+          // Deep clone the current state before mutating it
+          const next = structuredClone(current);
+
+          // Apply patch (mutates the clone in place)
+          applyPatch(next, filtered);
+
+          dataRef.current = next;
+          setData(next);
         }
-      };
 
-      ws.onmessage = (event) => {
-        try {
-          const msg: WsMsg = JSON.parse(event.data);
-
-          // Handle JsonPatch messages (same as SSE json_patch event)
-          if ('JsonPatch' in msg) {
-            const patches: Operation[] = msg.JsonPatch;
-            const filtered = deduplicatePatches
-              ? deduplicatePatches(patches)
-              : patches;
-
-            const current = dataRef.current;
-            if (!filtered.length || !current) return;
-
-            // Deep clone the current state before mutating it
-            const next = structuredClone(current);
-
-            // Apply patch (mutates the clone in place)
-            applyPatch(next, filtered);
-
-            dataRef.current = next;
-            setData(next);
-          }
-
-          // Handle finished messages ({finished: true})
-          // Treat finished as terminal - do NOT reconnect
-          if ('finished' in msg) {
-            finishedRef.current = true;
-            ws.close(1000, 'finished');
-            wsRef.current = null;
-            setIsConnected(false);
-          }
-        } catch (err) {
-          console.error('Failed to process WebSocket message:', err);
-          setError('Failed to process stream update');
+        // Handle finished messages ({finished: true})
+        // Treat finished as terminal - do NOT reconnect
+        if ('finished' in msg) {
+          finishedRef.current = true;
+          ws.close(1000, 'finished');
+          wsRef.current = null;
+          setIsConnected(false);
         }
-      };
+      } catch (err) {
+        console.error('Failed to process WebSocket message:', err);
+        setError('Failed to process stream update');
+      }
+    };
 
-      ws.onerror = () => {
-        setError('Connection failed');
-      };
+    ws.onerror = () => {
+      setError('Connection failed');
+    };
 
-      ws.onclose = (evt) => {
-        setIsConnected(false);
+    ws.onclose = (evt) => {
+      setIsConnected(false);
+      
+      // Only clear wsRef if this is still the current WebSocket
+      if (wsRef.current === ws) {
         wsRef.current = null;
+      }
 
-        // Do not reconnect if we received a finished message or clean close
-        if (finishedRef.current || (evt?.code === 1000 && evt?.wasClean)) {
-          return;
-        }
+      // Do not reconnect if we received a finished message or clean close
+      if (finishedRef.current || (evt?.code === 1000 && evt?.wasClean)) {
+        return;
+      }
 
-        // Otherwise, reconnect on unexpected/error closures
-        retryAttemptsRef.current += 1;
-        scheduleReconnect();
-      };
+      // Do not reconnect if disabled or endpoint changed
+      // (the effect cleanup will handle it)
+      if (!enabled || !endpoint) {
+        return;
+      }
 
-      wsRef.current = ws;
-    }
+      // Otherwise, reconnect on unexpected/error closures
+      retryAttemptsRef.current += 1;
+      scheduleReconnect();
+    };
+
+    wsRef.current = ws;
 
     return () => {
-      if (wsRef.current) {
-        const ws = wsRef.current;
-
+      if (wsRef.current === ws) {
         // Clear all event handlers first to prevent callbacks after cleanup
         ws.onopen = null;
         ws.onmessage = null;
