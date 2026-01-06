@@ -41,6 +41,7 @@ export function MermaidShowcase() {
   const [selectedExample, setSelectedExample] = useState<string>(exampleFlowchart);
 
   const openInDialog = (chart: string, title: string) => {
+    // @ts-expect-error - show method exists at runtime via defineModal
     MermaidDialog.show({
       title,
       description: 'This diagram is displayed in a dialog',

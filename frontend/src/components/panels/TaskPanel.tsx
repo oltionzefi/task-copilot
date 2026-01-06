@@ -8,10 +8,11 @@ import type { TaskWithAttemptStatus } from 'shared/types';
 import type { WorkspaceWithSession } from '@/types/attempt';
 import { NewCardContent } from '../ui/new-card';
 import { Button } from '../ui/button';
-import { PlusIcon, FileEdit, CheckCircle2 } from 'lucide-react';
+import { PlusIcon, FileEdit, CheckCircle2, History } from 'lucide-react';
 import { CreateAttemptDialog } from '@/components/dialogs/tasks/CreateAttemptDialog';
 import { JiraIntentTaskDialog } from '@/components/dialogs/tasks/JiraIntentTaskDialog';
 import { JiraReviewDialog } from '@/components/dialogs/tasks/JiraReviewDialog';
+import { TaskHistoryDialog } from '@/components/dialogs/tasks/TaskHistoryDialog';
 import WYSIWYGEditor from '@/components/ui/wysiwyg';
 import { DataTable, type ColumnDef } from '@/components/ui/table';
 import { DbSchemaViewerButton } from '@/components/tasks/DbSchemaViewerButton';
@@ -107,6 +108,19 @@ const TaskPanel = ({ task }: TaskPanelProps) => {
     <>
       <NewCardContent>
         <div className="p-6 flex flex-col h-full max-h-[calc(100vh-8rem)]">
+          {/* Header with title and history button */}
+          <div className="flex items-center justify-between mb-3">
+            <h2 className="text-lg font-semibold">Task Details</h2>
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => TaskHistoryDialog.show({ task })}
+            >
+              <History className="h-4 w-4 mr-2" />
+              {t('taskPanel.viewHistory', { defaultValue: 'View History' })}
+            </Button>
+          </div>
+
           <div
             className={`space-y-3 overflow-y-auto flex-shrink min-h-0 ${
               isConfluence ? 'flex-shrink-0' : ''
