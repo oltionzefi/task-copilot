@@ -68,6 +68,11 @@ export default defineConfig({
         target: `http://localhost:${process.env.BACKEND_PORT || "3001"}`,
         changeOrigin: true,
         ws: true,
+        configure: (proxy) => {
+          proxy.on('error', (err) => {
+            console.error('Proxy error:', err.message);
+          });
+        },
       }
     },
     fs: {

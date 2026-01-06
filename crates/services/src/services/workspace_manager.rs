@@ -3,7 +3,7 @@ use std::path::{Path, PathBuf};
 use db::models::{repo::Repo, workspace::Workspace as DbWorkspace};
 use sqlx::{Pool, Sqlite};
 use thiserror::Error;
-use tracing::{debug, error, info, warn};
+use tracing::{debug, error, info, trace, warn};
 use uuid::Uuid;
 
 use super::worktree_manager::{WorktreeCleanup, WorktreeError, WorktreeManager};
@@ -160,7 +160,7 @@ impl WorkspaceManager {
         for repo in repos {
             let worktree_path = workspace_dir.join(&repo.name);
 
-            debug!(
+            trace!(
                 "Ensuring worktree exists for repo '{}' at {}",
                 repo.name,
                 worktree_path.display()
@@ -313,6 +313,8 @@ impl WorkspaceManager {
             }
         };
 
+        // Collect all workspace paths first
+        let mut workspace_paths = Vec::new();
         for entry in entries {
             let entry = match entry {
                 Ok(entry) => entry,
@@ -326,9 +328,37 @@ impl WorkspaceManager {
             if !path.is_dir() {
                 continue;
             }
+            workspace_paths.push(path.to_string_lossy().to_string());
+        }
 
-            let workspace_path_str = path.to_string_lossy().to_string();
-            if let Ok(false) = DbWorkspace::container_ref_exists(db, &workspace_path_str).await {
+        if workspace_paths.is_empty() {
+            return;
+        }
+
+        // Batch check all workspace refs in single query
+        let placeholders = workspace_paths.iter().map(|_| "?").collect::<Vec<_>>().join(",");
+        let query_str = format!(
+            "SELECT container_ref FROM workspaces WHERE container_ref IN ({}) AND container_ref IS NOT NULL",
+            placeholders
+        );
+        
+        let mut query = sqlx::query_scalar::<_, String>(&query_str);
+        for path in &workspace_paths {
+            query = query.bind(path);
+        }
+        
+        let active_refs: std::collections::HashSet<String> = match query.fetch_all(db).await {
+            Ok(refs) => refs.into_iter().collect(),
+            Err(e) => {
+                error!("Failed to query active workspace refs: {}", e);
+                return;
+            }
+        };
+
+        // Clean up orphaned workspaces
+        for workspace_path_str in workspace_paths {
+            if !active_refs.contains(&workspace_path_str) {
+                let path = PathBuf::from(&workspace_path_str);
                 info!("Found orphaned workspace: {}", workspace_path_str);
                 if let Err(e) = Self::cleanup_workspace_without_repos(&path).await {
                     error!(
