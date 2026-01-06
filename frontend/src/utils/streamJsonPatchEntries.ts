@@ -38,16 +38,19 @@ export function streamJsonPatchEntries<E = unknown>(
   opts: StreamOptions<E> = {}
 ): StreamController<E> {
   let connected = false;
+  let closed = false;
+  let finished = false;
+  let ws: WebSocket | null = null;
+  let reconnectTimer: number | null = null;
+  let reconnectAttempts = 0;
+  const maxReconnectDelay = 8000; // 8 seconds max
+  
   let snapshot: PatchContainer<E> = structuredClone(
     opts.initial ?? ({ entries: [] } as PatchContainer<E>)
   );
 
   const subscribers = new Set<(entries: E[]) => void>();
   if (opts.onEntries) subscribers.add(opts.onEntries);
-
-  // Convert HTTP endpoint to WebSocket endpoint
-  const wsUrl = url.replace(/^http/, 'ws');
-  const ws = new WebSocket(wsUrl);
 
   const notify = () => {
     for (const cb of subscribers) {
@@ -57,6 +60,17 @@ export function streamJsonPatchEntries<E = unknown>(
         /* swallow subscriber errors */
       }
     }
+  };
+
+  const scheduleReconnect = () => {
+    if (closed || finished || reconnectTimer !== null) return;
+    
+    // Exponential backoff with cap: 1s, 2s, 4s, 8s (max)
+    const delay = Math.min(maxReconnectDelay, 1000 * Math.pow(2, reconnectAttempts));
+    reconnectTimer = window.setTimeout(() => {
+      reconnectTimer = null;
+      connect();
+    }, delay);
   };
 
   const handleMessage = (event: MessageEvent) => {
@@ -78,29 +92,56 @@ export function streamJsonPatchEntries<E = unknown>(
 
       // Handle Finished messages
       if (msg.finished !== undefined) {
+        finished = true;
         opts.onFinished?.(snapshot.entries);
-        ws.close();
+        if (ws) ws.close(1000, 'finished');
       }
     } catch (err) {
       opts.onError?.(err);
     }
   };
 
-  ws.addEventListener('open', () => {
-    connected = true;
-    opts.onConnect?.();
-  });
+  const connect = () => {
+    if (closed || finished || ws !== null) return;
 
-  ws.addEventListener('message', handleMessage);
+    // Convert HTTP endpoint to WebSocket endpoint
+    const wsUrl = url.replace(/^http/, 'ws');
+    ws = new WebSocket(wsUrl);
 
-  ws.addEventListener('error', (err) => {
-    connected = false;
-    opts.onError?.(err);
-  });
+    ws.addEventListener('open', () => {
+      connected = true;
+      reconnectAttempts = 0; // Reset on successful connection
+      if (reconnectTimer !== null) {
+        window.clearTimeout(reconnectTimer);
+        reconnectTimer = null;
+      }
+      opts.onConnect?.();
+    });
 
-  ws.addEventListener('close', () => {
-    connected = false;
-  });
+    ws.addEventListener('message', handleMessage);
+
+    ws.addEventListener('error', (err) => {
+      connected = false;
+      opts.onError?.(err);
+    });
+
+    ws.addEventListener('close', (evt) => {
+      connected = false;
+      ws = null;
+
+      // Don't reconnect if finished, closed manually, or clean close
+      if (finished || closed || (evt?.code === 1000 && evt?.wasClean)) {
+        return;
+      }
+
+      // Reconnect on unexpected close
+      reconnectAttempts += 1;
+      scheduleReconnect();
+    });
+  };
+
+  // Initial connection
+  connect();
 
   return {
     getEntries(): E[] {
@@ -119,7 +160,15 @@ export function streamJsonPatchEntries<E = unknown>(
       return () => subscribers.delete(cb);
     },
     close(): void {
-      ws.close();
+      closed = true;
+      if (reconnectTimer !== null) {
+        window.clearTimeout(reconnectTimer);
+        reconnectTimer = null;
+      }
+      if (ws) {
+        ws.close();
+        ws = null;
+      }
       subscribers.clear();
       connected = false;
     },
