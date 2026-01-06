@@ -13,6 +13,8 @@ use axum::{
     routing::{delete, get, post, put},
 };
 use db::models::{
+    execution_process::ExecutionProcess,
+    execution_process::ExecutionProcessRunReason,
     image::TaskImage,
     project::{Project, ProjectError},
     repo::Repo,
@@ -544,12 +546,60 @@ pub async fn get_task_history(
     Ok(ResponseJson(ApiResponse::success(history)))
 }
 
+pub async fn trigger_review(
+    Extension(task): Extension<Task>,
+    State(deployment): State<DeploymentImpl>,
+) -> Result<ResponseJson<ApiResponse<()>>, ApiError> {
+    let pool = &deployment.db().pool;
+    
+    // Find workspaces for this task
+    let workspaces = Workspace::fetch_all(pool, Some(task.id)).await?;
+    
+    let workspace = workspaces
+        .into_iter()
+        .max_by_key(|w| w.created_at)
+        .ok_or_else(|| ApiError::BadRequest("No workspace found for task".to_string()))?;
+
+    // Find sessions for this workspace
+    let sessions = db::models::session::Session::find_by_workspace_id(pool, workspace.id).await?;
+    
+    let session = sessions
+        .into_iter()
+        .max_by_key(|s| s.created_at)
+        .ok_or_else(|| ApiError::BadRequest("No session found for workspace".to_string()))?;
+
+    // Find execution processes for this session
+    let execution_processes = ExecutionProcess::find_by_session_id(pool, session.id, false).await?;
+    
+    let execution_process = execution_processes
+        .into_iter()
+        .filter(|ep| ep.run_reason == ExecutionProcessRunReason::CodingAgent)
+        .max_by_key(|ep| ep.created_at)
+        .ok_or_else(|| ApiError::BadRequest("No coding agent execution found".to_string()))?;
+
+    // Load full context
+    let ctx = ExecutionProcess::load_context(pool, execution_process.id)
+        .await
+        .map_err(|e| ApiError::BadRequest(format!("Failed to load context: {}", e)))?;
+
+    // Trigger review agent in background
+    let deployment_clone = deployment.clone();
+    tokio::spawn(async move {
+        if let Err(e) = deployment_clone.container().trigger_review_agent(&ctx).await {
+            tracing::error!("Failed to trigger review agent for task {}: {}", ctx.task.id, e);
+        }
+    });
+
+    Ok(ResponseJson(ApiResponse::success(())))
+}
+
 pub fn router(deployment: &DeploymentImpl) -> Router<DeploymentImpl> {
     let task_actions_router = Router::new()
         .route("/", put(update_task))
         .route("/", delete(delete_task))
         .route("/share", post(share_task))
         .route("/history", get(get_task_history))
+        .route("/trigger-review", post(trigger_review))
         .route("/generate-jira-template", post(generate_jira_template))
         .route("/jira-ticket", post(create_jira_ticket));
 

@@ -8,7 +8,7 @@ import type { TaskWithAttemptStatus } from 'shared/types';
 import type { WorkspaceWithSession } from '@/types/attempt';
 import { NewCardContent } from '../ui/new-card';
 import { Button } from '../ui/button';
-import { PlusIcon, FileEdit, CheckCircle2, History } from 'lucide-react';
+import { PlusIcon, FileEdit, CheckCircle2, History, PlayCircle } from 'lucide-react';
 import { CreateAttemptDialog } from '@/components/dialogs/tasks/CreateAttemptDialog';
 import { JiraIntentTaskDialog } from '@/components/dialogs/tasks/JiraIntentTaskDialog';
 import { JiraReviewDialog } from '@/components/dialogs/tasks/JiraReviewDialog';
@@ -16,6 +16,8 @@ import { TaskHistoryDialog } from '@/components/dialogs/tasks/TaskHistoryDialog'
 import WYSIWYGEditor from '@/components/ui/wysiwyg';
 import { DataTable, type ColumnDef } from '@/components/ui/table';
 import { DbSchemaViewerButton } from '@/components/tasks/DbSchemaViewerButton';
+import { tasksApi } from '@/lib/api';
+import { useState } from 'react';
 
 interface TaskPanelProps {
   task: TaskWithAttemptStatus | null;
@@ -25,6 +27,7 @@ const TaskPanel = ({ task }: TaskPanelProps) => {
   const { t } = useTranslation('tasks');
   const navigate = useNavigateWithSearch();
   const { projectId } = useProject();
+  const [isReviewTriggering, setIsReviewTriggering] = useState(false);
 
   const {
     data: attempts = [],
@@ -104,21 +107,47 @@ const TaskPanel = ({ task }: TaskPanelProps) => {
   const isConfluence = task.intent === 'confluence';
   const isJira = task.intent === 'jira';
 
+  const handleTriggerReview = async () => {
+    if (!task) return;
+    
+    setIsReviewTriggering(true);
+    try {
+      await tasksApi.triggerReview(task.id);
+    } catch (error) {
+      console.error('Failed to trigger review:', error);
+    } finally {
+      setIsReviewTriggering(false);
+    }
+  };
+
   return (
     <>
       <NewCardContent>
         <div className="p-6 flex flex-col h-full max-h-[calc(100vh-8rem)]">
-          {/* Header with title and history button */}
+          {/* Header with title and action buttons */}
           <div className="flex items-center justify-between mb-3">
             <h2 className="text-lg font-semibold">Task Details</h2>
-            <Button
-              variant="outline"
-              size="sm"
-              onClick={() => TaskHistoryDialog.show({ task })}
-            >
-              <History className="h-4 w-4 mr-2" />
-              {t('taskPanel.viewHistory', { defaultValue: 'View History' })}
-            </Button>
+            <div className="flex gap-2">
+              {task.status === 'inreview' && (
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={handleTriggerReview}
+                  disabled={isReviewTriggering}
+                >
+                  <PlayCircle className="h-4 w-4 mr-2" />
+                  {isReviewTriggering ? 'Triggering...' : 'Trigger Review'}
+                </Button>
+              )}
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => TaskHistoryDialog.show({ task })}
+              >
+                <History className="h-4 w-4 mr-2" />
+                {t('taskPanel.viewHistory', { defaultValue: 'View History' })}
+              </Button>
+            </div>
           </div>
 
           <div

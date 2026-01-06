@@ -606,6 +606,13 @@ export const tasksApi = {
     const response = await makeRequest(`/api/tasks/${taskId}/history`);
     return handleApiResponse<import('shared/types').TaskHistory[]>(response);
   },
+
+  triggerReview: async (taskId: string): Promise<void> => {
+    const response = await makeRequest(`/api/tasks/${taskId}/trigger-review`, {
+      method: 'POST',
+    });
+    return handleApiResponse<void>(response);
+  },
 };
 
 // Sessions API

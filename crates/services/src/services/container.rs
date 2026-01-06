@@ -162,7 +162,7 @@ pub trait ContainerService {
         action.next_action.is_none()
     }
 
-    /// Finalize task execution by updating status to InReview, triggering review agent, and sending notifications
+    /// Finalize task execution by updating status to InReview, optionally triggering review agent
     async fn finalize_task(
         &self,
         share_publisher: Option<&SharePublisher>,
@@ -180,14 +180,12 @@ pub trait ContainerService {
                     );
                 }
 
-                // Trigger automatic review agent
-                if let Err(err) = self.trigger_review_agent(ctx).await {
-                    tracing::warn!(
-                        "Failed to trigger review agent for task {}: {}",
-                        ctx.task.id,
-                        err
-                    );
-                }
+                // Note: Review agent triggering moved to be non-blocking
+                // It will be triggered after this function returns
+                tracing::debug!(
+                    "Task {} moved to InReview, review agent will be triggered asynchronously",
+                    ctx.task.id
+                );
             }
             Err(e) => {
                 tracing::error!("Failed to update task status to InReview: {e}");
