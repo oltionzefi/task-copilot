@@ -5,9 +5,7 @@ use strum_macros::{Display, EnumString};
 use ts_rs::TS;
 use uuid::Uuid;
 
-#[derive(
-    Debug, Clone, Type, Serialize, Deserialize, PartialEq, TS, EnumString, Display,
-)]
+#[derive(Debug, Clone, Type, Serialize, Deserialize, PartialEq, TS, EnumString, Display)]
 #[sqlx(type_name = "task_history_event_type", rename_all = "lowercase")]
 #[serde(rename_all = "snake_case")]
 #[strum(serialize_all = "snake_case")]
@@ -40,10 +38,7 @@ pub struct CreateTaskHistory {
 }
 
 impl TaskHistory {
-    pub async fn create(
-        pool: &SqlitePool,
-        data: &CreateTaskHistory,
-    ) -> Result<Self, sqlx::Error> {
+    pub async fn create(pool: &SqlitePool, data: &CreateTaskHistory) -> Result<Self, sqlx::Error> {
         let id = Uuid::new_v4();
         sqlx::query_as!(
             TaskHistory,

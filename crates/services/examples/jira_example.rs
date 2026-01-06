@@ -11,10 +11,9 @@ async fn main() -> Result<(), JiraError> {
     // In production, these should come from environment variables or secure storage
     let base_url = std::env::var("JIRA_BASE_URL")
         .unwrap_or_else(|_| "https://your-domain.atlassian.net".to_string());
-    let email = std::env::var("JIRA_EMAIL")
-        .unwrap_or_else(|_| "user@example.com".to_string());
-    let api_token = std::env::var("JIRA_API_TOKEN")
-        .unwrap_or_else(|_| "your-api-token".to_string());
+    let email = std::env::var("JIRA_EMAIL").unwrap_or_else(|_| "user@example.com".to_string());
+    let api_token =
+        std::env::var("JIRA_API_TOKEN").unwrap_or_else(|_| "your-api-token".to_string());
 
     let client = JiraClient::new(base_url, email, api_token)?;
 
@@ -28,8 +27,12 @@ async fn main() -> Result<(), JiraError> {
     let projects = client.get_projects().await?;
     println!("Found {} projects:", projects.len());
     for project in &projects {
-        println!("  - {} ({}): {}", project.name, project.key, 
-                 project.description.as_deref().unwrap_or("No description"));
+        println!(
+            "  - {} ({}): {}",
+            project.name,
+            project.key,
+            project.description.as_deref().unwrap_or("No description")
+        );
     }
 
     // Get a specific project
@@ -90,7 +93,10 @@ async fn main() -> Result<(), JiraError> {
 
         // Search using JQL
         println!("\nSearching issues with JQL...");
-        let jql = format!("project = {} AND status = 'To Do' ORDER BY created DESC", project.key);
+        let jql = format!(
+            "project = {} AND status = 'To Do' ORDER BY created DESC",
+            project.key
+        );
         let search_results = client.search_issues(&jql, Some(5)).await?;
         println!("Found {} issues matching search:", search_results.len());
         for issue in &search_results {

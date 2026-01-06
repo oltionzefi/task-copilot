@@ -1,6 +1,6 @@
 use std::path::{Path, PathBuf};
 
-use db::models::{repo::Repo};
+use db::models::repo::Repo;
 use sqlx::{Pool, Sqlite};
 use thiserror::Error;
 use tracing::{debug, error, info, trace, warn};
@@ -336,17 +336,21 @@ impl WorkspaceManager {
         }
 
         // Batch check all workspace refs in single query
-        let placeholders = workspace_paths.iter().map(|_| "?").collect::<Vec<_>>().join(",");
+        let placeholders = workspace_paths
+            .iter()
+            .map(|_| "?")
+            .collect::<Vec<_>>()
+            .join(",");
         let query_str = format!(
             "SELECT container_ref FROM workspaces WHERE container_ref IN ({}) AND container_ref IS NOT NULL",
             placeholders
         );
-        
+
         let mut query = sqlx::query_scalar::<_, String>(&query_str);
         for path in &workspace_paths {
             query = query.bind(path);
         }
-        
+
         let active_refs: std::collections::HashSet<String> = match query.fetch_all(db).await {
             Ok(refs) => refs.into_iter().collect(),
             Err(e) => {

@@ -200,7 +200,10 @@ async fn trigger_pr_description_follow_up(
             task_id: task.id,
             event_type: TaskHistoryEventType::PrBodyUpdated,
             old_value: None,
-            new_value: Some(format!("Initiated automatic PR description update for PR #{}", pr_number)),
+            new_value: Some(format!(
+                "Initiated automatic PR description update for PR #{}",
+                pr_number
+            )),
             metadata: Some(metadata.to_string()),
         },
     )

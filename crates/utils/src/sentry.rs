@@ -30,7 +30,7 @@ fn environment() -> &'static str {
 
 pub fn init_once(source: SentrySource) {
     let sentry_dsn = std::env::var("SENTRY_DSN").unwrap_or_default();
-    
+
     if sentry_dsn.is_empty() {
         tracing::warn!("SENTRY_DSN not set, Sentry integration disabled");
         return;

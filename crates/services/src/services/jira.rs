@@ -1,5 +1,5 @@
 use base64::{Engine as _, engine::general_purpose};
-use reqwest::{header, Client, StatusCode};
+use reqwest::{Client, StatusCode, header};
 use serde::{Deserialize, Serialize};
 use thiserror::Error;
 use ts_rs::TS;
@@ -120,7 +120,9 @@ impl JiraClient {
             ));
         }
         if email.is_empty() {
-            return Err(JiraError::InvalidConfig("Email cannot be empty".to_string()));
+            return Err(JiraError::InvalidConfig(
+                "Email cannot be empty".to_string(),
+            ));
         }
         if api_token.is_empty() {
             return Err(JiraError::InvalidConfig(
@@ -133,7 +135,9 @@ impl JiraClient {
         let client = Client::builder()
             .timeout(std::time::Duration::from_secs(30))
             .build()
-            .map_err(|e| JiraError::InvalidConfig(format!("Failed to create HTTP client: {}", e)))?;
+            .map_err(|e| {
+                JiraError::InvalidConfig(format!("Failed to create HTTP client: {}", e))
+            })?;
 
         Ok(Self {
             base_url,
@@ -280,9 +284,9 @@ impl JiraClient {
         self.handle_response_status(response.status())?;
 
         let result: serde_json::Value = response.json().await?;
-        let issues_json = result["issues"]
-            .as_array()
-            .ok_or_else(|| JiraError::RequestFailed("Expected issues array in response".to_string()))?;
+        let issues_json = result["issues"].as_array().ok_or_else(|| {
+            JiraError::RequestFailed("Expected issues array in response".to_string())
+        })?;
 
         let issues = issues_json
             .iter()
@@ -411,7 +415,10 @@ impl JiraClient {
         }
 
         if let Some(priority) = &request.priority {
-            fields.insert("priority".to_string(), serde_json::json!({"name": priority}));
+            fields.insert(
+                "priority".to_string(),
+                serde_json::json!({"name": priority}),
+            );
         }
 
         let body = serde_json::json!({ "fields": fields });
@@ -432,10 +439,7 @@ impl JiraClient {
     }
 
     /// Get available transitions for an issue
-    pub async fn get_transitions(
-        &self,
-        issue_key: &str,
-    ) -> Result<Vec<JiraTransition>, JiraError> {
+    pub async fn get_transitions(&self, issue_key: &str) -> Result<Vec<JiraTransition>, JiraError> {
         let url = format!(
             "{}/rest/api/3/issue/{}/transitions",
             self.base_url, issue_key
@@ -552,9 +556,7 @@ impl JiraClient {
             StatusCode::FORBIDDEN => Err(JiraError::PermissionDenied(
                 "Insufficient permissions for this operation".to_string(),
             )),
-            StatusCode::NOT_FOUND => {
-                Err(JiraError::NotFound("Resource not found".to_string()))
-            }
+            StatusCode::NOT_FOUND => Err(JiraError::NotFound("Resource not found".to_string())),
             status => Err(JiraError::RequestFailed(format!(
                 "Request failed with status: {}",
                 status
@@ -596,7 +598,10 @@ impl JiraClient {
         })
     }
 
-    fn extract_text_from_adf(&self, adf: &serde_json::Map<String, serde_json::Value>) -> Option<String> {
+    fn extract_text_from_adf(
+        &self,
+        adf: &serde_json::Map<String, serde_json::Value>,
+    ) -> Option<String> {
         let content = adf.get("content")?.as_array()?;
         let mut text = String::new();
 
@@ -635,13 +640,25 @@ mod tests {
 
     #[test]
     fn test_client_validation() {
-        let result = JiraClient::new("".to_string(), "user@example.com".to_string(), "token".to_string());
+        let result = JiraClient::new(
+            "".to_string(),
+            "user@example.com".to_string(),
+            "token".to_string(),
+        );
         assert!(result.is_err());
 
-        let result = JiraClient::new("https://example.atlassian.net".to_string(), "".to_string(), "token".to_string());
+        let result = JiraClient::new(
+            "https://example.atlassian.net".to_string(),
+            "".to_string(),
+            "token".to_string(),
+        );
         assert!(result.is_err());
 
-        let result = JiraClient::new("https://example.atlassian.net".to_string(), "user@example.com".to_string(), "".to_string());
+        let result = JiraClient::new(
+            "https://example.atlassian.net".to_string(),
+            "user@example.com".to_string(),
+            "".to_string(),
+        );
         assert!(result.is_err());
     }
 }

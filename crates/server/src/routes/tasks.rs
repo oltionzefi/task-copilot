@@ -550,46 +550,100 @@ pub async fn trigger_review(
     Extension(task): Extension<Task>,
     State(deployment): State<DeploymentImpl>,
 ) -> Result<ResponseJson<ApiResponse<()>>, ApiError> {
-    let pool = &deployment.db().pool;
-    
-    // Find workspaces for this task
-    let workspaces = Workspace::fetch_all(pool, Some(task.id)).await?;
-    
-    let workspace = workspaces
-        .into_iter()
-        .max_by_key(|w| w.created_at)
-        .ok_or_else(|| ApiError::BadRequest("No workspace found for task".to_string()))?;
+    let pool = deployment.db().pool.clone();
+    let task_id = task.id;
 
-    // Find sessions for this workspace
-    let sessions = db::models::session::Session::find_by_workspace_id(pool, workspace.id).await?;
-    
-    let session = sessions
-        .into_iter()
-        .max_by_key(|s| s.created_at)
-        .ok_or_else(|| ApiError::BadRequest("No session found for workspace".to_string()))?;
-
-    // Find execution processes for this session
-    let execution_processes = ExecutionProcess::find_by_session_id(pool, session.id, false).await?;
-    
-    let execution_process = execution_processes
-        .into_iter()
-        .filter(|ep| ep.run_reason == ExecutionProcessRunReason::CodingAgent)
-        .max_by_key(|ep| ep.created_at)
-        .ok_or_else(|| ApiError::BadRequest("No coding agent execution found".to_string()))?;
-
-    // Load full context
-    let ctx = ExecutionProcess::load_context(pool, execution_process.id)
-        .await
-        .map_err(|e| ApiError::BadRequest(format!("Failed to load context: {}", e)))?;
-
-    // Trigger review agent in background
-    let deployment_clone = deployment.clone();
+    // Spawn background task to process review completely outside request context
+    // This ensures the HTTP response returns immediately and doesn't block any streams
     tokio::spawn(async move {
-        if let Err(e) = deployment_clone.container().trigger_review_agent(&ctx).await {
-            tracing::error!("Failed to trigger review agent for task {}: {}", ctx.task.id, e);
+        // Find workspaces for this task
+        let workspaces = match Workspace::fetch_all(&pool, Some(task_id)).await {
+            Ok(w) => w,
+            Err(e) => {
+                tracing::error!("Failed to fetch workspaces for task {}: {}", task_id, e);
+                return;
+            }
+        };
+
+        let workspace = match workspaces.into_iter().max_by_key(|w| w.created_at) {
+            Some(w) => w,
+            None => {
+                tracing::error!("No workspace found for task {}", task_id);
+                return;
+            }
+        };
+
+        // Find sessions for this workspace
+        let sessions =
+            match db::models::session::Session::find_by_workspace_id(&pool, workspace.id).await {
+                Ok(s) => s,
+                Err(e) => {
+                    tracing::error!(
+                        "Failed to fetch sessions for workspace {}: {}",
+                        workspace.id,
+                        e
+                    );
+                    return;
+                }
+            };
+
+        let session = match sessions.into_iter().max_by_key(|s| s.created_at) {
+            Some(s) => s,
+            None => {
+                tracing::error!("No session found for workspace {}", workspace.id);
+                return;
+            }
+        };
+
+        // Find execution processes for this session
+        let execution_processes =
+            match ExecutionProcess::find_by_session_id(&pool, session.id, false).await {
+                Ok(ep) => ep,
+                Err(e) => {
+                    tracing::error!(
+                        "Failed to fetch execution processes for session {}: {}",
+                        session.id,
+                        e
+                    );
+                    return;
+                }
+            };
+
+        let execution_process = match execution_processes
+            .into_iter()
+            .filter(|ep| ep.run_reason == ExecutionProcessRunReason::CodingAgent)
+            .max_by_key(|ep| ep.created_at)
+        {
+            Some(ep) => ep,
+            None => {
+                tracing::error!("No coding agent execution found for session {}", session.id);
+                return;
+            }
+        };
+
+        // Load full context
+        let ctx = match ExecutionProcess::load_context(&pool, execution_process.id).await {
+            Ok(ctx) => ctx,
+            Err(e) => {
+                tracing::error!(
+                    "Failed to load context for execution process {}: {}",
+                    execution_process.id,
+                    e
+                );
+                return;
+            }
+        };
+
+        // Trigger review agent - results will be published via event stream when complete
+        tracing::info!("Starting background review agent for task {}", task_id);
+        if let Err(e) = deployment.container().trigger_review_agent(&ctx).await {
+            tracing::error!("Failed to trigger review agent for task {}: {}", task_id, e);
+        } else {
+            tracing::info!("Review agent completed for task {}", task_id);
         }
     });
 
+    // Return immediately - review will complete in background
     Ok(ResponseJson(ApiResponse::success(())))
 }
 

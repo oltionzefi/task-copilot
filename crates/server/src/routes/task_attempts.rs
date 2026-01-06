@@ -180,7 +180,7 @@ pub async fn create_task_attempt(
         .collect();
 
     WorkspaceRepo::create_many(pool, workspace.id, &workspace_repos).await?;
-    
+
     // Create initial session for the workspace
     let _session = Session::create(
         pool,
@@ -191,7 +191,7 @@ pub async fn create_task_attempt(
         workspace.id,
     )
     .await?;
-    
+
     if let Err(err) = deployment
         .container()
         .start_workspace(&workspace, executor_profile_id.clone())
@@ -1135,8 +1135,8 @@ pub async fn start_dev_server(
         )
         .await?;
 
-        // Automatically trigger review agent after dev server starts
-        // (This provides immediate feedback on the running application)
+    // Automatically trigger review agent after dev server starts
+    // (This provides immediate feedback on the running application)
 
     drop(deployment);
 

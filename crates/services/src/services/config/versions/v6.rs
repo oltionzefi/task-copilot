@@ -15,10 +15,10 @@ use crate::services::config::versions::v5;
 pub enum UiLanguage {
     #[default]
     Browser, // Detect from browser
-    En,      // Force English
-    Es,      // Force Spanish
-    De,      // Force German
-    It,      // Force Italian
+    En, // Force English
+    Es, // Force Spanish
+    De, // Force German
+    It, // Force Italian
 }
 
 #[derive(Clone, Debug, Serialize, Deserialize, TS)]

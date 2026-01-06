@@ -208,8 +208,7 @@ impl FlowManager {
             },
             FlowAction {
                 name: "Review Confluence".to_string(),
-                description: "Present documentation for review (no code modifications)"
-                    .to_string(),
+                description: "Present documentation for review (no code modifications)".to_string(),
                 status: FlowActionStatus::Pending,
             },
             FlowAction {
@@ -226,10 +225,7 @@ impl FlowManager {
         })
     }
 
-    pub fn execute_flow(
-        &self,
-        summary: &mut FlowSummary,
-    ) -> Result<Vec<FlowAction>, FlowError> {
+    pub fn execute_flow(&self, summary: &mut FlowSummary) -> Result<Vec<FlowAction>, FlowError> {
         match self.intent {
             FlowIntent::Code => self.execute_code_flow(summary),
             FlowIntent::Jira => self.execute_jira_flow(summary),
@@ -240,7 +236,7 @@ impl FlowManager {
     fn execute_code_flow(&self, summary: &mut FlowSummary) -> Result<Vec<FlowAction>, FlowError> {
         for action in summary.actions.iter_mut() {
             action.status = FlowActionStatus::InProgress;
-            
+
             match action.name.as_str() {
                 "Check Existing Code" => {
                     action.status = FlowActionStatus::Completed;
@@ -269,7 +265,7 @@ impl FlowManager {
     fn execute_jira_flow(&self, summary: &mut FlowSummary) -> Result<Vec<FlowAction>, FlowError> {
         for action in summary.actions.iter_mut() {
             action.status = FlowActionStatus::InProgress;
-            
+
             match action.name.as_str() {
                 "Read Title & Description" => {
                     action.status = FlowActionStatus::Completed;
@@ -301,7 +297,7 @@ impl FlowManager {
     ) -> Result<Vec<FlowAction>, FlowError> {
         for action in summary.actions.iter_mut() {
             action.status = FlowActionStatus::InProgress;
-            
+
             match action.name.as_str() {
                 "Read Title & Description" => {
                     action.status = FlowActionStatus::Completed;
@@ -404,8 +400,12 @@ mod tests {
 
         let mut summary = manager.create_code_flow(&input).unwrap();
         let actions = manager.execute_flow(&mut summary).unwrap();
-        
+
         assert_eq!(actions.len(), 5);
-        assert!(actions.iter().all(|a| a.status == FlowActionStatus::Completed));
+        assert!(
+            actions
+                .iter()
+                .all(|a| a.status == FlowActionStatus::Completed)
+        );
     }
 }

@@ -3,7 +3,7 @@ use axum::{
     extract::{Path, State},
     http::StatusCode,
     response::Json as ResponseJson,
-    routing::{get},
+    routing::get,
 };
 use db::models::portfolio::{CreatePortfolio, Portfolio, UpdatePortfolio};
 use deployment::Deployment;

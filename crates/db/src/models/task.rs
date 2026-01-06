@@ -146,20 +146,27 @@ pub struct UpdateTask {
 
 impl Task {
     pub fn to_prompt(&self) -> String {
-        let base_prompt = if let Some(description) = self.description.as_ref().filter(|d| !d.trim().is_empty()) {
-            format!("{}\n\n{}", &self.title, description)
-        } else {
-            self.title.clone()
-        };
+        let base_prompt =
+            if let Some(description) = self.description.as_ref().filter(|d| !d.trim().is_empty()) {
+                format!("{}\n\n{}", &self.title, description)
+            } else {
+                self.title.clone()
+            };
 
         // Add intent-specific instructions
         match self.intent {
             TaskIntent::Code => base_prompt,
             TaskIntent::Jira => {
-                format!("{}\n\nIMPORTANT: This is a Jira integration task. Focus on generating Jira-compatible content (issue descriptions, comments, etc.). Do NOT write or modify code.", base_prompt)
+                format!(
+                    "{}\n\nIMPORTANT: This is a Jira integration task. Focus on generating Jira-compatible content (issue descriptions, comments, etc.). Do NOT write or modify code.",
+                    base_prompt
+                )
             }
             TaskIntent::Confluence => {
-                format!("{}\n\nIMPORTANT: This is a Confluence documentation task. Focus on generating documentation content in Confluence format. Do NOT write or modify code.", base_prompt)
+                format!(
+                    "{}\n\nIMPORTANT: This is a Confluence documentation task. Focus on generating documentation content in Confluence format. Do NOT write or modify code.",
+                    base_prompt
+                )
             }
         }
     }

@@ -498,7 +498,10 @@ mod tests {
     fn test_normalize_branch() {
         assert_eq!(normalize_branch("refs/heads/main"), "main");
         assert_eq!(normalize_branch("Feature-Auth"), "feature-auth");
-        assert_eq!(normalize_branch("feature/feature-auth"), "feature/feature-auth");
+        assert_eq!(
+            normalize_branch("feature/feature-auth"),
+            "feature/feature-auth"
+        );
     }
 
     #[test]

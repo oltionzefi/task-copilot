@@ -232,9 +232,7 @@ pub trait ContainerService {
         let action = ctx.execution_process.executor_action()?;
         let executor_profile_id = match action.typ() {
             ExecutorActionType::CodingAgentInitialRequest(req) => req.executor_profile_id.clone(),
-            ExecutorActionType::CodingAgentFollowUpRequest(req) => {
-                req.executor_profile_id.clone()
-            }
+            ExecutorActionType::CodingAgentFollowUpRequest(req) => req.executor_profile_id.clone(),
             _ => {
                 // Fallback to default if not a coding agent action
                 return Ok(());
@@ -270,10 +268,7 @@ pub trait ContainerService {
             .await
         {
             Ok(_) => {
-                tracing::info!(
-                    "Review agent started successfully for task {}",
-                    ctx.task.id
-                );
+                tracing::info!("Review agent started successfully for task {}", ctx.task.id);
                 Ok(())
             }
             Err(e) => {
@@ -1259,7 +1254,8 @@ pub trait ContainerService {
                 | ExecutorActionType::CodingAgentInitialRequest(_),
             ) => ExecutionProcessRunReason::CodingAgent,
             // Review agents should never be chained
-            (ExecutorActionType::ReviewAgentRequest(_), _) | (_, ExecutorActionType::ReviewAgentRequest(_)) => {
+            (ExecutorActionType::ReviewAgentRequest(_), _)
+            | (_, ExecutorActionType::ReviewAgentRequest(_)) => {
                 tracing::warn!("Review agents cannot be chained as next actions, skipping");
                 return Ok(());
             }
