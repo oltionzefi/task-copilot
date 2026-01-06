@@ -17,8 +17,8 @@ pub async fn respond_to_approval(
     let service = deployment.approvals();
 
     match service.respond(&deployment.db().pool, &id, request).await {
-        Ok((status, context)) => {
-            deployment;
+        Ok((status, _context)) => {
+            drop(deployment);
 
             Ok(Json(status))
         }

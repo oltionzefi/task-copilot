@@ -109,11 +109,19 @@ impl EventService {
                                         }
                                         RecordTypes::Workspace(workspace) => {
                                             // Check if this workspace belongs to a task in our project
-                                            if let Ok(Some(task)) =
-                                                Task::find_by_id(&db_pool, workspace.task_id).await
-                                                && task.project_id == project_id
-                                            {
-                                                return Some(Ok(LogMsg::JsonPatch(patch)));
+                                            match Task::find_by_id(&db_pool, workspace.task_id).await {
+                                                Ok(Some(task)) if task.project_id == project_id => {
+                                                    return Some(Ok(LogMsg::JsonPatch(patch)));
+                                                }
+                                                Err(e) => {
+                                                    tracing::debug!(
+                                                        "Failed to load task {} for workspace {}: {}",
+                                                        workspace.task_id,
+                                                        workspace.id,
+                                                        e
+                                                    );
+                                                }
+                                                _ => {}
                                             }
                                         }
                                         RecordTypes::DeletedWorkspace {
@@ -121,11 +129,18 @@ impl EventService {
                                             ..
                                         } => {
                                             // Check if deleted workspace belonged to a task in our project
-                                            if let Ok(Some(task)) =
-                                                Task::find_by_id(&db_pool, *deleted_task_id).await
-                                                && task.project_id == project_id
-                                            {
-                                                return Some(Ok(LogMsg::JsonPatch(patch)));
+                                            match Task::find_by_id(&db_pool, *deleted_task_id).await {
+                                                Ok(Some(task)) if task.project_id == project_id => {
+                                                    return Some(Ok(LogMsg::JsonPatch(patch)));
+                                                }
+                                                Err(e) => {
+                                                    tracing::debug!(
+                                                        "Failed to load task {} for deleted workspace: {}",
+                                                        deleted_task_id,
+                                                        e
+                                                    );
+                                                }
+                                                _ => {}
                                             }
                                         }
                                         _ => {}

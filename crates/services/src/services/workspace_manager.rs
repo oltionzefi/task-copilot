@@ -1,6 +1,6 @@
 use std::path::{Path, PathBuf};
 
-use db::models::{repo::Repo, workspace::Workspace as DbWorkspace};
+use db::models::{repo::Repo};
 use sqlx::{Pool, Sqlite};
 use thiserror::Error;
 use tracing::{debug, error, info, trace, warn};

@@ -200,7 +200,7 @@ pub async fn create_task_attempt(
         tracing::error!("Failed to start task attempt: {}", err);
     }
 
-    deployment;
+    drop(deployment);
 
     tracing::info!("Created attempt for task {}", task.id);
 
@@ -226,7 +226,7 @@ pub async fn run_agent_setup(
         _ => return Err(ApiError::Executor(ExecutorError::SetupHelperNotSupported)),
     }
 
-    deployment;
+    drop(deployment);
 
     Ok(ResponseJson(ApiResponse::success(RunAgentSetupResponse {})))
 }
@@ -272,12 +272,12 @@ async fn handle_task_attempt_diff_ws(
                 match item {
                     Some(Ok(msg)) => {
                         if sender.send(msg).await.is_err() {
+                            tracing::debug!("Client disconnected from diff stream");
                             break;
                         }
                     }
                     Some(Err(e)) => {
-                        tracing::error!("stream error: {}", e);
-                        break;
+                        tracing::warn!("Stream error in diff WebSocket: {}", e);
                     }
                     None => break,
                 }
@@ -395,7 +395,7 @@ pub async fn merge_task_attempt(
         );
     }
 
-    deployment;
+    drop(deployment);
 
     Ok(ResponseJson(ApiResponse::success(())))
 }
@@ -530,7 +530,7 @@ pub async fn open_task_attempt_in_editor(
                 if url.is_some() { " (remote mode)" } else { "" }
             );
 
-            deployment;
+            drop(deployment);
 
             Ok(ResponseJson(ApiResponse::success(OpenEditorResponse {
                 url,
@@ -775,7 +775,7 @@ pub async fn change_target_branch(
             .git()
             .get_branch_status(&repo.path, &workspace.branch, &new_target_branch)?;
 
-    deployment;
+    drop(deployment);
 
     Ok(ResponseJson(ApiResponse::success(
         ChangeTargetBranchResponse {
@@ -912,7 +912,7 @@ pub async fn rename_branch(
         );
     }
 
-    deployment;
+    drop(deployment);
 
     Ok(ResponseJson(ApiResponse::success(RenameBranchResponse {
         branch: new_branch_name.to_string(),
@@ -1003,7 +1003,7 @@ pub async fn rebase_task_attempt(
         };
     }
 
-    deployment;
+    drop(deployment);
 
     Ok(ResponseJson(ApiResponse::success(())))
 }
@@ -1138,7 +1138,7 @@ pub async fn start_dev_server(
         // Automatically trigger review agent after dev server starts
         // (This provides immediate feedback on the running application)
 
-    deployment;
+    drop(deployment);
 
     Ok(ResponseJson(ApiResponse::success(())))
 }
@@ -1149,7 +1149,7 @@ pub async fn get_task_attempt_children(
 ) -> Result<ResponseJson<ApiResponse<TaskRelationships>>, StatusCode> {
     match Task::find_relationships_for_workspace(&deployment.db().pool, &workspace).await {
         Ok(relationships) => {
-            deployment;
+            drop(deployment);
 
             Ok(ResponseJson(ApiResponse::success(relationships)))
         }
@@ -1170,7 +1170,7 @@ pub async fn stop_task_attempt_execution(
 ) -> Result<ResponseJson<ApiResponse<()>>, ApiError> {
     deployment.container().try_stop(&workspace, false).await;
 
-    deployment;
+    drop(deployment);
 
     Ok(ResponseJson(ApiResponse::success(())))
 }
@@ -1253,7 +1253,7 @@ pub async fn run_setup_script(
         )
         .await?;
 
-    deployment;
+    drop(deployment);
 
     Ok(ResponseJson(ApiResponse::success(execution_process)))
 }
@@ -1328,7 +1328,7 @@ pub async fn run_cleanup_script(
         )
         .await?;
 
-    deployment;
+    drop(deployment);
 
     Ok(ResponseJson(ApiResponse::success(execution_process)))
 }
@@ -1340,7 +1340,7 @@ pub async fn gh_cli_setup_handler(
 ) -> Result<ResponseJson<ApiResponse<ExecutionProcess, GhCliSetupError>>, ApiError> {
     match gh_cli_setup::run_gh_cli_setup(&deployment, &workspace).await {
         Ok(execution_process) => {
-            deployment;
+            drop(deployment);
 
             Ok(ResponseJson(ApiResponse::success(execution_process)))
         }

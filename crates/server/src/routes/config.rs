@@ -142,7 +142,7 @@ async fn update_config(
 }
 
 /// Track config events when fields transition from false → true
-async fn track_config_events(deployment: &DeploymentImpl, old: &Config, new: &Config) {
+async fn track_config_events(_deployment: &DeploymentImpl, old: &Config, new: &Config) {
     let events = [
         (
             !old.onboarding_acknowledged && new.onboarding_acknowledged,
@@ -159,9 +159,9 @@ async fn track_config_events(deployment: &DeploymentImpl, old: &Config, new: &Co
         ),
     ];
 
-    for (should_track, event_name, properties) in events {
+    for (should_track, _event_name, _properties) in events {
         if should_track {
-            deployment;
+            // TODO: Track analytics event
         }
     }
 }

@@ -116,12 +116,14 @@ async fn handle_tasks_ws(
         match item {
             Ok(msg) => {
                 if sender.send(msg).await.is_err() {
-                    break; // client disconnected
+                    tracing::debug!("Client disconnected from tasks stream");
+                    break;
                 }
             }
             Err(e) => {
-                tracing::error!("stream error: {}", e);
-                break;
+                tracing::warn!("Stream error in tasks WebSocket: {}", e);
+                // Don't break on stream errors - continue processing
+                // The stream filter should handle errors gracefully
             }
         }
     }
@@ -442,7 +444,7 @@ pub async fn share_task(
         .ok_or(ShareError::MissingAuth)?;
     let shared_task_id = publisher.share_task(task.id, profile.user_id).await?;
 
-    let props = serde_json::json!({
+    let _props = serde_json::json!({
         "task_id": task.id,
         "shared_task_id": shared_task_id,
     });

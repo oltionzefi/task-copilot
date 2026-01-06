@@ -39,7 +39,6 @@ use executors::{
     profile::ExecutorProfileId,
 };
 use futures::{FutureExt, TryStreamExt, stream::select};
-use serde_json::json;
 use services::services::{
     approvals::{Approvals, executor_approvals::ExecutorApprovalBridge},
     config::Config,
@@ -346,7 +345,7 @@ impl LocalContainerService {
         let child_store = self.child_store.clone();
         let msg_stores = self.msg_stores.clone();
         let db = self.db.clone();
-        let config = self.config.clone();
+        let _config = self.config.clone();
         let container = self.clone();
         let publisher = self.publisher.clone();
 

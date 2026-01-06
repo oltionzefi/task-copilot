@@ -132,12 +132,12 @@ async fn handle_scratch_ws(
         match item {
             Ok(msg) => {
                 if sender.send(msg).await.is_err() {
+                    tracing::debug!("Client disconnected from scratch stream");
                     break;
                 }
             }
             Err(e) => {
-                tracing::error!("scratch stream error: {}", e);
-                break;
+                tracing::warn!("Stream error in scratch WebSocket: {}", e);
             }
         }
     }

@@ -40,7 +40,7 @@ pub async fn create_tag(
 ) -> Result<ResponseJson<ApiResponse<Tag>>, ApiError> {
     let tag = Tag::create(&deployment.db().pool, &payload).await?;
 
-    deployment;
+    drop(deployment);
 
     Ok(ResponseJson(ApiResponse::success(tag)))
 }
@@ -52,7 +52,7 @@ pub async fn update_tag(
 ) -> Result<ResponseJson<ApiResponse<Tag>>, ApiError> {
     let updated_tag = Tag::update(&deployment.db().pool, tag.id, &payload).await?;
 
-    deployment;
+    drop(deployment);
 
     Ok(ResponseJson(ApiResponse::success(updated_tag)))
 }

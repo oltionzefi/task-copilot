@@ -80,12 +80,12 @@ async fn handle_projects_ws(socket: WebSocket, deployment: DeploymentImpl) -> an
         match item {
             Ok(msg) => {
                 if sender.send(msg).await.is_err() {
-                    break; // client disconnected
+                    tracing::debug!("Client disconnected from projects stream");
+                    break;
                 }
             }
             Err(e) => {
-                tracing::error!("stream error: {}", e);
-                break;
+                tracing::warn!("Stream error in projects WebSocket: {}", e);
             }
         }
     }
@@ -203,8 +203,6 @@ async fn apply_remote_project_link(
         .link_to_remote(&deployment.db().pool, project.id, remote_project)
         .await?;
 
-    deployment;
-
     Ok(updated_project)
 }
 
@@ -213,7 +211,7 @@ pub async fn create_project(
     Json(payload): Json<CreateProject>,
 ) -> Result<ResponseJson<ApiResponse<Project>>, ApiError> {
     tracing::debug!("Creating project '{}'", payload.name);
-    let repo_count = payload.repositories.len();
+    let _repo_count = payload.repositories.len();
 
     match deployment
         .project()
@@ -222,7 +220,7 @@ pub async fn create_project(
     {
         Ok(project) => {
             // Track project creation event
-            deployment;
+            drop(deployment);
 
             Ok(ResponseJson(ApiResponse::success(project)))
         }
@@ -276,7 +274,7 @@ pub async fn delete_project(
             if rows_affected == 0 {
                 Err(StatusCode::NOT_FOUND)
             } else {
-                deployment;
+                drop(deployment);
 
                 Ok(ResponseJson(ApiResponse::success(())))
             }
@@ -335,7 +333,7 @@ pub async fn open_project_in_editor(
                 if url.is_some() { " (remote mode)" } else { "" }
             );
 
-            deployment;
+            drop(deployment);
 
             Ok(ResponseJson(ApiResponse::success(OpenEditorResponse {
                 url,
@@ -422,7 +420,7 @@ pub async fn add_project_repository(
         .await
     {
         Ok(repository) => {
-            deployment;
+            drop(deployment);
 
             Ok(ResponseJson(ApiResponse::success(repository)))
         }
@@ -491,7 +489,7 @@ pub async fn delete_project_repository(
         .await
     {
         Ok(()) => {
-            deployment;
+            drop(deployment);
 
             Ok(ResponseJson(ApiResponse::success(())))
         }

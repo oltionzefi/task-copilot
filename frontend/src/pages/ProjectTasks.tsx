@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { useNavigate, useParams, useSearchParams } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
+import { TaskErrorBoundary } from '@/components/errors/TaskErrorBoundary';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { AlertTriangle, Plus, X } from 'lucide-react';
@@ -391,64 +392,80 @@ export function ProjectTasks() {
       );
     };
 
-    tasks.forEach((task) => {
-      const statusKey = normalizeStatus(task.status);
-      const sharedTask = task.shared_task_id
-        ? sharedTasksById[task.shared_task_id]
-        : sharedTasksById[task.id];
+    try {
+      tasks.forEach((task) => {
+        if (!task?.status) return;
+        
+        const statusKey = normalizeStatus(task.status);
+        if (!columns[statusKey]) return;
+        
+        const sharedTask = task.shared_task_id
+          ? sharedTasksById[task.shared_task_id]
+          : sharedTasksById[task.id];
 
-      if (!matchesSearch(task.title, task.description)) {
-        return;
-      }
-
-      const isSharedAssignedElsewhere =
-        !showSharedTasks &&
-        !!sharedTask &&
-        !!sharedTask.assignee_user_id &&
-        sharedTask.assignee_user_id !== userId;
-
-      if (isSharedAssignedElsewhere) {
-        return;
-      }
-
-      columns[statusKey].push({
-        type: 'task',
-        task,
-        sharedTask,
-      });
-    });
-
-    (
-      Object.entries(sharedOnlyByStatus) as [TaskStatus, SharedTaskRecord[]][]
-    ).forEach(([status, items]) => {
-      if (!columns[status]) {
-        columns[status] = [];
-      }
-      items.forEach((sharedTask) => {
-        if (!matchesSearch(sharedTask.title, sharedTask.description)) {
+        if (!matchesSearch(task.title, task.description)) {
           return;
         }
-        const shouldIncludeShared =
-          showSharedTasks || sharedTask.assignee_user_id === userId;
-        if (!shouldIncludeShared) {
+
+        const isSharedAssignedElsewhere =
+          !showSharedTasks &&
+          !!sharedTask &&
+          !!sharedTask.assignee_user_id &&
+          sharedTask.assignee_user_id !== userId;
+
+        if (isSharedAssignedElsewhere) {
           return;
         }
-        columns[status].push({
-          type: 'shared',
-          task: sharedTask,
+
+        columns[statusKey].push({
+          type: 'task',
+          task,
+          sharedTask,
         });
       });
-    });
 
-    const getTimestamp = (item: KanbanColumnItem) => {
-      const createdAt =
-        item.type === 'task' ? item.task.created_at : item.task.created_at;
-      return new Date(createdAt).getTime();
-    };
+      (
+        Object.entries(sharedOnlyByStatus) as [TaskStatus, SharedTaskRecord[]][]
+      ).forEach(([status, items]) => {
+        if (!columns[status]) {
+          columns[status] = [];
+        }
+        items.forEach((sharedTask) => {
+          if (!sharedTask) return;
+          
+          if (!matchesSearch(sharedTask.title, sharedTask.description)) {
+            return;
+          }
+          const shouldIncludeShared =
+            showSharedTasks || sharedTask.assignee_user_id === userId;
+          if (!shouldIncludeShared) {
+            return;
+          }
+          columns[status].push({
+            type: 'shared',
+            task: sharedTask,
+          });
+        });
+      });
 
-    TASK_STATUSES.forEach((status) => {
-      columns[status].sort((a, b) => getTimestamp(b) - getTimestamp(a));
-    });
+      const getTimestamp = (item: KanbanColumnItem) => {
+        try {
+          const createdAt =
+            item.type === 'task' ? item.task.created_at : item.task.created_at;
+          return new Date(createdAt).getTime();
+        } catch {
+          return 0;
+        }
+      };
+
+      TASK_STATUSES.forEach((status) => {
+        if (columns[status]) {
+          columns[status].sort((a, b) => getTimestamp(b) - getTimestamp(a));
+        }
+      });
+    } catch (err) {
+      console.error('Error building kanban columns:', err);
+    }
 
     return columns;
   }, [
@@ -929,36 +946,40 @@ export function ProjectTasks() {
 
   const attemptContent = selectedTask ? (
     <NewCard className="h-full min-h-0 flex flex-col bg-diagonal-lines bg-muted border-0">
-      {isTaskView ? (
-        <TaskPanel task={selectedTask} />
-      ) : (
-        <TaskAttemptPanel attempt={attempt} task={selectedTask}>
-          {({ logs, followUp }) => (
-            <>
-              <GitErrorBanner />
-              <div className="flex-1 min-h-0 flex flex-col">
-                <div className="flex-1 min-h-0 flex flex-col">{logs}</div>
+      <TaskErrorBoundary>
+        {isTaskView ? (
+          <TaskPanel task={selectedTask} />
+        ) : (
+          <TaskAttemptPanel attempt={attempt} task={selectedTask}>
+            {({ logs, followUp }) => (
+              <>
+                <GitErrorBanner />
+                <div className="flex-1 min-h-0 flex flex-col">
+                  <div className="flex-1 min-h-0 flex flex-col">{logs}</div>
 
-                <div className="shrink-0 border-t">
-                  <div className="mx-auto w-full max-w-[50rem]">
-                    <TodoPanel />
+                  <div className="shrink-0 border-t">
+                    <div className="mx-auto w-full max-w-[50rem]">
+                      <TodoPanel />
+                    </div>
+                  </div>
+
+                  <div className="min-h-0 max-h-[50%] border-t overflow-hidden bg-background">
+                    <div className="mx-auto w-full max-w-[50rem] h-full min-h-0">
+                      {followUp}
+                    </div>
                   </div>
                 </div>
-
-                <div className="min-h-0 max-h-[50%] border-t overflow-hidden bg-background">
-                  <div className="mx-auto w-full max-w-[50rem] h-full min-h-0">
-                    {followUp}
-                  </div>
-                </div>
-              </div>
-            </>
-          )}
-        </TaskAttemptPanel>
-      )}
+              </>
+            )}
+          </TaskAttemptPanel>
+        )}
+      </TaskErrorBoundary>
     </NewCard>
   ) : selectedSharedTask ? (
     <NewCard className="h-full min-h-0 flex flex-col bg-diagonal-lines bg-muted border-0">
-      <SharedTaskPanel task={selectedSharedTask} />
+      <TaskErrorBoundary>
+        <SharedTaskPanel task={selectedSharedTask} />
+      </TaskErrorBoundary>
     </NewCard>
   ) : null;
 

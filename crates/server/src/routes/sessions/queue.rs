@@ -33,7 +33,7 @@ pub async fn queue_message(
         .queued_message_service()
         .queue_message(session.id, data);
 
-    deployment;
+    drop(deployment);
 
     Ok(ResponseJson(ApiResponse::success(QueueStatus::Queued {
         message: queued,
@@ -49,7 +49,7 @@ pub async fn cancel_queued_message(
         .queued_message_service()
         .cancel_queued(session.id);
 
-    deployment;
+    drop(deployment);
 
     Ok(ResponseJson(ApiResponse::success(QueueStatus::Empty)))
 }

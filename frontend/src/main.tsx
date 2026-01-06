@@ -19,7 +19,7 @@ import {
 
 Sentry.init({
   dsn: import.meta.env.VITE_SENTRY_DSN || '',
-  enabled: !!import.meta.env.VITE_SENTRY_DSN,
+  enabled: false, // Temporarily disabled
   tracesSampleRate: 1.0,
   environment: import.meta.env.MODE === 'development' ? 'dev' : 'production',
   integrations: [
@@ -44,7 +44,7 @@ const queryClient = new QueryClient({
 });
 
 ReactDOM.createRoot(document.getElementById('root')!).render(
-  <React.StrictMode>
+  // <React.StrictMode> // Temporarily disabled to reduce WebSocket noise in dev
     <QueryClientProvider client={queryClient}>
       <Sentry.ErrorBoundary
         fallback={<p>{i18n.t('common:states.error')}</p>}
@@ -57,5 +57,5 @@ ReactDOM.createRoot(document.getElementById('root')!).render(
         {/* <ReactQueryDevtools initialIsOpen={false} /> */}
       </Sentry.ErrorBoundary>
     </QueryClientProvider>
-  </React.StrictMode>
+  // </React.StrictMode>
 );

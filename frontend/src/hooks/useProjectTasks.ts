@@ -125,25 +125,34 @@ export const useProjectTasks = (projectId: string): UseProjectTasksResult => {
       cancelled: [],
     };
 
-    Object.values(merged).forEach((task) => {
-      byStatus[task.status]?.push(task);
-    });
+    try {
+      Object.values(merged).forEach((task) => {
+        if (task?.status && byStatus[task.status]) {
+          byStatus[task.status].push(task);
+        }
+      });
 
-    const sorted = Object.values(merged).sort(
-      (a, b) =>
-        new Date(b.created_at as string).getTime() -
-        new Date(a.created_at as string).getTime()
-    );
+      const sorted = Object.values(merged)
+        .filter((task) => task && task.created_at)
+        .sort(
+          (a, b) =>
+            new Date(b.created_at as string).getTime() -
+            new Date(a.created_at as string).getTime()
+        );
 
-    (Object.values(byStatus) as TaskWithAttemptStatus[][]).forEach((list) => {
-      list.sort(
-        (a, b) =>
-          new Date(b.created_at as string).getTime() -
-          new Date(a.created_at as string).getTime()
-      );
-    });
+      (Object.values(byStatus) as TaskWithAttemptStatus[][]).forEach((list) => {
+        list.sort(
+          (a, b) =>
+            new Date(b.created_at as string).getTime() -
+            new Date(a.created_at as string).getTime()
+        );
+      });
 
-    return { tasks: sorted, tasksById: merged, tasksByStatus: byStatus };
+      return { tasks: sorted, tasksById: merged, tasksByStatus: byStatus };
+    } catch (err) {
+      console.error('Error processing tasks:', err);
+      return { tasks: [], tasksById: {}, tasksByStatus: byStatus };
+    }
   }, [localTasksById]);
 
   const sharedOnlyByStatus = useMemo(() => {
@@ -155,24 +164,33 @@ export const useProjectTasks = (projectId: string): UseProjectTasksResult => {
       cancelled: [],
     };
 
-    Object.values(sharedTasksById).forEach((sharedTask) => {
-      const hasLocal =
-        Boolean(localTasksById[sharedTask.id]) ||
-        referencedSharedIds.has(sharedTask.id);
+    try {
+      Object.values(sharedTasksById).forEach((sharedTask) => {
+        if (!sharedTask?.status) return;
 
-      if (hasLocal) {
-        return;
-      }
-      grouped[sharedTask.status]?.push(sharedTask);
-    });
+        const hasLocal =
+          Boolean(localTasksById[sharedTask.id]) ||
+          referencedSharedIds.has(sharedTask.id);
 
-    (Object.values(grouped) as SharedTaskRecord[][]).forEach((list) => {
-      list.sort(
-        (a, b) =>
-          new Date(b.created_at as string).getTime() -
-          new Date(a.created_at as string).getTime()
-      );
-    });
+        if (hasLocal) {
+          return;
+        }
+        
+        if (grouped[sharedTask.status]) {
+          grouped[sharedTask.status].push(sharedTask);
+        }
+      });
+
+      (Object.values(grouped) as SharedTaskRecord[][]).forEach((list) => {
+        list.sort(
+          (a, b) =>
+            new Date(b.created_at as string).getTime() -
+            new Date(a.created_at as string).getTime()
+        );
+      });
+    } catch (err) {
+      console.error('Error processing shared tasks:', err);
+    }
 
     return grouped;
   }, [localTasksById, sharedTasksById, referencedSharedIds]);

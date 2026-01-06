@@ -106,8 +106,6 @@ pub(crate) async fn process_image_upload(
                 .await?;
             }
 
-            deployment;
-
             return Ok(ImageResponse::from_image(image));
         }
     }

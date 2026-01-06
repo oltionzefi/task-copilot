@@ -47,11 +47,11 @@ pub async fn assign_shared_task(
         .assign_shared_task(shared_task_id, payload.new_assignee_user_id.clone())
         .await?;
 
-    let props = serde_json::json!({
+    let _props = serde_json::json!({
         "shared_task_id": shared_task_id,
         "new_assignee_user_id": payload.new_assignee_user_id,
     });
-    deployment;
+    drop(deployment);
 
     Ok(ResponseJson(ApiResponse::success(updated_shared_task)))
 }
@@ -66,10 +66,10 @@ pub async fn delete_shared_task(
 
     publisher.delete_shared_task(shared_task_id).await?;
 
-    let props = serde_json::json!({
+    let _props = serde_json::json!({
         "shared_task_id": shared_task_id,
     });
-    deployment;
+    drop(deployment);
 
     Ok(ResponseJson(ApiResponse::success(())))
 }
@@ -85,12 +85,12 @@ pub async fn link_shared_task_to_local(
     let task = publisher.link_shared_task(shared_task_details).await?;
 
     if let Some(ref task) = task {
-        let props = serde_json::json!({
+        let _props = serde_json::json!({
             "shared_task_id": task.shared_task_id,
             "task_id": task.id,
             "project_id": task.project_id,
         });
-        deployment;
+        drop(deployment);
     }
 
     Ok(ResponseJson(ApiResponse::success(task)))

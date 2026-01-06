@@ -108,12 +108,12 @@ async fn handle_raw_logs_ws(
         match item {
             Ok(msg) => {
                 if sender.send(msg).await.is_err() {
-                    break; // client disconnected
+                    tracing::debug!("Client disconnected from raw logs stream");
+                    break;
                 }
             }
             Err(e) => {
-                tracing::error!("stream error: {}", e);
-                break;
+                tracing::warn!("Stream error in raw logs WebSocket: {}", e);
             }
         }
     }
@@ -154,12 +154,12 @@ async fn handle_normalized_logs_ws(
         match item {
             Ok(msg) => {
                 if sender.send(msg).await.is_err() {
+                    tracing::debug!("Client disconnected from normalized logs stream");
                     break;
                 }
             }
             Err(e) => {
-                tracing::error!("stream error: {}", e);
-                break;
+                tracing::warn!("Stream error in normalized logs WebSocket: {}", e);
             }
         }
     }
@@ -221,12 +221,12 @@ async fn handle_execution_processes_ws(
         match item {
             Ok(msg) => {
                 if sender.send(msg).await.is_err() {
-                    break; // client disconnected
+                    tracing::debug!("Client disconnected from execution processes stream");
+                    break;
                 }
             }
             Err(e) => {
-                tracing::error!("stream error: {}", e);
-                break;
+                tracing::warn!("Stream error in execution processes WebSocket: {}", e);
             }
         }
     }
