@@ -1167,7 +1167,7 @@ impl ContainerService for LocalContainerService {
         if let Ok(ctx) = ExecutionProcess::load_context(&self.db.pool, execution_process.id).await
             && !matches!(
                 ctx.execution_process.run_reason,
-                ExecutionProcessRunReason::DevServer
+                ExecutionProcessRunReason::DevServer | ExecutionProcessRunReason::ReviewAgent
             )
         {
             match Task::update_status(&self.db.pool, ctx.task.id, TaskStatus::InReview).await {

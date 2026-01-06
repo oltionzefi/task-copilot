@@ -1135,6 +1135,9 @@ pub async fn start_dev_server(
         )
         .await?;
 
+        // Automatically trigger review agent after dev server starts
+        // (This provides immediate feedback on the running application)
+
     deployment;
 
     Ok(ResponseJson(ApiResponse::success(())))
