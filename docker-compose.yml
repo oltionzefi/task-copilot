@@ -22,6 +22,118 @@ services:
       retries: 3
       start_period: 10s
 
+  sentry-redis:
+    image: redis:7-alpine
+    container_name: task-copilot-sentry-redis
+    restart: unless-stopped
+    volumes:
+      - sentry-redis-data:/data
+    networks:
+      - sentry-network
+
+  sentry-postgres:
+    image: postgres:16-alpine
+    container_name: task-copilot-sentry-postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: sentry
+      POSTGRES_PASSWORD: sentry
+      POSTGRES_DB: sentry
+    volumes:
+      - sentry-postgres-data:/var/lib/postgresql/data
+    networks:
+      - sentry-network
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U sentry"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  sentry:
+    image: getsentry/sentry:latest
+    container_name: task-copilot-sentry
+    restart: unless-stopped
+    depends_on:
+      sentry-postgres:
+        condition: service_healthy
+      sentry-redis:
+        condition: service_started
+    environment:
+      SENTRY_SECRET_KEY: ${SENTRY_SECRET_KEY:-task-copilot-local-dev-secret-key-change-in-production}
+      SENTRY_POSTGRES_HOST: sentry-postgres
+      SENTRY_POSTGRES_PORT: 5432
+      SENTRY_DB_NAME: sentry
+      SENTRY_DB_USER: sentry
+      SENTRY_DB_PASSWORD: sentry
+      SENTRY_REDIS_HOST: sentry-redis
+      SENTRY_REDIS_PORT: 6379
+      SENTRY_SINGLE_ORGANIZATION: 'true'
+      SENTRY_USE_KAFKA: 'false'
+      SENTRY_KAFKA_HOSTS: ''
+    ports:
+      - "9000:9000"
+    volumes:
+      - sentry-data:/var/lib/sentry/files
+    networks:
+      - sentry-network
+    command: >
+      sh -c "sentry upgrade --noinput && 
+             sentry createuser --email admin@taskcopilot.local --password admin --superuser --no-input || true &&
+             sentry run web"
+
+  sentry-worker:
+    image: getsentry/sentry:latest
+    container_name: task-copilot-sentry-worker
+    restart: unless-stopped
+    depends_on:
+      - sentry
+    environment:
+      SENTRY_SECRET_KEY: ${SENTRY_SECRET_KEY:-task-copilot-local-dev-secret-key-change-in-production}
+      SENTRY_POSTGRES_HOST: sentry-postgres
+      SENTRY_POSTGRES_PORT: 5432
+      SENTRY_DB_NAME: sentry
+      SENTRY_DB_USER: sentry
+      SENTRY_DB_PASSWORD: sentry
+      SENTRY_REDIS_HOST: sentry-redis
+      SENTRY_REDIS_PORT: 6379
+      SENTRY_USE_KAFKA: 'false'
+      SENTRY_KAFKA_HOSTS: ''
+    volumes:
+      - sentry-data:/var/lib/sentry/files
+    networks:
+      - sentry-network
+    command: sentry run worker
+
+  sentry-cron:
+    image: getsentry/sentry:latest
+    container_name: task-copilot-sentry-cron
+    restart: unless-stopped
+    depends_on:
+      - sentry
+    environment:
+      SENTRY_SECRET_KEY: ${SENTRY_SECRET_KEY:-task-copilot-local-dev-secret-key-change-in-production}
+      SENTRY_POSTGRES_HOST: sentry-postgres
+      SENTRY_POSTGRES_PORT: 5432
+      SENTRY_DB_NAME: sentry
+      SENTRY_DB_USER: sentry
+      SENTRY_DB_PASSWORD: sentry
+      SENTRY_REDIS_HOST: sentry-redis
+      SENTRY_REDIS_PORT: 6379
+      SENTRY_USE_KAFKA: 'false'
+      SENTRY_KAFKA_HOSTS: ''
+    volumes:
+      - sentry-data:/var/lib/sentry/files
+    networks:
+      - sentry-network
+    command: sentry run cron
+
 volumes:
   task-copilot-repos:
   task-copilot-data:
+  sentry-redis-data:
+  sentry-postgres-data:
+  sentry-data:
+
+networks:
+  sentry-network:
+    driver: bridge
