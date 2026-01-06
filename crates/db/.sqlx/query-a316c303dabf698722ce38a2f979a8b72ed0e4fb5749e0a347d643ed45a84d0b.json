@@ -1,0 +1,20 @@
+{
+  "db_name": "SQLite",
+  "query": "SELECT COUNT(*) as \"count!: i64\"\n               FROM task_build_history\n               WHERE task_id = $1\n               AND datetime(expires_at) >= datetime('now')",
+  "describe": {
+    "columns": [
+      {
+        "name": "count!: i64",
+        "ordinal": 0,
+        "type_info": "Integer"
+      }
+    ],
+    "parameters": {
+      "Right": 1
+    },
+    "nullable": [
+      false
+    ]
+  },
+  "hash": "a316c303dabf698722ce38a2f979a8b72ed0e4fb5749e0a347d643ed45a84d0b"
+}
