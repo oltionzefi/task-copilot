@@ -20,8 +20,6 @@ AI coding agents are increasingly writing the world's code and human engineers n
 - Open projects remotely via SSH when running Task Copilot on a remote server
 - **Connect with external tools**: Integrate with Jira, Slack, Microsoft Teams, and Outlook for seamless workflow management
 
-You can watch a video overview [here](https://youtu.be/TFT3KnZOOAk).
-
 ## Integrations & Connectors
 
 Task Copilot provides native integrations with popular productivity and communication tools:
