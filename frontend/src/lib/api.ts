@@ -535,6 +535,11 @@ export const tasksApi = {
     });
     return handleApiResponse<CreateJiraTicketResponse>(response);
   },
+
+  getHistory: async (taskId: string): Promise<import('shared/types').TaskHistory[]> => {
+    const response = await makeRequest(`/api/tasks/${taskId}/history`);
+    return handleApiResponse<import('shared/types').TaskHistory[]>(response);
+  },
 };
 
 // Sessions API
