@@ -482,6 +482,7 @@ pub trait ContainerService {
                                     project.default_agent_working_dir.clone()
                                 },
                                 portfolio_id: project.portfolio_id,
+                                include_task_id_in_commits: Some(project.include_task_id_in_commits),
                             },
                         )
                         .await?;

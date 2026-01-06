@@ -24,6 +24,7 @@ use axum::{
 use db::models::{
     execution_process::{ExecutionProcess, ExecutionProcessRunReason, ExecutionProcessStatus},
     merge::{Merge, MergeStatus, PrMerge, PullRequestInfo},
+    project::{Project, ProjectError},
     project_repo::ProjectRepo,
     repo::{Repo, RepoError},
     session::{CreateSession, Session},
@@ -331,10 +332,19 @@ pub async fn merge_task_attempt(
         .parent_task(pool)
         .await?
         .ok_or(ApiError::Workspace(WorkspaceError::TaskNotFound))?;
+    
+    let project = Project::find_by_id(pool, task.project_id)
+        .await?
+        .ok_or(ProjectError::ProjectNotFound)?;
+    
     let task_uuid_str = task.id.to_string();
     let first_uuid_section = task_uuid_str.split('-').next().unwrap_or(&task_uuid_str);
 
-    let commit_message = format!("{} (task-copilot {})", task.title, first_uuid_section);
+    let commit_message = if project.include_task_id_in_commits {
+        format!("{} (task-copilot {})", task.title, first_uuid_section)
+    } else {
+        task.title.clone()
+    };
 
     let merge_commit_id = deployment.git().merge_changes(
         &repo.path,

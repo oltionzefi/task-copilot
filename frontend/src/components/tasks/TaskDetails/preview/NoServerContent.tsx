@@ -88,6 +88,7 @@ export function NoServerContent({
           dev_script_working_dir: project.dev_script_working_dir ?? null,
           default_agent_working_dir: project.default_agent_working_dir ?? null,
           portfolio_id: project.portfolio_id ?? null,
+          include_task_id_in_commits: null,
         },
       },
       {

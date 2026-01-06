@@ -133,6 +133,7 @@ impl ProjectService {
                     dev_script_working_dir: None,
                     default_agent_working_dir: Some(repo.name),
                     portfolio_id: None,
+                    include_task_id_in_commits: None,
                 },
             )
             .await?;

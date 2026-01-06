@@ -40,6 +40,7 @@ interface ProjectFormState {
   dev_script_working_dir: string;
   default_agent_working_dir: string;
   portfolio_id: string | null;
+  include_task_id_in_commits: boolean;
 }
 
 interface RepoScriptsFormState {
@@ -56,6 +57,7 @@ function projectToFormState(project: Project): ProjectFormState {
     dev_script_working_dir: project.dev_script_working_dir ?? '',
     default_agent_working_dir: project.default_agent_working_dir ?? '',
     portfolio_id: project.portfolio_id ?? null,
+    include_task_id_in_commits: project.include_task_id_in_commits,
   };
 }
 
@@ -407,6 +409,7 @@ export function ProjectSettings() {
         default_agent_working_dir:
           draft.default_agent_working_dir.trim() || null,
         portfolio_id: draft.portfolio_id,
+        include_task_id_in_commits: draft.include_task_id_in_commits,
       };
 
       updateProject.mutate({
@@ -678,6 +681,30 @@ export function ProjectSettings() {
                 />
                 <p className="text-sm text-muted-foreground">
                   {t('settings.projects.scripts.agentWorkingDir.helper')}
+                </p>
+              </div>
+
+              {/* Include Task ID in Commits */}
+              <div className="space-y-2">
+                <div className="flex items-center space-x-2">
+                  <Checkbox
+                    id="include-task-id"
+                    checked={draft.include_task_id_in_commits}
+                    onCheckedChange={(checked) =>
+                      updateDraft({
+                        include_task_id_in_commits: checked === true,
+                      })
+                    }
+                  />
+                  <Label
+                    htmlFor="include-task-id"
+                    className="text-sm font-normal cursor-pointer"
+                  >
+                    {t('settings.projects.includeTaskId.label')}
+                  </Label>
+                </div>
+                <p className="text-sm text-muted-foreground">
+                  {t('settings.projects.includeTaskId.helper')}
                 </p>
               </div>
 
