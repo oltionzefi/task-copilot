@@ -56,6 +56,40 @@ Install dependencies:
 pnpm i
 ```
 
+### Running with Docker (Production-like)
+
+To run the application in a containerized environment:
+
+```bash
+# Start the service
+pnpm run docker:up
+# or directly:
+./scripts/docker-up.sh
+
+# View logs
+pnpm run docker:logs
+
+# Restart service
+pnpm run docker:restart
+
+# Stop the service (preserves data)
+pnpm run docker:down
+# or directly:
+./scripts/docker-down.sh
+
+# Stop and remove all data
+./scripts/docker-down.sh --volumes
+```
+
+The service will be available at `http://localhost:3000` (or the port specified in `.env`).
+
+Environment variables can be configured in a `.env` file:
+```bash
+PORT=3000              # Application port
+RUST_LOG=info          # Log level (debug, info, warn, error)
+SENTRY_DSN=            # Optional Sentry DSN for error tracking
+```
+
 ### Running the dev server
 
 ```bash
