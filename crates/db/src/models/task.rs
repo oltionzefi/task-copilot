@@ -369,7 +369,7 @@ ORDER BY t.created_at DESC"#,
         // Log history for changed fields
         if let Some(old_task) = existing_task {
             if old_task.status != updated_task.status {
-                let _ = TaskHistory::create(
+                if let Err(e) = TaskHistory::create(
                     pool,
                     &CreateTaskHistory {
                         task_id: id,
@@ -379,11 +379,14 @@ ORDER BY t.created_at DESC"#,
                         metadata: None,
                     },
                 )
-                .await;
+                .await
+                {
+                    tracing::error!("Failed to create status change history: {:?}", e);
+                }
             }
 
             if old_task.title != updated_task.title {
-                let _ = TaskHistory::create(
+                if let Err(e) = TaskHistory::create(
                     pool,
                     &CreateTaskHistory {
                         task_id: id,
@@ -393,11 +396,14 @@ ORDER BY t.created_at DESC"#,
                         metadata: None,
                     },
                 )
-                .await;
+                .await
+                {
+                    tracing::error!("Failed to create title change history: {:?}", e);
+                }
             }
 
             if old_task.description != updated_task.description {
-                let _ = TaskHistory::create(
+                if let Err(e) = TaskHistory::create(
                     pool,
                     &CreateTaskHistory {
                         task_id: id,
@@ -407,7 +413,10 @@ ORDER BY t.created_at DESC"#,
                         metadata: None,
                     },
                 )
-                .await;
+                .await
+                {
+                    tracing::error!("Failed to create description change history: {:?}", e);
+                }
             }
         }
 
@@ -433,7 +442,7 @@ ORDER BY t.created_at DESC"#,
         // Log status change to history
         if let Some(old_task) = existing_task {
             if old_task.status != status {
-                let _ = TaskHistory::create(
+                if let Err(e) = TaskHistory::create(
                     pool,
                     &CreateTaskHistory {
                         task_id: id,
@@ -443,7 +452,10 @@ ORDER BY t.created_at DESC"#,
                         metadata: None,
                     },
                 )
-                .await;
+                .await
+                {
+                    tracing::error!("Failed to create status change history: {:?}", e);
+                }
             }
         }
 

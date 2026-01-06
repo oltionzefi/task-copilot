@@ -12,6 +12,7 @@ use db::models::{
     project_repo::ProjectRepo,
     scratch::{Scratch, ScratchType},
     session::{CreateSession, Session},
+    task_history::{CreateTaskHistory, TaskHistory, TaskHistoryEventType},
     workspace::{Workspace, WorkspaceError},
 };
 use deployment::Deployment;
@@ -174,7 +175,7 @@ pub async fn follow_up(
     let latest_agent_session_id =
         ExecutionProcess::find_latest_coding_agent_turn_session_id(pool, session.id).await?;
 
-    let prompt = payload.prompt;
+    let prompt = payload.prompt.clone();
 
     let project_repos = ProjectRepo::find_by_project_id_with_names(pool, project.id).await?;
     let cleanup_action = deployment
@@ -197,7 +198,7 @@ pub async fn follow_up(
     } else {
         ExecutorActionType::CodingAgentInitialRequest(
             executors::actions::coding_agent_initial::CodingAgentInitialRequest {
-                prompt,
+                prompt: prompt.clone(),
                 executor_profile_id: executor_profile_id.clone(),
                 working_dir,
             },
@@ -215,6 +216,22 @@ pub async fn follow_up(
             &ExecutionProcessRunReason::CodingAgent,
         )
         .await?;
+
+    // Log the change request to task history
+    if let Err(e) = TaskHistory::create(
+        pool,
+        &CreateTaskHistory {
+            task_id: task.id,
+            event_type: TaskHistoryEventType::ChangeRequested,
+            old_value: None,
+            new_value: Some(prompt),
+            metadata: None,
+        },
+    )
+    .await
+    {
+        tracing::error!("Failed to create change request history: {:?}", e);
+    }
 
     // Clear the draft follow-up scratch on successful spawn
     // This ensures the scratch is wiped even if the user navigates away quickly

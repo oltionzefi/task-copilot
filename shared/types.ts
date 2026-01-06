@@ -64,7 +64,7 @@ export type UpdateTask = { title: string | null, description: string | null, sta
 
 export type TaskHistory = { id: string, task_id: string, event_type: TaskHistoryEventType, old_value: string | null, new_value: string | null, metadata: string | null, created_at: string, };
 
-export type TaskHistoryEventType = "status_changed" | "description_changed" | "title_changed" | "pr_body_updated" | "other";
+export type TaskHistoryEventType = "status_changed" | "description_changed" | "title_changed" | "pr_body_updated" | "change_requested" | "other";
 
 export type DraftFollowUpData = { message: string, variant: string | null, };
 

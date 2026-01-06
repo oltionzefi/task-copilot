@@ -14,6 +14,7 @@ pub enum TaskHistoryEventType {
     DescriptionChanged,
     TitleChanged,
     PrBodyUpdated,
+    ChangeRequested,
     Other,
 }
 
