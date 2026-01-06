@@ -66,6 +66,12 @@ export type TaskHistory = { id: string, task_id: string, event_type: TaskHistory
 
 export type TaskHistoryEventType = "status_changed" | "description_changed" | "title_changed" | "pr_body_updated" | "other";
 
+export type TaskBuildHistory = { id: string, task_id: string, workspace_id: string | null, session_id: string | null, context_type: TaskBuildHistoryContextType, content: string, metadata: string | null, created_at: string, expires_at: string, };
+
+export type TaskBuildHistoryContextType = "chat_message" | "execution_step" | "agent_turn" | "setup_complete" | "error" | "status_change";
+
+export type CreateTaskBuildHistory = { task_id: string, workspace_id: string | null, session_id: string | null, context_type: TaskBuildHistoryContextType, content: string, metadata: string | null, };
+
 export type DraftFollowUpData = { message: string, variant: string | null, };
 
 export type ScratchPayload = { "type": "DRAFT_TASK", "data": string } | { "type": "DRAFT_FOLLOW_UP", "data": DraftFollowUpData };

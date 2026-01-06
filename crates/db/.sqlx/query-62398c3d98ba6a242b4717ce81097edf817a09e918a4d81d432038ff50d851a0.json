@@ -1,0 +1,20 @@
+{
+  "db_name": "SQLite",
+  "query": "SELECT MIN(created_at) as \"oldest: DateTime<Utc>\"\n               FROM task_build_history\n               WHERE task_id = $1\n               AND datetime(expires_at) >= datetime('now')",
+  "describe": {
+    "columns": [
+      {
+        "name": "oldest: DateTime<Utc>",
+        "ordinal": 0,
+        "type_info": "Null"
+      }
+    ],
+    "parameters": {
+      "Right": 1
+    },
+    "nullable": [
+      true
+    ]
+  },
+  "hash": "62398c3d98ba6a242b4717ce81097edf817a09e918a4d81d432038ff50d851a0"
+}

@@ -1,0 +1,12 @@
+{
+  "db_name": "SQLite",
+  "query": "DELETE FROM task_build_history WHERE datetime(expires_at) < datetime('now')",
+  "describe": {
+    "columns": [],
+    "parameters": {
+      "Right": 0
+    },
+    "nullable": []
+  },
+  "hash": "b29582a72ec0dc5fc7ad303d6dcbb3a6061ead00e3dd69c1b014c7083bc769a6"
+}

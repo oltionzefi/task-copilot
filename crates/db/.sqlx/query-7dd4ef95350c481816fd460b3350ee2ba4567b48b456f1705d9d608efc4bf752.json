@@ -1,0 +1,68 @@
+{
+  "db_name": "SQLite",
+  "query": "SELECT \n                   id as \"id!: Uuid\",\n                   task_id as \"task_id!: Uuid\",\n                   workspace_id as \"workspace_id: Uuid\",\n                   session_id as \"session_id: Uuid\",\n                   context_type as \"context_type!: TaskBuildHistoryContextType\",\n                   content,\n                   metadata,\n                   created_at as \"created_at!: DateTime<Utc>\",\n                   expires_at as \"expires_at!: DateTime<Utc>\"\n               FROM task_build_history\n               WHERE workspace_id = $1\n               AND datetime(expires_at) >= datetime('now')\n               ORDER BY created_at ASC",
+  "describe": {
+    "columns": [
+      {
+        "name": "id!: Uuid",
+        "ordinal": 0,
+        "type_info": "Blob"
+      },
+      {
+        "name": "task_id!: Uuid",
+        "ordinal": 1,
+        "type_info": "Blob"
+      },
+      {
+        "name": "workspace_id: Uuid",
+        "ordinal": 2,
+        "type_info": "Blob"
+      },
+      {
+        "name": "session_id: Uuid",
+        "ordinal": 3,
+        "type_info": "Blob"
+      },
+      {
+        "name": "context_type!: TaskBuildHistoryContextType",
+        "ordinal": 4,
+        "type_info": "Text"
+      },
+      {
+        "name": "content",
+        "ordinal": 5,
+        "type_info": "Text"
+      },
+      {
+        "name": "metadata",
+        "ordinal": 6,
+        "type_info": "Text"
+      },
+      {
+        "name": "created_at!: DateTime<Utc>",
+        "ordinal": 7,
+        "type_info": "Text"
+      },
+      {
+        "name": "expires_at!: DateTime<Utc>",
+        "ordinal": 8,
+        "type_info": "Text"
+      }
+    ],
+    "parameters": {
+      "Right": 1
+    },
+    "nullable": [
+      true,
+      false,
+      true,
+      true,
+      false,
+      false,
+      true,
+      false,
+      false
+    ]
+  },
+  "hash": "7dd4ef95350c481816fd460b3350ee2ba4567b48b456f1705d9d608efc4bf752"
+}
