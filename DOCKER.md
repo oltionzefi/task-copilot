@@ -48,7 +48,54 @@ RUST_LOG=info
 
 # Optional: Sentry DSN for error tracking
 SENTRY_DSN=https://your-sentry-dsn
+VITE_SENTRY_DSN=https://your-sentry-dsn
+
+# Optional: Custom Sentry secret key (change in production)
+SENTRY_SECRET_KEY=your-secret-key-here
 ```
+
+### Error Tracking with Sentry
+
+The Docker setup includes a complete Sentry stack for error tracking and monitoring. Sentry services start automatically with the main application.
+
+**Accessing Sentry UI:**
+1. After starting with `pnpm run docker:up`, Sentry is available at http://localhost:9000
+2. Login with default credentials:
+   - Email: `admin@taskcopilot.local`
+   - Password: `admin`
+
+**Setting up error tracking:**
+1. Create a new JavaScript project in Sentry UI
+2. Copy the DSN (looks like: `http://abc123@localhost:9000/1`)
+3. Add to your `.env` file:
+   ```bash
+   SENTRY_DSN=http://abc123@localhost:9000/1
+   VITE_SENTRY_DSN=http://abc123@localhost:9000/1
+   ```
+4. Restart the application: `pnpm run docker:restart`
+
+**Testing the integration:**
+- Frontend: Open http://localhost:3000/sentry-test (dev mode only)
+- Or use browser console: `Sentry.captureMessage('Test message');`
+- Check Sentry UI for captured events
+
+**Managing Sentry services:**
+```bash
+# View Sentry logs
+docker compose logs -f sentry
+
+# Stop all services including Sentry
+pnpm run docker:down
+
+# Remove all data including Sentry events
+pnpm run docker:down -- --volumes
+```
+
+**Production notes:**
+- Change `SENTRY_SECRET_KEY` to a secure random value
+- Consider using an external Sentry instance for production
+- To disable Sentry services, comment them out in `docker-compose.yml`
+
 
 ### Default Configuration
 
@@ -207,11 +254,13 @@ git pull
 
 ## Security Considerations
 
-- Change default Sentry configuration in production
+- **Change default credentials**: Update Sentry admin password after first login
+- **Sentry secret key**: Change `SENTRY_SECRET_KEY` to a secure random value in production
 - Use environment variables for sensitive data (never commit to git)
 - Run behind a reverse proxy with HTTPS in production
 - Regularly update the Docker image with security patches
 - Consider using Docker secrets for sensitive environment variables
+- For production, use an external managed Sentry instance instead of self-hosted
 
 ## Backup and Restore
 

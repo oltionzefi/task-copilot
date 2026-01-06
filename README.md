@@ -121,45 +121,4 @@ The following environment variables can be configured at build time or runtime:
 
 **Build-time variables** must be set when running `pnpm run build`. **Runtime variables** are read when the application starts.
 
-### Local Sentry Setup (Error Tracking & Monitoring)
-
-For local development, you can run a Sentry instance for error tracking and monitoring:
-
-**Quick Start:**
-```bash
-# Automated setup (recommended)
-pnpm run sentry:setup
-```
-
-This wizard will:
-1. Start Sentry services (if not running)
-2. Guide you through creating a project
-3. Automatically configure your `.env` file
-
-**Manual Setup:**
-```bash
-# 1. Start Sentry
-pnpm run sentry:start
-
-# 2. Open http://localhost:9000 and login with:
-#    Email: admin@vibekanban.local
-#    Password: admin
-
-# 3. Create a JavaScript project and copy the DSN
-
-# 4. Add to .env file:
-VITE_SENTRY_DSN=http://YOUR_KEY@localhost:9000/PROJECT_ID
-```
-
-**Test the Integration:**
-- Open http://localhost:3000/sentry-test in your browser (dev mode only)
-- Or use the browser console: `Sentry.captureMessage('Test message');`
-- Check Sentry UI at http://localhost:9000 for captured events
-
-**Management Commands:**
-```bash
-pnpm run sentry:start   # Start Sentry services
-pnpm run sentry:stop    # Stop Sentry services
-pnpm run sentry:status  # Check service status
-pnpm run sentry:logs    # View logs
-```
+For information about error tracking with Sentry in Docker, see [DOCKER.md](./DOCKER.md#error-tracking-with-sentry).
