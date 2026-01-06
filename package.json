@@ -32,6 +32,7 @@
     "docker:down": "bash scripts/docker-down.sh",
     "docker:logs": "docker compose logs -f task-copilot",
     "docker:restart": "docker compose restart task-copilot",
+    "migrate": "bash scripts/migrate-to-docker.sh",
     "remote:dev": "cd crates/remote && docker compose --env-file .env.remote up --build ; docker compose down -v",
     "remote:prepare-db": "cd crates/remote && bash scripts/prepare-db.sh",
     "remote:prepare-db:check": "cd crates/remote && bash scripts/prepare-db.sh --check"

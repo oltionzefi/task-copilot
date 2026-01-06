@@ -88,6 +88,18 @@ RUST_LOG=info          # Log level (debug, info, warn, error)
 SENTRY_DSN=            # Optional Sentry DSN for error tracking
 ```
 
+See [DOCKER.md](DOCKER.md) for detailed Docker deployment instructions.
+
+## Migrate to Docker
+
+Migrate from local dev to Docker:
+
+```bash
+pnpm run migrate
+```
+
+Migrates `dev_assets/` (database, config) to Docker volumes and starts containers on port 3000.
+
 ### Running the dev server
 
 ```bash
