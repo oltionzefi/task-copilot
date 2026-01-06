@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { KanbanCard } from '@/components/ui/shadcn-io/kanban';
-import { Link, Loader2, XCircle, FileEdit } from 'lucide-react';
+import { Link, Loader2, XCircle, FileEdit, History } from 'lucide-react';
 import type { TaskWithAttemptStatus } from 'shared/types';
 import { ActionsDropdown } from '@/components/ui/actions-dropdown';
 import { Button } from '@/components/ui/button';
@@ -11,6 +11,7 @@ import type { SharedTaskRecord } from '@/hooks/useProjectTasks';
 import { TaskCardHeader } from './TaskCardHeader';
 import { DbSchemaViewerButton } from './DbSchemaViewerButton';
 import { WrittenTaskDescriptionDialog } from '@/components/dialogs/tasks/WrittenTaskDescriptionDialog';
+import { TaskHistoryDialog } from '@/components/dialogs/tasks/TaskHistoryDialog';
 import { useTranslation } from 'react-i18next';
 import { useAuth } from '@/hooks';
 
@@ -130,6 +131,18 @@ export function TaskCard({
                   <Link className="h-4 w-4" />
                 </Button>
               )}
+              <Button
+                variant="icon"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  TaskHistoryDialog.show({ task });
+                }}
+                onPointerDown={(e) => e.stopPropagation()}
+                onMouseDown={(e) => e.stopPropagation()}
+                title={t('viewHistory', { defaultValue: 'View History' })}
+              >
+                <History className="h-4 w-4" />
+              </Button>
               <ActionsDropdown task={task} sharedTask={sharedTask} />
             </>
           }

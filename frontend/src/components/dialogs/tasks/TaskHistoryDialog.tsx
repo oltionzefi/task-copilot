@@ -86,6 +86,8 @@ const TaskHistoryDialogImpl = NiceModal.create<TaskHistoryDialogProps>(
       enabled: modal.visible,
     });
 
+    const hasHistoryBeenDeleted = task.history_deleted_at !== null && task.history_deleted_at !== undefined;
+
     return (
       <Dialog open={modal.visible} onOpenChange={(open) => !open && modal.hide()}>
       <DialogContent className="max-w-3xl max-h-[80vh]">
@@ -188,6 +190,11 @@ const TaskHistoryDialogImpl = NiceModal.create<TaskHistoryDialogProps>(
             <h3 className="text-sm font-semibold">
               Change History ({history.length})
             </h3>
+            {hasHistoryBeenDeleted && (
+              <div className="rounded-lg border border-yellow-500 bg-yellow-50 dark:bg-yellow-950 p-3 text-sm text-yellow-800 dark:text-yellow-300">
+                ⚠️ History was cleaned up on {format(new Date(task.history_deleted_at!), 'MMM d, yyyy HH:mm')}
+              </div>
+            )}
             {isLoading ? (
               <div className="text-sm text-muted-foreground">Loading history...</div>
             ) : history.length > 0 ? (
@@ -244,7 +251,7 @@ const TaskHistoryDialogImpl = NiceModal.create<TaskHistoryDialogProps>(
               </ScrollArea>
             ) : (
               <div className="rounded-lg border p-4 text-sm text-muted-foreground text-center">
-                No changes recorded yet
+                {hasHistoryBeenDeleted ? 'History has been cleaned up' : 'No changes recorded yet'}
               </div>
             )}
           </div>
