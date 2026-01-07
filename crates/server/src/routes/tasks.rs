@@ -538,11 +538,23 @@ pub async fn create_jira_ticket(
     )))
 }
 
+#[derive(Debug, Deserialize)]
+pub struct TaskHistoryQuery {
+    pub limit: Option<i64>,
+    pub offset: Option<i64>,
+}
+
 pub async fn get_task_history(
     Extension(task): Extension<Task>,
     State(deployment): State<DeploymentImpl>,
+    Query(query): Query<TaskHistoryQuery>,
 ) -> Result<ResponseJson<ApiResponse<Vec<TaskHistory>>>, ApiError> {
-    let history = TaskHistory::find_by_task_id(&deployment.db().pool, task.id).await?;
+    let history = if let (Some(limit), Some(offset)) = (query.limit, query.offset) {
+        TaskHistory::find_by_task_id_paginated(&deployment.db().pool, task.id, limit, offset)
+            .await?
+    } else {
+        TaskHistory::find_by_task_id(&deployment.db().pool, task.id).await?
+    };
     Ok(ResponseJson(ApiResponse::success(history)))
 }
 

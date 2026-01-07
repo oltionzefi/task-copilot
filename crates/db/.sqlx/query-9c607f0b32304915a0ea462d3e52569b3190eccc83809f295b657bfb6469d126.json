@@ -1,6 +1,6 @@
 {
   "db_name": "SQLite",
-  "query": "SELECT \n                   id as \"id!: Uuid\",\n                   task_id as \"task_id!: Uuid\",\n                   event_type as \"event_type!: TaskHistoryEventType\",\n                   old_value,\n                   new_value,\n                   metadata,\n                   created_at as \"created_at!: DateTime<Utc>\"\n               FROM task_history\n               WHERE task_id = $1\n               ORDER BY created_at ASC",
+  "query": "SELECT \n                   id as \"id!: Uuid\",\n                   task_id as \"task_id!: Uuid\",\n                   event_type as \"event_type!: TaskHistoryEventType\",\n                   old_value,\n                   new_value,\n                   metadata,\n                   created_at as \"created_at!: DateTime<Utc>\"\n               FROM task_history\n               WHERE task_id = $1\n               ORDER BY created_at DESC\n               LIMIT $2 OFFSET $3",
   "describe": {
     "columns": [
       {
@@ -40,7 +40,7 @@
       }
     ],
     "parameters": {
-      "Right": 1
+      "Right": 3
     },
     "nullable": [
       true,
@@ -52,5 +52,5 @@
       false
     ]
   },
-  "hash": "bfb0bdf34e5f8861456e5792e7d847c6e32d89f3d84a06ae6ebeb151e0a3b2ce"
+  "hash": "9c607f0b32304915a0ea462d3e52569b3190eccc83809f295b657bfb6469d126"
 }

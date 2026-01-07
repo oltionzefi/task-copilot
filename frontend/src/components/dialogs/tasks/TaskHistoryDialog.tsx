@@ -20,10 +20,14 @@ import {
 import { format } from 'date-fns';
 import NiceModal, { useModal } from '@ebay/nice-modal-react';
 import { defineModal } from '@/lib/modals';
+import { Button } from '@/components/ui/button';
+import { useState } from 'react';
 
 export interface TaskHistoryDialogProps {
   task: Task;
 }
+
+const ITEMS_PER_PAGE = 5;
 
 const getEventIcon = (eventType: TaskHistoryEventType) => {
   switch (eventType) {
@@ -73,6 +77,7 @@ const getEventColor = (eventType: TaskHistoryEventType) => {
 const TaskHistoryDialogImpl = NiceModal.create<TaskHistoryDialogProps>(
   ({ task }) => {
     const modal = useModal();
+    const [visibleCount, setVisibleCount] = useState(ITEMS_PER_PAGE);
 
     const { data: history = [], isLoading } = useQuery({
       queryKey: ['taskHistory', task.id],
@@ -87,6 +92,13 @@ const TaskHistoryDialogImpl = NiceModal.create<TaskHistoryDialogProps>(
     });
 
     const hasHistoryBeenDeleted = task.history_deleted_at !== null && task.history_deleted_at !== undefined;
+
+    const displayedHistory = history.slice(0, visibleCount);
+    const hasMore = visibleCount < history.length;
+
+    const handleLoadMore = () => {
+      setVisibleCount(prev => Math.min(prev + ITEMS_PER_PAGE, history.length));
+    };
 
     return (
       <Dialog open={modal.visible} onOpenChange={(open) => !open && modal.hide()}>
@@ -198,57 +210,70 @@ const TaskHistoryDialogImpl = NiceModal.create<TaskHistoryDialogProps>(
             {isLoading ? (
               <div className="text-sm text-muted-foreground">Loading history...</div>
             ) : history.length > 0 ? (
-              <ScrollArea className="h-[250px] rounded-lg border">
-                <div className="p-4 space-y-4">
-                  {history.map((entry) => (
-                    <div
-                      key={entry.id}
-                      className="flex items-start gap-3 pb-4 border-b last:border-b-0"
+              <>
+                <ScrollArea className="h-[250px] rounded-lg border">
+                  <div className="p-4 space-y-4">
+                    {displayedHistory.map((entry) => (
+                      <div
+                        key={entry.id}
+                        className="flex items-start gap-3 pb-4 border-b last:border-b-0"
+                      >
+                        <div className="flex-shrink-0 mt-1">
+                          <div
+                            className={`p-2 rounded-full ${getEventColor(
+                              entry.event_type
+                            )}`}
+                          >
+                            {getEventIcon(entry.event_type)}
+                          </div>
+                        </div>
+                        <div className="flex-1 space-y-1">
+                          <div className="flex items-center justify-between">
+                            <span className="text-sm font-medium">
+                              {getEventLabel(entry.event_type)}
+                            </span>
+                            <span className="text-xs text-muted-foreground">
+                              {format(new Date(entry.created_at), 'MMM d, HH:mm')}
+                            </span>
+                          </div>
+                          {entry.old_value && (
+                            <div className="text-xs">
+                              <span className="text-muted-foreground">From: </span>
+                              <span className="line-through text-red-600 dark:text-red-400">
+                                {entry.old_value}
+                              </span>
+                            </div>
+                          )}
+                          {entry.new_value && (
+                            <div className="text-xs">
+                              <span className="text-muted-foreground">To: </span>
+                              <span className="text-green-600 dark:text-green-400">
+                                {entry.new_value}
+                              </span>
+                            </div>
+                          )}
+                          {entry.metadata && (
+                            <div className="text-xs text-muted-foreground mt-1">
+                              {entry.metadata}
+                            </div>
+                          )}
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </ScrollArea>
+                {hasMore && (
+                  <div className="flex justify-center pt-2">
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={handleLoadMore}
                     >
-                      <div className="flex-shrink-0 mt-1">
-                        <div
-                          className={`p-2 rounded-full ${getEventColor(
-                            entry.event_type
-                          )}`}
-                        >
-                          {getEventIcon(entry.event_type)}
-                        </div>
-                      </div>
-                      <div className="flex-1 space-y-1">
-                        <div className="flex items-center justify-between">
-                          <span className="text-sm font-medium">
-                            {getEventLabel(entry.event_type)}
-                          </span>
-                          <span className="text-xs text-muted-foreground">
-                            {format(new Date(entry.created_at), 'MMM d, HH:mm')}
-                          </span>
-                        </div>
-                        {entry.old_value && (
-                          <div className="text-xs">
-                            <span className="text-muted-foreground">From: </span>
-                            <span className="line-through text-red-600 dark:text-red-400">
-                              {entry.old_value}
-                            </span>
-                          </div>
-                        )}
-                        {entry.new_value && (
-                          <div className="text-xs">
-                            <span className="text-muted-foreground">To: </span>
-                            <span className="text-green-600 dark:text-green-400">
-                              {entry.new_value}
-                            </span>
-                          </div>
-                        )}
-                        {entry.metadata && (
-                          <div className="text-xs text-muted-foreground mt-1">
-                            {entry.metadata}
-                          </div>
-                        )}
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              </ScrollArea>
+                      Load More ({history.length - visibleCount} remaining)
+                    </Button>
+                  </div>
+                )}
+              </>
             ) : (
               <div className="rounded-lg border p-4 text-sm text-muted-foreground text-center">
                 {hasHistoryBeenDeleted ? 'History has been cleaned up' : 'No changes recorded yet'}

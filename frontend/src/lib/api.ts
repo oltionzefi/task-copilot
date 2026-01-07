@@ -602,8 +602,15 @@ export const tasksApi = {
     return handleApiResponse<CreateJiraTicketResponse>(response);
   },
 
-  getHistory: async (taskId: string): Promise<import('shared/types').TaskHistory[]> => {
-    const response = await makeRequest(`/api/tasks/${taskId}/history`);
+  getHistory: async (
+    taskId: string,
+    options?: { limit?: number; offset?: number }
+  ): Promise<import('shared/types').TaskHistory[]> => {
+    const params = new URLSearchParams();
+    if (options?.limit !== undefined) params.append('limit', options.limit.toString());
+    if (options?.offset !== undefined) params.append('offset', options.offset.toString());
+    const queryString = params.toString() ? `?${params.toString()}` : '';
+    const response = await makeRequest(`/api/tasks/${taskId}/history${queryString}`);
     return handleApiResponse<import('shared/types').TaskHistory[]>(response);
   },
 

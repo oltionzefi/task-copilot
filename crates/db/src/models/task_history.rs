@@ -80,8 +80,36 @@ impl TaskHistory {
                    created_at as "created_at!: DateTime<Utc>"
                FROM task_history
                WHERE task_id = $1
-               ORDER BY created_at ASC"#,
+               ORDER BY created_at DESC"#,
             task_id
+        )
+        .fetch_all(pool)
+        .await
+    }
+
+    pub async fn find_by_task_id_paginated(
+        pool: &SqlitePool,
+        task_id: Uuid,
+        limit: i64,
+        offset: i64,
+    ) -> Result<Vec<Self>, sqlx::Error> {
+        sqlx::query_as!(
+            TaskHistory,
+            r#"SELECT 
+                   id as "id!: Uuid",
+                   task_id as "task_id!: Uuid",
+                   event_type as "event_type!: TaskHistoryEventType",
+                   old_value,
+                   new_value,
+                   metadata,
+                   created_at as "created_at!: DateTime<Utc>"
+               FROM task_history
+               WHERE task_id = $1
+               ORDER BY created_at DESC
+               LIMIT $2 OFFSET $3"#,
+            task_id,
+            limit,
+            offset
         )
         .fetch_all(pool)
         .await
