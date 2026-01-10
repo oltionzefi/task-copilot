@@ -18,7 +18,7 @@ use db::models::{
     image::TaskImage,
     project::{Project, ProjectError},
     repo::Repo,
-    task::{CreateTask, Task, TaskWithAttemptStatus, UpdateTask},
+    task::{CreateTask, Task, TaskStatus, TaskWithAttemptStatus, UpdateTask},
     task_history::TaskHistory,
     workspace::{CreateWorkspace, Workspace},
     workspace_repo::{CreateWorkspaceRepo, WorkspaceRepo},
@@ -180,7 +180,12 @@ pub async fn create_task_and_start(
     let pool = &deployment.db().pool;
 
     let task_id = Uuid::new_v4();
-    let task = Task::create(pool, &payload.task, task_id).await?;
+    
+    // Ensure task starts with Todo status so history is created when it transitions to InProgress
+    let mut create_task_data = payload.task.clone();
+    create_task_data.status = Some(TaskStatus::Todo);
+    
+    let task = Task::create(pool, &create_task_data, task_id).await?;
 
     if let Some(image_ids) = &payload.task.image_ids {
         TaskImage::associate_many_dedup(pool, task.id, image_ids).await?;
