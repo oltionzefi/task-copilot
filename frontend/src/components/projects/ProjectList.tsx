@@ -14,6 +14,7 @@ import { useKeyCreate, Scope } from '@/keyboard';
 import { useProjects } from '@/hooks/useProjects';
 import { portfoliosApi } from '@/lib/api';
 import { getPortfolioThemeStyles } from '@/constants/portfolioThemes';
+import { ProjectCreatedGreeting } from '@/components/projects/ProjectCreatedGreeting';
 
 type ProjectGroup = {
   key: string;
@@ -32,6 +33,8 @@ export function ProjectList() {
   });
   const [error, setError] = useState('');
   const [focusedProjectId, setFocusedProjectId] = useState<string | null>(null);
+  const [newProjectName, setNewProjectName] = useState<string | null>(null);
+  const [previousProjectCount, setPreviousProjectCount] = useState(0);
 
   const handleCreateProject = async () => {
     try {
@@ -48,6 +51,16 @@ export function ProjectList() {
   const handleEditProject = (project: Project) => {
     navigate(`/settings/projects?projectId=${project.id}`);
   };
+
+  // Detect when a new project is created
+  useEffect(() => {
+    if (projects.length > previousProjectCount && previousProjectCount > 0) {
+      // A new project was added
+      const newestProject = projects[projects.length - 1];
+      setNewProjectName(newestProject.name);
+    }
+    setPreviousProjectCount(projects.length);
+  }, [projects, previousProjectCount]);
 
   // Set initial focus when projects are loaded
   useEffect(() => {
@@ -85,6 +98,13 @@ export function ProjectList() {
 
   return (
     <div className="space-y-6 p-8 pb-16 md:pb-8 h-full overflow-auto">
+      {newProjectName && (
+        <ProjectCreatedGreeting
+          projectName={newProjectName}
+          onDismiss={() => setNewProjectName(null)}
+        />
+      )}
+      
       <div className="flex justify-between items-center">
         <div>
           <h1 className="text-3xl font-bold tracking-tight">{t('title')}</h1>
