@@ -78,6 +78,7 @@ const LinkPortfolioDialogImpl = NiceModal.create<LinkPortfolioDialogProps>(
           dev_script_working_dir: null,
           default_agent_working_dir: null,
           portfolio_id: selectedPortfolioId || null,
+          include_task_id_in_commits: null,
         });
 
         queryClient.setQueryData(['project', projectId], updatedProject);
@@ -110,6 +111,7 @@ const LinkPortfolioDialogImpl = NiceModal.create<LinkPortfolioDialogProps>(
           dev_script_working_dir: null,
           default_agent_working_dir: null,
           portfolio_id: null,
+          include_task_id_in_commits: null,
         });
 
         queryClient.setQueryData(['project', projectId], updatedProject);

@@ -16,6 +16,7 @@ import {
   CheckCircle2,
   Clock,
   MessageSquare,
+  GitPullRequest,
 } from 'lucide-react';
 import { format } from 'date-fns';
 import NiceModal, { useModal } from '@ebay/nice-modal-react';
@@ -39,6 +40,8 @@ const getEventIcon = (eventType: TaskHistoryEventType) => {
       return <MessageSquare className="h-4 w-4" />;
     case 'pr_body_updated':
       return <GitBranch className="h-4 w-4" />;
+    case 'change_requested':
+      return <GitPullRequest className="h-4 w-4" />;
     default:
       return <Clock className="h-4 w-4" />;
   }
@@ -54,6 +57,8 @@ const getEventLabel = (eventType: TaskHistoryEventType) => {
       return 'Description Changed';
     case 'pr_body_updated':
       return 'PR Body Updated';
+    case 'change_requested':
+      return 'Change Requested';
     default:
       return 'Other';
   }
@@ -69,6 +74,8 @@ const getEventColor = (eventType: TaskHistoryEventType) => {
       return 'bg-purple-100 text-purple-800 dark:bg-purple-900 dark:text-purple-300';
     case 'pr_body_updated':
       return 'bg-orange-100 text-orange-800 dark:bg-orange-900 dark:text-orange-300';
+    case 'change_requested':
+      return 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-300';
     default:
       return 'bg-gray-100 text-gray-800 dark:bg-gray-900 dark:text-gray-300';
   }
@@ -276,7 +283,9 @@ const TaskHistoryDialogImpl = NiceModal.create<TaskHistoryDialogProps>(
               </>
             ) : (
               <div className="rounded-lg border p-4 text-sm text-muted-foreground text-center">
-                {hasHistoryBeenDeleted ? 'History has been cleaned up' : 'No changes recorded yet'}
+                {hasHistoryBeenDeleted 
+                  ? 'History has been cleaned up' 
+                  : 'No changes recorded yet. History tracking started - changes will appear here after you update the task.'}
               </div>
             )}
           </div>

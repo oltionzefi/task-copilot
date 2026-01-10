@@ -1,9 +1,9 @@
 PRAGMA foreign_keys = ON;
 
--- Drop the old task_history table
-DROP TABLE IF EXISTS task_history;
+-- Rename the old table
+ALTER TABLE task_history RENAME TO task_history_old;
 
--- Recreate task_history with the new event type
+-- Create new task_history table with the new event type
 CREATE TABLE task_history (
     id                BLOB PRIMARY KEY DEFAULT (randomblob(16)),
     task_id           BLOB NOT NULL,
@@ -16,6 +16,15 @@ CREATE TABLE task_history (
     FOREIGN KEY (task_id) REFERENCES tasks(id) ON DELETE CASCADE
 );
 
+-- Copy data from old table to new table
+INSERT INTO task_history (id, task_id, event_type, old_value, new_value, metadata, created_at)
+SELECT id, task_id, event_type, old_value, new_value, metadata, created_at
+FROM task_history_old;
+
+-- Drop the old table
+DROP TABLE task_history_old;
+
+-- Recreate indexes
 CREATE INDEX idx_task_history_task_id ON task_history(task_id);
 CREATE INDEX idx_task_history_created_at ON task_history(created_at);
 CREATE INDEX idx_task_history_event_type ON task_history(event_type);
